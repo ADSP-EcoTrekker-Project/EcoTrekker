@@ -1,0 +1,11 @@
+include = [
+    "cars.toml"
+]
+[[vehicles]]
+name = "car"
+co2 = 139
+wh = 200
+[[vehicles]]
+name ="tram"
+wh = 330
+co2 = 10

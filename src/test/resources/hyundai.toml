@@ -1,0 +1,4 @@
+[[vehicles]]
+name = "ioniq5"
+wh = 500
+parent = "ecar"

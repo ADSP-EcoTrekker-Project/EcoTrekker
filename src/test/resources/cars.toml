@@ -1,0 +1,8 @@
+include = [
+    "G:/ADSP/EcoTrekker/src/test/resources/hyundai.toml"
+]
+[[vehicles]]
+name = "ecar"
+co2 = 60
+wh = 300
+parent = "car"
