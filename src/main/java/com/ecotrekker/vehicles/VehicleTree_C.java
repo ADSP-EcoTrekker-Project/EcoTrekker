@@ -30,10 +30,10 @@ public class VehicleTree_C extends VehicleDatastructure_A {
 
         return results;
     }
-    
+
     public VehicleTree_C(VehicleConfigLoader_I configLoader) {
         super(configLoader);
-        this.setRoot(new VehicleTreeElement_C(null, null, null, null));
+        this.setRoot(new VehicleTreeElement_C("", null, null, null));
 
         LinkedList<VehicleDatastructureElement_A> vehicles = configLoader.getVehicle_elements();
 
@@ -52,6 +52,13 @@ public class VehicleTree_C extends VehicleDatastructure_A {
             }
             logger.warn("Failed to insert Element into the Tree");
         }
+    }
+
+
+
+    @Override
+    public VehicleDatastructureElement_A getElementByName(String name) {
+        return VehicleDatastructureElement_A.findByString(this.getTreeAsList(), name);
     }
 
 }

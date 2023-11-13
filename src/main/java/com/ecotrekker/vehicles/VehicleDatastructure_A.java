@@ -1,5 +1,7 @@
 package com.ecotrekker.vehicles;
 
+import java.lang.UnsupportedOperationException;
+
 import com.ecotrekker.config.vehicles.*;
 
 public abstract class VehicleDatastructure_A {
@@ -14,7 +16,10 @@ public abstract class VehicleDatastructure_A {
         this.root = root;
     }
 
-    
+    public VehicleDatastructureElement_A getElementByName(String name){
+        new UnsupportedOperationException("Please override in Subtypes");
+        return null;
+    }
 
     public VehicleDatastructure_A(VehicleConfigLoader_I configLoader){
         

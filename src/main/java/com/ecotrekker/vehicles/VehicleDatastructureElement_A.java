@@ -1,5 +1,6 @@
 package com.ecotrekker.vehicles;
 
+import java.security.InvalidParameterException;
 import java.util.List;
 
 abstract public class VehicleDatastructureElement_A implements Comparable<VehicleDatastructureElement_A>{
@@ -43,6 +44,7 @@ abstract public class VehicleDatastructureElement_A implements Comparable<Vehicl
 
     public static <T extends VehicleDatastructureElement_A> T findByString(List<T> list, String name){
         for (T vehicle : list){
+
             if (vehicle.getName().compareTo(name) == 0) {
                 return vehicle;
             }
@@ -56,6 +58,9 @@ abstract public class VehicleDatastructureElement_A implements Comparable<Vehicl
     List<VehicleDatastructureElement_A> children;
 
     public VehicleDatastructureElement_A(String name, Integer g_co2_per_pkm, Integer kwh_per_pkm, String parent){
+        if (name == null){
+            new InvalidParameterException("The name of a vehicle datastructure element cannot be null!");
+        }
         this.setName(name);
         this.setG_co2_per_pkm(g_co2_per_pkm);
         this.setKwh_per_pkm(kwh_per_pkm);

@@ -18,8 +18,8 @@ public class YAMLVehicleConfigLoader_CTests {
 
             VehicleTree_C t = new VehicleTree_C(l);
 
-            t.getTreeAsList();
-            
+            System.out.println(t.getElementByName("car").toString());
+
             System.out.flush();
         } catch (IOException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
             // TODO Auto-generated catch block
