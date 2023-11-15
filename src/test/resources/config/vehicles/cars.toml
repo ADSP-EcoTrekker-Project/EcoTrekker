@@ -1,5 +1,5 @@
 include = [
-    "G:/ADSP/EcoTrekker/src/test/resources/hyundai.toml"
+    "hyundai.toml"
 ]
 [[vehicles]]
 name = "ecar"

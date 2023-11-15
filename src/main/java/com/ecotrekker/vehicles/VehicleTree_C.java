@@ -16,7 +16,7 @@ public class VehicleTree_C extends VehicleDatastructure_A {
         LinkedList<VehicleTreeElement_C> results = new LinkedList<>();
         Stack<VehicleTreeElement_C> nodeStack = new Stack<>();
 
-        nodeStack.push(this.getRoot());
+        nodeStack.push((VehicleTreeElement_C) this.getRoot());
 
         while(nodeStack.empty() == false){
             VehicleTreeElement_C currentE = nodeStack.pop();
@@ -31,20 +31,20 @@ public class VehicleTree_C extends VehicleDatastructure_A {
         return results;
     }
 
-    public VehicleTree_C(VehicleConfigLoader_I configLoader) {
+    public <T extends VehicleConfigLoader_I> VehicleTree_C(T configLoader) {
         super(configLoader);
         this.setRoot(new VehicleTreeElement_C("", null, null, null));
 
-        LinkedList<VehicleDatastructureElement_A> vehicles = configLoader.getVehicle_elements();
+        LinkedList<VehicleTreeElement_C> vehicles = configLoader.getVehicle_elements();
 
-        for (VehicleDatastructureElement_A vehicle : vehicles){
+        for (VehicleTreeElement_C vehicle : vehicles){
             
             if (vehicle.getParent_string() == null || vehicle.getParent_string() == ""){
                 vehicle.parent = this.getRoot();
                 this.getRoot().children.add(vehicle);
                 continue;
             }
-            VehicleDatastructureElement_A parent = VehicleDatastructureElement_A.findByString(vehicles, vehicle.getParent_string());
+            VehicleTreeElement_C parent = VehicleTreeElement_C.findByString(vehicles, vehicle.getParent_string());
             if (parent != null){
                 vehicle.parent = parent;
                 parent.children.add(vehicle);

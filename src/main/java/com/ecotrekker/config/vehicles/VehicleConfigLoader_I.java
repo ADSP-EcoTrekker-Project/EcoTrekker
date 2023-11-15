@@ -6,6 +6,6 @@ import com.ecotrekker.vehicles.VehicleDatastructureElement_A;
 
 public interface VehicleConfigLoader_I extends Iterable<VehicleDatastructureElement_A> {
 
-    public LinkedList<VehicleDatastructureElement_A> getVehicle_elements();
+    public <T extends VehicleDatastructureElement_A> LinkedList<T> getVehicle_elements();
 
 }

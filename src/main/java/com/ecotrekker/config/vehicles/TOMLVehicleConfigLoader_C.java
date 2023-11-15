@@ -21,9 +21,9 @@ import com.ecotrekker.vehicles.VehicleDatastructureElement_A;
 
 
 
-public class YAMLVehicleConfigLoader_C implements VehicleConfigLoader_I {
+public class TOMLVehicleConfigLoader_C implements VehicleConfigLoader_I {
 
-    private static Logger logger = LoggerFactory.getLogger(YAMLVehicleConfigLoader_C.class);
+    private static Logger logger = LoggerFactory.getLogger(TOMLVehicleConfigLoader_C.class);
 
     private static LinkedList<Path> known_vehicle_config_files = new LinkedList<Path>();
 
@@ -35,19 +35,31 @@ public class YAMLVehicleConfigLoader_C implements VehicleConfigLoader_I {
         return vehicle_elements;
     }
 
-    public ArrayList<Map<String,Object>> loadConfigFile(Path pathToFile) throws StreamReadException, DatabindException, IOException {
-        ArrayList<Map<String,Object>> vehicles = new ArrayList<>();
+    public ArrayList<Map<String,Object>> loadConfigFile(Path pathToFile) {
         if (known_vehicle_config_files.contains(pathToFile)){
             logger.warn("There is a circular include in your vehicle config files!");
             logger.warn(String.format("You just tried to parse %s again!", pathToFile.toString()));
         }
+
         TomlMapper tomlMapper = new TomlMapper();
         File tomlFile = pathToFile.toFile();
-        Map<String, Object> data = tomlMapper.readValue(tomlFile, Map.class);
+        ArrayList<Map<String,Object>> vehicles = new ArrayList<>();
+        Map<String, Object> data;
+        try{
+            data = tomlMapper.readValue(tomlFile, Map.class);
+        }
+        catch (IOException e){
+            logger.error(String.format("Failed to parse %s", pathToFile.toString()));
+            return vehicles;
+        }
+
+        // Load Vehicles
         if (data.get("vehicles") != null){
             ArrayList<Map<String,Object>> vehicle_data = (ArrayList<Map<String,Object>>) data.get("vehicles");
             vehicles.addAll(vehicle_data);
         }
+
+        // Load Files and Load them
         if (data.get("include") != null){
             ArrayList<String> files = (ArrayList<String>) data.get("include");
             for (String file : files){
@@ -62,9 +74,8 @@ public class YAMLVehicleConfigLoader_C implements VehicleConfigLoader_I {
         return vehicles;
     }
 
-    public <T extends VehicleDatastructureElement_A> YAMLVehicleConfigLoader_C(Path pathToFile, Class<T> desiredObject) throws StreamReadException, DatabindException, IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+    public <T extends VehicleDatastructureElement_A> TOMLVehicleConfigLoader_C(Path pathToFile, Class<T> desiredObject) throws StreamReadException, DatabindException, IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
         vehicles = this.loadConfigFile(pathToFile);
-        logger.debug(vehicles.toString());
         for (Map<String, Object> vehicle : vehicles){
             String name = (String) vehicle.get("name");
             Integer g_co2_per_pkm = (Integer) vehicle.get("co2");
@@ -76,14 +87,13 @@ public class YAMLVehicleConfigLoader_C implements VehicleConfigLoader_I {
             cArg[2] = Integer.class;
             cArg[3] = String.class;
             Constructor<T> desiredObjectConstructor = desiredObject.getDeclaredConstructor(cArg);
-            VehicleDatastructureElement_A vehicle_element = desiredObjectConstructor.newInstance(
+            T vehicle_element = desiredObjectConstructor.newInstance(
                 name, g_co2_per_pkm, kwh_per_pkm, parent
             );
             vehicle_elements.add(
                 vehicle_element
             );
         }
-        logger.error(this.vehicle_elements.toString());
     }
 
     @Override

@@ -6,13 +6,13 @@ import com.ecotrekker.config.vehicles.*;
 
 public abstract class VehicleDatastructure_A {
 
-    private VehicleTreeElement_C root = null;
+    private VehicleDatastructureElement_A root = null;
 
-    public VehicleTreeElement_C getRoot() {
+    public VehicleDatastructureElement_A getRoot() {
         return root;
     }
 
-    void setRoot(VehicleTreeElement_C root) {
+    <T extends VehicleDatastructureElement_A> void setRoot(T root) {
         this.root = root;
     }
 
