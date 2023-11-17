@@ -1,4 +1,4 @@
-package com.jelbi.ecotrekker;
+package com.ecotrekker.restapi;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

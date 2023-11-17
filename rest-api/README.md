@@ -1,1 +1,1 @@
-# EcoTrekker
+# EcoTrekker REST API

@@ -1,4 +1,4 @@
-package com.jelbi.ecotrekker.controller;
+package com.ecotrekker.restapi.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
