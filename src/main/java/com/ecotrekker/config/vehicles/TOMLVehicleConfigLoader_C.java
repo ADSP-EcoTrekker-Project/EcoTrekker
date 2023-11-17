@@ -35,7 +35,12 @@ public class TOMLVehicleConfigLoader_C implements VehicleConfigLoader_I {
         return vehicle_elements;
     }
 
-    public ArrayList<Map<String,Object>> loadConfigFile(Path pathToFile) {
+    /**
+     * recursively loads config files in TOML format 
+     * @param pathToFile The Path object pointing to the top level config file
+     * @return An ArrayList containing a map for each vehicle to be parsed into an object
+     */
+    public ArrayList<Map<String,Object>> loadConfigFile(Path pathToFile) {    
         if (known_vehicle_config_files.contains(pathToFile)){
             logger.warn("There is a circular include in your vehicle config files!");
             logger.warn(String.format("You just tried to parse %s again!", pathToFile.toString()));
@@ -59,7 +64,7 @@ public class TOMLVehicleConfigLoader_C implements VehicleConfigLoader_I {
             vehicles.addAll(vehicle_data);
         }
 
-        // Load Files and Load them
+        // Load included files and recursively parse them
         if (data.get("include") != null){
             ArrayList<String> files = (ArrayList<String>) data.get("include");
             for (String file : files){
@@ -74,6 +79,21 @@ public class TOMLVehicleConfigLoader_C implements VehicleConfigLoader_I {
         return vehicles;
     }
 
+    /**
+     * The TOMLVehicleConfigLoader_C loads a TOML file and has a field for a List of vehicle objects
+     * @param <T> The subtype of VehicleDatastructureElement_A that should be created
+     * @param pathToFile The path to the root config file
+     * @param desiredObject The subtype of VehicleDatastructureElement_A that should be created
+     * @throws StreamReadException
+     * @throws DatabindException
+     * @throws IOException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
+     * @throws NoSuchMethodException
+     * @throws SecurityException
+     */
     public <T extends VehicleDatastructureElement_A> TOMLVehicleConfigLoader_C(Path pathToFile, Class<T> desiredObject) throws StreamReadException, DatabindException, IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
         vehicles = this.loadConfigFile(pathToFile);
         for (Map<String, Object> vehicle : vehicles){
