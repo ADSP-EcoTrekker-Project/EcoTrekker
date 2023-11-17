@@ -11,4 +11,3 @@ plugins {
 }
 
 rootProject.name = 'co2-calculator'
-include('app')
