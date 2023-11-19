@@ -1,4 +1,4 @@
-package com.jelbi.ecotrekker;
+package com.ecotrekker.restapi;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

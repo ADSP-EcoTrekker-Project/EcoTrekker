@@ -10,4 +10,6 @@ plugins {
     id 'org.gradle.toolchains.foojay-resolver-convention' version '0.7.0'
 }
 
-rootProject.name = 'co2-calculator'
+rootProject.name = 'EcoTrekker'
+
+include "rest-api", "co2-calculator"
