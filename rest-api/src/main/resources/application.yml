@@ -1,0 +1,5 @@
+server:
+  port: 8080
+
+topic:
+  name: eco.route.calc.co2
