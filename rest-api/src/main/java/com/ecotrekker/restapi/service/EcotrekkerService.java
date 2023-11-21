@@ -18,6 +18,7 @@ public class EcotrekkerService {
     }
 
     public String requestCalculation(Routes routes) throws JsonProcessingException {
-        return producer.sendMessages(routes);
+        producer.sendMessages(routes);
+        return "Done";
     }
 }

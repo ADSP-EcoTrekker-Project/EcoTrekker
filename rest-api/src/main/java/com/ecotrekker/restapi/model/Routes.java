@@ -5,5 +5,5 @@ import java.util.List;
 
 @Data
 public class Routes {
-    List<Route> routes;
+    private List<Route> routes;
 }
