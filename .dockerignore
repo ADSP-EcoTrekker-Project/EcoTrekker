@@ -1,0 +1,10 @@
+# Filter IDEs
+.vscode/
+
+# Filter unnecessary code / files 
+setup/
+*/README.md
+
+.gradle/
+
+
