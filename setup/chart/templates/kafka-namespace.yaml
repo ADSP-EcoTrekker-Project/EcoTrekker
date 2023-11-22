@@ -1,0 +1,6 @@
+{{- if .Values.kafka.namespace -}}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.kafka.namespace }}
+{{- end }}
