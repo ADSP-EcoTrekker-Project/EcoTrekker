@@ -9,6 +9,10 @@ kafka:
   cluster: {}
   namespace: {}
 
+ecotrekker:
+  rest-api:
+    image: lierseleow/eco-rest-api:latest
+
 # replicaCount: 1
 
 # image:
