@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: {{ .Values.namespace }}
+  name: {{ lower (include "ecotrekker.name" .) }}-rest-api-deployment
+  labels:
+    {{- include "ecotrekker.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.ecotrekker.restapi.replicas }}
+  selector:
+    matchLabels:
+      {{- include "ecotrekker.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "ecotrekker.labels" . | nindent 8 }}
+    spec:
+      containers:
+      - name: {{ lower (include "ecotrekker.name" .) }}-rest-api
+        image: {{ .Values.ecotrekker.restapi.image }}
+        ports:
+        - containerPort: 8080

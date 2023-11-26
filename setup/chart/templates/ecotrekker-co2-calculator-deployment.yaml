@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: {{ .Values.namespace }}
+  name: {{ lower (include "ecotrekker.name" .) }}-co2-calculator-deployment
+  labels:
+    {{- include "ecotrekker.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.ecotrekker.co2calculator.replicas }}
+  selector:
+    matchLabels:
+      {{- include "ecotrekker.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "ecotrekker.labels" . | nindent 8 }}
+    spec:
+      containers:
+      - name: {{ lower (include "ecotrekker.name" .) }}-co2-calculator
+        image: {{ .Values.ecotrekker.co2calculator.image }}
+        ports:
+        - containerPort: 8080
