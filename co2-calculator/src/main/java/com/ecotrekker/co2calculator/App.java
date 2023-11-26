@@ -3,12 +3,22 @@
  */
 package com.ecotrekker.co2calculator;
 
+import java.util.concurrent.TimeUnit;
+
 public class App {
     public String getGreeting() {
         return "Hello World!";
     }
 
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+        while (true){
+            System.out.println(new App().getGreeting());
+            try {
+                TimeUnit.SECONDS.sleep(15);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
     }
 }

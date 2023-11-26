@@ -10,8 +10,12 @@ kafka:
   namespace: {}
 
 ecotrekker:
-  rest-api:
+  restapi:
     image: lierseleow/eco-rest-api:latest
+    replicas: 1
+  co2calculator:
+    image: lierseleow/eco-co2-calculator:latest
+    replicas: 1
 
 # replicaCount: 1
 
