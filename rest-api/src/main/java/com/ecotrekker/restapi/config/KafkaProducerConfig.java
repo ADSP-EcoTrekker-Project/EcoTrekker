@@ -1,4 +1,4 @@
-package com.ecotrekker.restapi;
+package com.ecotrekker.restapi.config;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,12 +9,12 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import java.util.Map;
 
 @Configuration
-public class Config {
+public class KafkaProducerConfig {
 
     private final KafkaProperties kafkaProperties;
 
     @Autowired
-    public Config(KafkaProperties kafkaProperties) {
+    public KafkaProducerConfig(KafkaProperties kafkaProperties) {
         this.kafkaProperties = kafkaProperties;
     }
 

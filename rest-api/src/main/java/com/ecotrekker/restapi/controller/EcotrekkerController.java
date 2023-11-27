@@ -1,7 +1,7 @@
 package com.ecotrekker.restapi.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,7 +20,7 @@ public class EcotrekkerController {
         this.ecotrekkerService = ecotrekkerService;
     }
 
-    @GetMapping("/calc/co2")
+    @PostMapping("/calc/co2")
     public String calculateCo2(@RequestBody Routes routes) throws JsonProcessingException {
         return ecotrekkerService.requestCalculation(routes);
     }
