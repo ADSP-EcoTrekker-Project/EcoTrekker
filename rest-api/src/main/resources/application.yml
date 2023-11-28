@@ -3,3 +3,4 @@ server:
 
 topic:
   name: eco.route.calc.co2
+  consumer-group: my-kafka-group
