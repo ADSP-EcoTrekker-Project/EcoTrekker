@@ -41,7 +41,7 @@ public class EcotrekkerProducer {
             record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, String.format("%s-reply", orderTopic).getBytes()));
             futures.put(route.getId(), replykafkaTemplate.sendAndReceive(record, Duration.ofMillis(1000)));
         }
-        System.out.println("send events");
+
         return futures;
     }
 }

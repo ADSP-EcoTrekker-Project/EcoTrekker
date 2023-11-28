@@ -26,7 +26,6 @@ public class TestConsumer {
         result.setId(request.getId());
         result.setSteps(request.getSteps());
         result.setCo2(999d);
-        System.out.println("[Consumer] responded with "+ objectMapper.writeValueAsString(result));
         return objectMapper.writeValueAsString(result);
      }
 }
