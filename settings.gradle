@@ -12,4 +12,4 @@ plugins {
 
 rootProject.name = 'EcoTrekker'
 
-include "rest-api", "co2-calculator"
+include "rest-api", "co2-calculator", "grid-co2-cache", "public-transport-distance"
