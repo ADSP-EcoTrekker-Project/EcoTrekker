@@ -1,0 +1,29 @@
+plugins {
+    id 'java-library' 
+}
+
+repositories {
+    mavenCentral() 
+}
+
+version = '0.1.0'
+
+dependencies {
+    // Use JUnit test framework.
+    testImplementation(platform('org.junit:junit-bom:5.10.1'))
+	testImplementation('org.junit.jupiter:junit-jupiter')
+}
+
+java {
+	sourceCompatibility = '17'
+}
+
+tasks.named('jar') {
+    manifest {
+        attributes('Automatic-Module-Name': 'com.ecotrekker.vehicleconfiglib')
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform() 
+}
