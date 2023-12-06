@@ -18,9 +18,10 @@ public class TestConsumer {
     public TestConsumer(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
-    @KafkaListener(topics = "${topic.name}", groupId = "my-cool-group")
-    @SendTo("${topic.name}"+"-reply")
-    public String listen(String msg) throws InterruptedException, JsonProcessingException {
+
+    @KafkaListener(topics = "${topic.name}", groupId = "{topic.consumer-group}")
+    @SendTo("${topic.reply}")
+    public String listen(String msg) throws JsonProcessingException {
         Route request = objectMapper.readValue(msg, Route.class);
         RouteResult result = new RouteResult();
         result.setId(request.getId());

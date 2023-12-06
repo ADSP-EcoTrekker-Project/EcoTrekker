@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.UUID;
 import org.springframework.kafka.requestreply.RequestReplyFuture;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import java.util.concurrent.CountDownLatch;
 
 @SpringBootTest
@@ -28,7 +27,7 @@ import java.util.concurrent.CountDownLatch;
 class EmbeddedKafkaIntegrationTest {
 
     @Value("${topic.name}")
-    String orderTopic;
+    private String orderTopic;
 
     @Autowired
     private EcotrekkerProducer producer;
@@ -38,8 +37,6 @@ class EmbeddedKafkaIntegrationTest {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    @Autowired
-    EmbeddedKafkaBroker embeddedKafkaBroker;
 
     private final CountDownLatch waiter = new CountDownLatch(1);
     @Test

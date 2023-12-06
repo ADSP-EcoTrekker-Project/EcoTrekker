@@ -2,5 +2,6 @@ server:
   port: 8080
 
 topic:
-  name: eco.route.calc.co2
+  name: calc-co2
+  reply: calc-co2-reply
   consumer-group: my-kafka-group

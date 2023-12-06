@@ -23,6 +23,9 @@ public class EcotrekkerProducer {
     @Value("${topic.name}")
     private String orderTopic;
 
+    @Value("${topic.reply}")
+    private String replyTopic;
+
     private final ObjectMapper objectMapper;
     private final ReplyingKafkaTemplate<String, String, String> replykafkaTemplate;
 
@@ -38,7 +41,7 @@ public class EcotrekkerProducer {
             String routeJSON = objectMapper.writeValueAsString(route);
             ProducerRecord<String, String> record = new ProducerRecord<String, String>(orderTopic, routeJSON);
             
-            record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, String.format("%s-reply", orderTopic).getBytes()));
+            record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC,replyTopic.getBytes()));
             futures.put(route.getId(), replykafkaTemplate.sendAndReceive(record, Duration.ofMillis(1000)));
         }
 
