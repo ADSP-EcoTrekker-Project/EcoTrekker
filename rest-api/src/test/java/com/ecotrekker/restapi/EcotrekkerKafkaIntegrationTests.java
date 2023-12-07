@@ -28,8 +28,7 @@ import java.util.concurrent.CountDownLatch;
 
 @SpringBootTest
 @DirtiesContext
-@EmbeddedKafka(partitions = 1, bootstrapServersProperty = "spring.kafka.bootstrap-servers", brokerProperties = {
-        "listeners=PLAINTEXT://localhost:8080", "port=8080" })
+@EmbeddedKafka(partitions = 1, bootstrapServersProperty = "spring.kafka.bootstrap-servers")
 class EmbeddedKafkaIntegrationTest {
 
     @Value("${topic.name}")

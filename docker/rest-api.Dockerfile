@@ -9,4 +9,4 @@ EXPOSE 8080
 
 ENV KAFKA_BOOTSTRAP_SERVERS=localhost:9092
 
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+ENTRYPOINT ["java", "-jar", "/app.jar", "--spring.kafka.bootstrap-servers=${KAFKA_BOOTSTRAP_SERVERS}"]
