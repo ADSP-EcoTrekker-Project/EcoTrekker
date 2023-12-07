@@ -5,4 +5,6 @@ ENV BUILD_HOME=/ecotrekker/build
 WORKDIR ${BUILD_HOME}
 
 COPY . .
-RUN gradle clean build
+RUN gradle clean
+RUN gradle build; exit 0
+RUN gradle build 
