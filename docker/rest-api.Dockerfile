@@ -7,4 +7,6 @@ COPY --from=builder /ecotrekker/build/rest-api/build/libs/*.jar app.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+ENV KAFKA_BOOTSTRAP_SERVERS=localhost:9092
+
+ENTRYPOINT ["java", "-jar", "/app.jar", "-Dspring.kafka.producer.bootstrap.servers=${KAFKA_BOOTSTRAP_SERVERS}"]

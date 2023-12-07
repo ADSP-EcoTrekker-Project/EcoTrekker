@@ -1,7 +1,7 @@
 apiVersion: kafka.strimzi.io/v1beta2
 kind: Kafka
 metadata:
-  name: ecotrekker-kafka-cluster
+  name: {{ lower (include "ecotrekker.name" .) }}-kafka-cluster
   namespace: {{ .Values.kafka.namespace | default .Values.namespace }}
 spec:
   kafka:
