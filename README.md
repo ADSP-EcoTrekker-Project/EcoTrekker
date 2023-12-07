@@ -28,12 +28,14 @@ The following variables can be set:
 
 ### How to build
 
-Environment Variables (Powershell):
+1. Set the Environment Variables
 
+#### Powershell
 ```powershell
 $env:REPO="your_amazing_repository"
 ```
 
+2. Execute the bake file 
 ```powershell
-docker buildx bake -f .\ecotrakker-bake.hcl
+docker buildx bake -f .\ecotrekker-bake.hcl
 ```
