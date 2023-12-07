@@ -14,7 +14,6 @@ import java.util.concurrent.TimeUnit;
 
 public class ElectricityMapsApi {
     private static final String API_URL = "https://api-access.electricitymaps.com/free-tier/carbon-intensity/latest?zone=DE";
-    private static final String AUTH_TOKEN = "yi9wa2inSOpmmrfLJGJoQRbbdtf2aF1B";
 
     public static void main(String[] args) {
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -31,10 +30,14 @@ public class ElectricityMapsApi {
     }
 
     public static HttpResponse<String> connectToAPI() throws Exception {
+        String authToken = System.getenv("ELECTRICITY_MAPS_AUTH_TOKEN");
+        if (authToken == null || authToken.isBlank()) {
+            throw new IllegalStateException("Environment variable 'ELECTRICITY_MAPS_AUTH_TOKEN' not set");
+        }
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(new URI(API_URL))
-                .header("auth-token", AUTH_TOKEN)
+                .header("auth-token", authToken)
                 .GET()
                 .build();
 
@@ -51,23 +54,6 @@ public class ElectricityMapsApi {
     public static String readCarbonIntensityFromAPI(HttpResponse<String> response) {
         String responseBody = response.body();
         System.out.println(responseBody);
-        //sendToKafka(responseBody);
         return responseBody;
-    }
-
-    public static void sendToKafka(String carbonIntensityResponse) {
-            Properties props = new Properties();
-            props.put("bootstrap.servers", "localhost:9092");
-            props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-            props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-
-            try (Producer<String, String> producer = new KafkaProducer<>(props)) {
-                ProducerRecord<String, String> record = new ProducerRecord<>("carbon-intensity", carbonIntensityResponse);
-                producer.send(record);
-                System.out.println("Record sent to Kafka successfully");
-            } catch (Exception e) {
-                System.err.println("Error in sending record to Kafka");
-                e.printStackTrace();
-            }
     }
 }
