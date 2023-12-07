@@ -1,4 +1,5 @@
 package com.ecotrekker.restapi;
+
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import com.ecotrekker.restapi.producer.EcotrekkerProducer;
@@ -7,8 +8,12 @@ import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.beans.factory.annotation.Autowired;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.LinkedList;
+
 import org.junit.jupiter.api.Test;
 import com.ecotrekker.restapi.model.Route;
 import com.ecotrekker.restapi.model.RouteResult;
@@ -23,7 +28,7 @@ import java.util.concurrent.CountDownLatch;
 
 @SpringBootTest
 @DirtiesContext
-@EmbeddedKafka(partitions = 1, brokerProperties = { "listeners=PLAINTEXT://localhost:8080", "port=8080" })
+@EmbeddedKafka(partitions = 1, bootstrapServersProperty = "spring.kafka.bootstrap-servers")
 class EmbeddedKafkaIntegrationTest {
 
     @Value("${topic.name}")
@@ -39,10 +44,13 @@ class EmbeddedKafkaIntegrationTest {
 
 
     private final CountDownLatch waiter = new CountDownLatch(1);
+
     @Test
-    public void simpleEmbeddedKafkaProducerTest() 
-      throws Exception {
-        waiter.await(1, TimeUnit.SECONDS); //Give embedded Kafka some time to launch, test becomes more flaky without
+    public void simpleEmbeddedKafkaProducerTest()
+    throws Exception {
+
+        waiter.await(1, TimeUnit.SECONDS); // Give embedded Kafka some time to launch, test becomes more flaky without
+
         Routes routes = new Routes();
         LinkedList<Route> testRoutes = new LinkedList<>();
         Route testRoute = new Route();
@@ -55,17 +63,23 @@ class EmbeddedKafkaIntegrationTest {
         testRoutes.add(testRoute);
         routes.setRoutes(testRoutes);
         HashMap<UUID, RequestReplyFuture<String, String, String>> sendResults = producer.sendMessages(routes);
-        CompletableFuture<Void> resultFuture = CompletableFuture.allOf(sendResults.values().toArray(new CompletableFuture[0]));
-        
+        CompletableFuture<Void> resultFuture = CompletableFuture
+                .allOf(sendResults.values().toArray(new CompletableFuture[0]));
+
         try {
             resultFuture.get(1, TimeUnit.SECONDS);
-            for(RequestReplyFuture<String, String, String> requestReply: sendResults.values()) {
-                RouteResult result = objectMapper.readValue(requestReply.get().value(), RouteResult.class);
+            for (RequestReplyFuture<String, String, String> requestReply : sendResults.values()) {
+                String value = requestReply.get().value();
+                assertNotNull(value);
+                RouteResult result = objectMapper.readValue(value, RouteResult.class);
                 assertNotNull(result);
-                assert(result.getCo2() == 999);
+                assert (result.getCo2() == 999);
             }
         } catch (Exception e) {
-            fail("Exception thrown on send: "+e);
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            fail("Exception thrown on send" + exceptionAsString);
         }
     }
 }
