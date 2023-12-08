@@ -1,7 +1,5 @@
 FROM bake-base-image as builder
 
-
-
 FROM eclipse-temurin:17-jdk-jammy
 
 VOLUME [ "/tmp" ]
