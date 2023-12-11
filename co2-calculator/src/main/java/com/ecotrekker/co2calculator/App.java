@@ -3,22 +3,77 @@
  */
 package com.ecotrekker.co2calculator;
 
-import java.util.concurrent.TimeUnit;
+import java.util.Properties;
+
+import com.ecotrekker.co2calculator.model.Parameter;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class App {
-    public String getGreeting() {
-        return "Hello World!";
+    private static void printHelp() {
+        System.out.println("Usage: java -jar /app.jar ARGS");
+        System.out.println("Available arguments: ");
+        for(Parameter param: Parameter.values()) {
+            System.out.println(String.format("%s=ARG", param.getKey()));
+        }
     }
-
     public static void main(String[] args) {
-        while (true){
-            System.out.println(new App().getGreeting());
-            try {
-                TimeUnit.SECONDS.sleep(15);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+        String servers = null, group = null, requestTopic = null, replyTopic = null;
+        Long commitInterval = null;
+        Boolean autoCommit = null;
+        if (args.length == 1) {
+            printHelp();
+            return;
+        }
+        for(String arg: args) {
+            String[] argVal = arg.split("=", 2);
+            if (argVal.length == 1) {
+                continue;
             }
+            Parameter param = Parameter.valueOf(arg);
+            if (param == null) {
+                continue;
+            }
+            String value = argVal[1];
+            switch (param) {
+                case BOOTSTRAP_SERVERS:
+                servers = value;
+                break;
+                case GROUP_KEY:
+                group = value;
+                break;
+                case COMMIT_INTERVAL_MS_KEY:
+                commitInterval = Long.parseLong(value);
+                break;
+                case AUTO_COMMIT_KEY:
+                autoCommit = Boolean.parseBoolean(value);
+                break;
+                case REPLY_TOPIC_KEY:
+                replyTopic = value;
+                break;
+                case TOPIC_KEY:
+                requestTopic = value;
+                break;
+                default:
+                break;
+            }
+        }
+        if (servers == null || group == null || commitInterval == null || autoCommit == null || requestTopic == null || replyTopic == null) {
+            printHelp();
+            return;
+        }
+        Properties props = new Properties();
+        props.setProperty("bootstrap.servers", servers);
+        props.setProperty("group.id",  group);
+        props.setProperty("enable.auto.commit", autoCommit.toString());
+        props.setProperty("auto.commit.interval.ms", commitInterval.toString());
+        props.setProperty("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        props.setProperty("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        CalculatorService service = new CalculatorService(props, props, requestTopic, replyTopic, new ObjectMapper());
+        try {
+            service.run();
+        } catch (Exception e) {
+            //TODO Error handling
+            e.printStackTrace();
         }
     }
 }
