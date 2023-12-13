@@ -1,5 +1,9 @@
 # EcoTrekker
 
+## How to Contribute
+
+More information on how to contribute can be found [here](./CONTRIBUTION.md)
+
 ## Services
 
 ### REST API
@@ -15,11 +19,11 @@
 
 ### Dockerfiles
 
-More info about the Dockerfiles can be found [here](docker/README.md)
+More info about the Dockerfiles can be found [here](./docker/README.md)
 
 ### The Bake file
 
-The [ecotrekker-bake.hcl](ecotrekker-bake.hcl) file contains the instructions on how to build and use the different Dockerfiles.
+The [ecotrekker-bake.hcl](./ecotrekker-bake.hcl) file contains the instructions on how to build and use the different Dockerfiles.
 
 The following variables can be set:
 
