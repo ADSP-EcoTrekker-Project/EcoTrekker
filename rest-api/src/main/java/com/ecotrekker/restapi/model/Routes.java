@@ -1,6 +1,7 @@
 package com.ecotrekker.restapi.model;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import java.util.List;
 
@@ -8,6 +9,7 @@ import java.util.List;
 public class Routes {
 
     @Valid
+    @NotNull
     private List<Route> routes;
 
 }
