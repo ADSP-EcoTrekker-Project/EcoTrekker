@@ -9,7 +9,7 @@ import java.util.List;
 public class Routes {
 
     @Valid
-    @NotNull
+    @NotNull(message = "Routes must not be null")
     private List<Route> routes;
 
 }

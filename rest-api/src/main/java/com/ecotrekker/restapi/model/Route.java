@@ -12,7 +12,7 @@ import lombok.Data;
 public class Route {
 
     @Valid
-    @NotNull
+    @NotNull(message = "Route must not be null")
     @Size(min = 1, message = "At least one step is required in each route.")
     private List<RouteStep> steps;
     private UUID id = UUID.randomUUID();
