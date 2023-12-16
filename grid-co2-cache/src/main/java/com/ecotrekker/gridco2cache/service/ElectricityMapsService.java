@@ -11,8 +11,9 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 @Slf4j
 public class ElectricityMapsService {
-    private static final String url = "https://api-access.electricitymaps.com/free-tier/carbon-intensity/latest";
+    private static final String url = "https://api-access.electricitymaps.com/free-tier/carbon-intensity/latest?zone=DE";
     private static final String key = "yi9wa2inSOpmmrfLJGJoQRbbdtf2aF1B";
+
 
     @Autowired
     private RestTemplate restTemplate;
