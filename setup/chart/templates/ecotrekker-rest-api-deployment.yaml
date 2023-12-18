@@ -1,7 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: {{ .Values.namespace }}
   name: {{ lower (include "ecotrekker.name" .) }}-rest-api-deployment
   labels:
     {{- include "ecotrekker.labels" . | nindent 4 }}
