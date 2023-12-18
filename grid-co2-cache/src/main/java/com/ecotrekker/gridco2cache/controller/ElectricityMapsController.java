@@ -1,5 +1,6 @@
 package com.ecotrekker.gridco2cache.controller;
 
+import com.ecotrekker.gridco2cache.DTO.CarbonIntensityResponse;
 import com.ecotrekker.gridco2cache.service.ElectricityMapsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -12,9 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ElectricityMapsController {
     private final ElectricityMapsService electricityMapsService;
-    @GetMapping("/get-germany-carbon-intensity")
-    public ResponseEntity<?> callEndpointToGetGermanyCarbonIntensity() {
-        return ResponseEntity.ok(electricityMapsService.getGermanyCarbonIntensity());
 
+    @GetMapping("/get-germany-carbon-intensity")
+    public ResponseEntity<CarbonIntensityResponse> callEndpointToGetGermanyCarbonIntensity() {
+        CarbonIntensityResponse response = electricityMapsService.getGermanyCarbonIntensity();
+        return ResponseEntity.ok(response);
     }
 }
+
