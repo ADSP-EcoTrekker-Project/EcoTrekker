@@ -4,11 +4,6 @@
 
 namespace: "ecotrekker" # Required!
 
-kafka:
-  operator: {}
-  cluster: {}
-  namespace: {}
-
 ecotrekker:
   restapi:
     image: lierseleow/eco-rest-api:latest
