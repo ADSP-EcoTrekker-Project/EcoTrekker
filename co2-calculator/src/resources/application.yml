@@ -1,0 +1,12 @@
+server:
+  port: 8080
+
+calculation-service:
+  timeout: 40
+
+consumption-service:
+  address: http://localhost:8080
+  uri: /v1/consumption
+  timeout: 40
+
+          
