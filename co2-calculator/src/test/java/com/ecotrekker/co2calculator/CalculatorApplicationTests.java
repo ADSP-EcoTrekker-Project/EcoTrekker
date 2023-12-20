@@ -20,8 +20,10 @@ import java.util.LinkedList;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class CalculatorApplicationTests {
+    
     @Autowired
     private TestRestTemplate testRestTemplate;
+
     @LocalServerPort
     private Integer port;
 

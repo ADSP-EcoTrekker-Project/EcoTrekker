@@ -22,7 +22,7 @@ public class WebClientFactory {
     @Value("${consumption-service.address}")
     private String consumURL;
 
-    @Value("{calculation-service.timeout}")
+    @Value("${calculation-service.timeout}")
     private int requestTimeout;
 
     private HttpClient makeHttpClient(){
