@@ -1,7 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: {{ .Values.namespace }}
   name: {{ lower (include "ecotrekker.name" .) }}-rest-api-deployment
   labels:
     {{- include "ecotrekker.labels" . | nindent 4 }}
@@ -9,7 +8,7 @@ spec:
   replicas: {{ .Values.ecotrekker.restapi.replicas }}
   selector:
     matchLabels:
-      {{- include "ecotrekker.labels" . | nindent 6 }}
+      {{- include "ecotrekker.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
@@ -20,11 +19,3 @@ spec:
         image: {{ .Values.ecotrekker.restapi.image }}
         ports:
         - containerPort: 8080
-        env:
-        {{ if .Values.kafka.namespace }}
-        - name: KAFKA_BOOTSTRAP_SERVERS
-          value: {{ lower (include "ecotrekker.name" .) }}-kafka-cluster-kafka-bootstrap.{{ .Values.kafka.namespace }}:9092
-        {{ else }}
-        - name: KAFKA_BOOTSTRAP_SERVERS
-          value: {{ lower (include "ecotrekker.name" .) }}-kafka-cluster-kafka-bootstrap:9092
-        {{ end }}
