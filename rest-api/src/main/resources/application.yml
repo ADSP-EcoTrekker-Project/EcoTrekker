@@ -1,9 +1,6 @@
 server:
-  port: 8080
+  port: 9999
 
-topic:
-  name: calc-co2
-  reply: calc-co2-reply
-  consumer-group: my-kafka-group
-
-          
+co2-calculator:
+  address: http://localhost:8081
+  timeout: 200
