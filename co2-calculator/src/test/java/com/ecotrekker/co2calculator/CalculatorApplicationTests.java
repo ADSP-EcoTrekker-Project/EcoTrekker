@@ -36,7 +36,11 @@ public class CalculatorApplicationTests {
         Route testRoute = new Route();
         LinkedList<RouteStep> testSteps = new LinkedList<>();
         RouteStep step1 = new RouteStep();
+        step1.setDistance(300L);
+        step1.setVehicle("car");
         RouteStep step2 = new RouteStep();
+        step2.setDistance(300L);
+        step2.setVehicle("e-bike");
         testSteps.add(step1);
         testSteps.add(step2);
         testRoute.setSteps(testSteps); 
