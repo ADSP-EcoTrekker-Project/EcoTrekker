@@ -10,7 +10,7 @@ public class ConsumptionRequestBuilder {
 
     public ConsumptionRequest build() {
         ConsumptionRequest request = new ConsumptionRequest();
-        request.setVehicle_name(vehicle);
+        request.setVehicle(vehicle);
         return request;
     }
 }

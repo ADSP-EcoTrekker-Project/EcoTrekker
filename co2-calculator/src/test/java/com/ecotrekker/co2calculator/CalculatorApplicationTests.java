@@ -58,16 +58,16 @@ public class CalculatorApplicationTests {
         public MockResponse dispatch (RecordedRequest request) {
 
             ConsumptionResponse carResponse = new ConsumptionResponse();
-            carResponse.setVehicle_name("car");
+            carResponse.setVehicle("car");
             carResponse.setCo2_per_m(160D);
             ConsumptionResponse ebikeResponse = new ConsumptionResponse();
-            ebikeResponse.setVehicle_name("e-bike");
+            ebikeResponse.setVehicle("e-bike");
             ebikeResponse.setCo2_per_m(21D);
 
             try {
                 ConsumptionRequest consumptionRequest = mapper.readValue(request.getBody().readUtf8(), ConsumptionRequest.class);
 
-                switch (consumptionRequest.getVehicle_name()) {
+                switch (consumptionRequest.getVehicle()) {
                     case "car":
                         return new MockResponse()
                             .setResponseCode(200)

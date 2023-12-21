@@ -48,7 +48,7 @@ public class CalculatorService {
             Map<String, ConsumptionResponse> consumptions = Flux.fromIterable(route.getSteps())
             .distinct(RouteStep::getVehicle)
             .flatMap(this::getVehicleConsum)
-            .collectMap(ConsumptionResponse::getVehicle_name)
+            .collectMap(ConsumptionResponse::getVehicle)
             .block(Duration.ofMillis(consumTimeout));
 
             boolean needPower = consumptions.values().stream()

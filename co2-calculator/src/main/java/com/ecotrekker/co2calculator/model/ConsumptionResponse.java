@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class ConsumptionResponse {
-    String vehicle_name;
+    String vehicle;
     Double consum_kwh_m = null;
     Double co2_per_m = null;
 }
