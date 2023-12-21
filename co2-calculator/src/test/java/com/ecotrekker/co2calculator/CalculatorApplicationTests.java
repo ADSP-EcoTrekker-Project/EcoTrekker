@@ -1,7 +1,13 @@
 package com.ecotrekker.co2calculator;
 
+import java.io.IOException;
+import java.net.URL;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -9,17 +15,90 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+
+import com.ecotrekker.co2calculator.model.ConsumptionRequest;
+import com.ecotrekker.co2calculator.model.ConsumptionResponse;
 import com.ecotrekker.co2calculator.model.Route;
 import com.ecotrekker.co2calculator.model.RouteResult;
 import com.ecotrekker.co2calculator.model.RouteStep;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import okhttp3.mockwebserver.Dispatcher;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.LinkedList;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(
+    webEnvironment = WebEnvironment.RANDOM_PORT,
+    properties = {
+        "consumption-service.address=http://localhost:8081",
+        "consumption-service.timeout=200",
+        "calculation-service.timeout=200"
+    }
+)
 public class CalculatorApplicationTests {
+
+    public MockWebServer mockBackEnd;
+
+    @Value("${consumption-service.address}")
+    private String consumURL;
+
+    private ObjectMapper mapper = new ObjectMapper();
+
+    final Dispatcher dispatcher = new Dispatcher() {
+
+        @Override
+        public MockResponse dispatch (RecordedRequest request) {
+
+            ConsumptionResponse carResponse = new ConsumptionResponse();
+            carResponse.setVehicle_name("car");
+            carResponse.setCo2_per_m(160D);
+            ConsumptionResponse ebikeResponse = new ConsumptionResponse();
+            ebikeResponse.setVehicle_name("e-bike");
+            ebikeResponse.setCo2_per_m(21D);
+
+            try {
+                ConsumptionRequest consumptionRequest = mapper.readValue(request.getBody().readUtf8(), ConsumptionRequest.class);
+
+                switch (consumptionRequest.getVehicle_name()) {
+                    case "car":
+                        return new MockResponse()
+                            .setResponseCode(200)
+                            .addHeader("Content-Type", "application/json; charset=utf-8")
+                            .setBody(mapper.writeValueAsString(carResponse));
+                    case "e-bike":
+                        return new MockResponse()
+                            .setResponseCode(200)
+                            .addHeader("Content-Type", "application/json; charset=utf-8")
+                            .setBody(mapper.writeValueAsString(ebikeResponse));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return new MockResponse().setResponseCode(500);
+            } 
+
+            return new MockResponse().setResponseCode(404);
+        }
+    };
+
+    @BeforeEach
+    void setUp() throws IOException {
+        mockBackEnd = new MockWebServer();
+        mockBackEnd.setDispatcher(dispatcher);
+        mockBackEnd.start(new URL(consumURL).getPort());
+    }
+
+    @AfterEach
+    void tearDown() throws IOException {
+        mockBackEnd.shutdown();
+    }
     
     @Autowired
     private TestRestTemplate testRestTemplate;
@@ -51,7 +130,7 @@ public class CalculatorApplicationTests {
             new HttpEntity<Route>(testRoute), 
             RouteResult.class);
         assertTrue(result.getStatusCode().is2xxSuccessful());
-        assertEquals(result.getBody().getCo2(), 999d);
+        assertEquals(54300.0, result.getBody().getCo2());
         
     }
 }

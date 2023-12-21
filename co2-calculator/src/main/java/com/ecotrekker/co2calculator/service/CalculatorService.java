@@ -61,7 +61,7 @@ public class CalculatorService {
 
             double co2 = route.getSteps()
             .stream()
-            .map(routeStep -> routeStep.getDistance() * consumptions.get(routeStep.getVehicle()).getConsum_kwh_m())
+            .map(routeStep -> routeStep.getDistance() * consumptions.get(routeStep.getVehicle()).getCo2_per_m())
             .reduce((a, b) -> a + b).get();
 
             RouteResult result = new RouteResult();

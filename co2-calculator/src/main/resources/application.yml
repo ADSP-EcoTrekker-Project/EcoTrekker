@@ -5,7 +5,7 @@ calculation-service:
   timeout: 40
 
 consumption-service:
-  address: http://localhost:8080
+  address: http://localhost:8081
   uri: /v1/consumption
   timeout: 40
 
