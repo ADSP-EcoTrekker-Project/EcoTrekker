@@ -1,55 +1,55 @@
 package com.ecotrekker.co2calculator.service;
 
-import java.time.Duration;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 
-import com.ecotrekker.co2calculator.model.ConsumptionRequestBuilder;
+import com.ecotrekker.co2calculator.model.ConsumptionRequest;
 import com.ecotrekker.co2calculator.model.ConsumptionResponse;
 import com.ecotrekker.co2calculator.model.Route;
 import com.ecotrekker.co2calculator.model.RouteResult;
 import com.ecotrekker.co2calculator.model.RouteStep;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 @Service
 public class CalculatorService {
-    @Autowired
-    private WebClient webClient;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Value("${consumption-service.uri}")
-    private String consumURI;
     
-    @Value("${consumption-service.timeout}")
-    private Long consumTimeout;
+    @Autowired
+    private VehicleConsumptionFeignClient client;
 
-    public Mono<ConsumptionResponse> getVehicleConsum(RouteStep routeStep) {
-        return webClient.post()
-        .uri(consumURI)
-        .bodyValue((new ConsumptionRequestBuilder()).setVehicle(routeStep.getVehicle()).build())
-        .retrieve()
-        .bodyToMono(ConsumptionResponse.class);
+    @Async
+    public List<CompletableFuture<ConsumptionResponse>> getVehicleConsumption(List<RouteStep> steps) {
+        LinkedList<CompletableFuture<ConsumptionResponse>> results = new LinkedList<>();
+        for (RouteStep step : steps) {
+            ConsumptionRequest request = new ConsumptionRequest();
+            request.setVehicle(step.getVehicle());
+            CompletableFuture<ConsumptionResponse> future = CompletableFuture.completedFuture(client.getConsumption(request));
+            results.add(future);
+        }
+        return results;
     }
 
-    public String requestCalculation(Route route) throws JsonProcessingException {
+    public List<ConsumptionResponse> fetchVehicleConsumption(List<RouteStep> steps) {
+        List<CompletableFuture<ConsumptionResponse>> futures = getVehicleConsumption(steps);
+        CompletableFuture<?>[] futuresArray = futures.toArray(new CompletableFuture<?>[0]);
+        CompletableFuture<List<ConsumptionResponse>> listFuture = CompletableFuture.allOf(futuresArray)
+            .thenApply(v -> futures.stream().map(CompletableFuture::join).collect(Collectors.toList()));
+        final List<ConsumptionResponse> results = listFuture.join();
+        return results;
+    }
+    
+
+    public RouteResult requestCalculation(Route route) {
         try {
-            Map<String, ConsumptionResponse> consumptions = Flux.fromIterable(route.getSteps())
-            .distinct(RouteStep::getVehicle)
-            .flatMap(this::getVehicleConsum)
-            .collectMap(ConsumptionResponse::getVehicle)
-            .block(Duration.ofMillis(consumTimeout));
+            Map<String, ConsumptionResponse> consumptions = fetchVehicleConsumption(route.getSteps())
+                .stream()
+                .collect(Collectors.toMap(ConsumptionResponse::getVehicle, Function.identity()));
 
             boolean needPower = consumptions.values().stream()
             .filter(consumption -> { return consumption.getConsum_kwh_m() != null;})
@@ -68,7 +68,7 @@ public class CalculatorService {
             result.setId(route.getId());
             result.setSteps(route.getSteps());
             result.setCo2(co2);
-            return objectMapper.writeValueAsString(result);
+            return result;
         } catch (Exception e) {
             e.printStackTrace();
             return null;

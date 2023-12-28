@@ -21,8 +21,6 @@ import com.ecotrekker.co2calculator.model.ConsumptionResponse;
 import com.ecotrekker.co2calculator.model.Route;
 import com.ecotrekker.co2calculator.model.RouteResult;
 import com.ecotrekker.co2calculator.model.RouteStep;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import okhttp3.mockwebserver.Dispatcher;
@@ -38,9 +36,7 @@ import java.util.LinkedList;
 @SpringBootTest(
     webEnvironment = WebEnvironment.RANDOM_PORT,
     properties = {
-        "consumption-service.address=http://localhost:8081",
-        "consumption-service.timeout=200",
-        "calculation-service.timeout=200"
+        "consumption-service.address=http://localhost:8082",
     }
 )
 public class CalculatorApplicationTests {
