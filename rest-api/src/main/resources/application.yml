@@ -1,6 +1,8 @@
 server:
   port: 8080
 
+client:
+  timeout: 200
+
 co2-calculator:
   address: http://localhost:8081
-  timeout: 300
