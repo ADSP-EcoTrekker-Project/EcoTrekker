@@ -1,48 +1,54 @@
 package com.ecotrekker.restapi.service;
 
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.UUID;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.requestreply.RequestReplyFuture;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.ecotrekker.restapi.model.Route;
 import com.ecotrekker.restapi.model.RouteResult;
 import com.ecotrekker.restapi.model.Routes;
 import com.ecotrekker.restapi.model.RoutesResult;
-import com.ecotrekker.restapi.producer.EcotrekkerProducer;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class EcotrekkerService {
 
-    private final EcotrekkerProducer producer;
-    private ObjectMapper objectMapper;
-
     @Autowired
-    public EcotrekkerService(EcotrekkerProducer producer, ObjectMapper objectMapper) {
-        this.producer = producer;
-        this.objectMapper = objectMapper;
+    private CO2CalculatorFeignClient fclient;
+
+    @Async
+    public List<CompletableFuture<RouteResult>> getCo2(List<Route> routes) {
+        LinkedList<CompletableFuture<RouteResult>> results = new LinkedList<>();
+        for (Route r : routes) {
+            CompletableFuture<RouteResult> future = CompletableFuture.completedFuture(fclient.getRouteResult(r));
+            results.add(future);
+        }
+        return results;
     }
 
-    public String requestCalculation(Routes routes) throws JsonProcessingException {
-        HashMap<UUID, RequestReplyFuture<String, String, String>> futures = producer.sendMessages(routes);
-        CompletableFuture<Void> resultFuture = CompletableFuture.allOf(futures.values().toArray(new CompletableFuture[0]));
-        RoutesResult result = new RoutesResult();
-        LinkedList<RouteResult> routeResults = new LinkedList<>();
+    public List<RouteResult> fetchCo2(List<Route> routes) {
+        List<CompletableFuture<RouteResult>> futures = getCo2(routes);
+        CompletableFuture<?>[] futuresArray = futures.toArray(new CompletableFuture<?>[0]);
+        CompletableFuture<List<RouteResult>> listFuture = CompletableFuture.allOf(futuresArray)
+            .thenApply(v -> futures.stream().map(CompletableFuture::join).collect(Collectors.toList()));
+        final List<RouteResult> results = listFuture.join();
+        return results;
+    }
+
+    public RoutesResult requestCalculation(Routes routes) {
         try {
-            resultFuture.get(1, TimeUnit.SECONDS);
-            for(RequestReplyFuture<String, String, String> requestReply: futures.values()) {
-                routeResults.add(objectMapper.readValue(requestReply.get().value(), RouteResult.class));
-            }
+            List<RouteResult> routeResultList = fetchCo2(routes.getRoutes());
+            RoutesResult result = new RoutesResult();
+            result.setRoutes(routeResultList);
+            return result;
         } catch (Exception e) {
-            // TODO what do we do here?
+            e.printStackTrace();
+            return null;
         }
-        result.setRoutes(routeResults);
-        return objectMapper.writeValueAsString(result);
     }
 }
