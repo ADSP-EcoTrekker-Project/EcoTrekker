@@ -11,14 +11,14 @@ public class VehicleConsumptionRequest {
 
     @Getter
     @Setter
-    private String vehicle_name;
+    private String vehicleName;
 
     public VehicleConsumptionRequest(){
         super();
     }
 
     public VehicleConsumptionRequest(String vehicle_name) {
-        this.setVehicle_name(vehicle_name);
+        this.setVehicleName(vehicle_name);
     }
 
     @Override
@@ -31,8 +31,8 @@ public class VehicleConsumptionRequest {
 
         VehicleConsumptionRequest reply = (VehicleConsumptionRequest) o;
 
-        boolean nameEquals = (this.getVehicle_name() == null && reply.getVehicle_name() == null) ||
-                             (this.getVehicle_name().compareTo(reply.getVehicle_name()) == 0);
+        boolean nameEquals = (this.getVehicleName() == null && reply.getVehicleName() == null) ||
+                             (this.getVehicleName().compareTo(reply.getVehicleName()) == 0);
         return  nameEquals;
     }
 }

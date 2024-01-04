@@ -28,6 +28,6 @@ public class VehicleConsumptionV1Controller_C_Application_Test {
             "http://localhost:"  + port + "/v1/consumption",
             request, 
             VehicleConsumptionReply.class);
-        assertTrue(reply.getVehicle_name().compareTo(request.getVehicle_name()) == 0);
+        assertTrue(reply.getVehicleName().compareTo(request.getVehicleName()) == 0);
     }
 }

@@ -15,7 +15,7 @@ import com.ecotrekker.vehicleconsumption.config.vehicles.VehicleBeanFactory;
 
 @ControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class ExceptionHandler {
+public class ControllerExceptionHandler {
     
     private static Logger logger = LoggerFactory.getLogger(VehicleBeanFactory.class);
 

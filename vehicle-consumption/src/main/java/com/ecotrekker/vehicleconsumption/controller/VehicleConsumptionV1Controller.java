@@ -21,7 +21,7 @@ public class VehicleConsumptionV1Controller {
 
     @PostMapping("/consumption")
     public VehicleConsumptionReply getVehicleConsumption(@RequestBody VehicleConsumptionRequest request){
-        String name = request.getVehicle_name();
+        String name = request.getVehicleName();
         IVehicleTreeElement v = vehicles.getElementByName(name);
         VehicleConsumptionReply reply = new VehicleConsumptionReply(name, v.getKwh(), v.getCo2());
         return reply;

@@ -11,24 +11,24 @@ public class VehicleConsumptionReply {
 
     @Getter
     @Setter
-    private String vehicle_name;
+    private String vehicleName;
 
     @Getter
     @Setter
-    private Integer consumption_kwh_m;
+    private Integer consumptionKwhM;
 
     @Getter
     @Setter
-    private Integer co2_m;
+    private Integer co2M;
 
     public VehicleConsumptionReply(){
         super();
     }
 
     public VehicleConsumptionReply(String vehicle_name, Integer consumption_kwh_m, Integer co2_m) {
-        this.setVehicle_name(vehicle_name);
-        this.setConsumption_kwh_m(consumption_kwh_m);
-        this.setCo2_m(co2_m);
+        this.setVehicleName(vehicle_name);
+        this.setConsumptionKwhM(consumption_kwh_m);
+        this.setCo2M(co2_m);
     }
 
     @Override
@@ -41,10 +41,10 @@ public class VehicleConsumptionReply {
 
         VehicleConsumptionReply reply = (VehicleConsumptionReply) o;
 
-        boolean nameEquals = (this.getVehicle_name() == null && reply.getVehicle_name() == null) ||
-                             (this.getVehicle_name().compareTo(reply.getVehicle_name()) == 0);
-        boolean consumptionEquals = (this.getConsumption_kwh_m() == reply.getConsumption_kwh_m());
-        boolean co2Equals = (this.getCo2_m() == reply.getCo2_m());
+        boolean nameEquals = (this.getVehicleName() == null && reply.getVehicleName() == null) ||
+                             (this.getVehicleName().compareTo(reply.getVehicleName()) == 0);
+        boolean consumptionEquals = (this.getConsumptionKwhM() == reply.getConsumptionKwhM());
+        boolean co2Equals = (this.getCo2M() == reply.getCo2M());
 
         return  nameEquals && consumptionEquals && co2Equals;
     }

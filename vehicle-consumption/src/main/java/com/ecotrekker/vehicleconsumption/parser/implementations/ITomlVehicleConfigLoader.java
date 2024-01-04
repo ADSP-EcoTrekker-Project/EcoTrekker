@@ -22,7 +22,7 @@ public class ITomlVehicleConfigLoader <T extends AbstractVehicleDatastructureEle
 
     private Logger logger = LoggerFactory.getLogger(ITomlVehicleConfigLoader.class);
 
-    private LinkedList<Path> known_vehicle_config_files = new LinkedList<Path>();
+    private LinkedList<Path> knownVehicleConfigFiles = new LinkedList<Path>();
 
     private Stack<Path> todo = new Stack<>();
 
@@ -43,7 +43,7 @@ public class ITomlVehicleConfigLoader <T extends AbstractVehicleDatastructureEle
         while (todo.size() > 0){
             Path path = todo.pop();
 
-            for (Path p : known_vehicle_config_files){
+            for (Path p : knownVehicleConfigFiles){
                 if (p.compareTo(path) == 0) {
                     logger.warn("You tried to parse " + path + " again!");
                     continue;
@@ -74,7 +74,7 @@ public class ITomlVehicleConfigLoader <T extends AbstractVehicleDatastructureEle
                 }
             }
 
-            known_vehicle_config_files.add(path);
+            knownVehicleConfigFiles.add(path);
         }
     }
     
