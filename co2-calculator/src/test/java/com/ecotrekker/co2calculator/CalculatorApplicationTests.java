@@ -55,10 +55,10 @@ public class CalculatorApplicationTests {
 
             ConsumptionResponse carResponse = new ConsumptionResponse();
             carResponse.setVehicle("car");
-            carResponse.setCo2_per_m(160D);
+            carResponse.setCo2(160D);
             ConsumptionResponse ebikeResponse = new ConsumptionResponse();
             ebikeResponse.setVehicle("e-bike");
-            ebikeResponse.setCo2_per_m(21D);
+            ebikeResponse.setCo2(21D);
 
             try {
                 ConsumptionRequest consumptionRequest = mapper.readValue(request.getBody().readUtf8(), ConsumptionRequest.class);

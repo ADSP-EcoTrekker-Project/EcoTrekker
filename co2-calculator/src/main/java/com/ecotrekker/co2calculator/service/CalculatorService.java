@@ -52,7 +52,7 @@ public class CalculatorService {
                 .collect(Collectors.toMap(ConsumptionResponse::getVehicle, Function.identity()));
 
             boolean needPower = consumptions.values().stream()
-            .filter(consumption -> { return consumption.getConsum_kwh_m() != null;})
+            .filter(consumption -> { return consumption.getKwh() != null;})
             .findFirst()
             .isPresent();
             if (needPower) {
@@ -61,7 +61,7 @@ public class CalculatorService {
 
             double co2 = route.getSteps()
             .stream()
-            .map(routeStep -> routeStep.getDistance() * consumptions.get(routeStep.getVehicle()).getCo2_per_m())
+            .map(routeStep -> routeStep.getDistance() * consumptions.get(routeStep.getVehicle()).getCo2())
             .reduce((a, b) -> a + b).get();
 
             RouteResult result = new RouteResult();
