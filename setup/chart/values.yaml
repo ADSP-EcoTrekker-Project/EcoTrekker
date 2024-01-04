@@ -9,6 +9,9 @@ ecotrekker:
   co2calculator:
     image: lierseleow/eco-co2-calculator:latest
     replicas: 1
+  vehicleconsumption:
+    image: lierseleow/eco-vehicle-consumption:latest
+    replicas: 1
 
 # replicaCount: 1
 
