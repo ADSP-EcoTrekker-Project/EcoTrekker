@@ -1,9 +1,7 @@
 package com.ecotrekker.vehicleconsumption.parser.implementations;
 
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Stack;
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 import org.slf4j.LoggerFactory;
@@ -16,7 +14,6 @@ import java.nio.file.Paths;
 import com.ecotrekker.vehicleconsumption.parser.VehicleConfigLoader_I;
 import com.ecotrekker.vehicleconsumption.parser.VehicleDataFile_C;
 import com.ecotrekker.vehicleconsumption.parser.VehicleDatastructureElement_A;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.dataformat.toml.TomlMapper;
 
 import lombok.Getter;

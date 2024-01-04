@@ -10,13 +10,14 @@ import com.ecotrekker.vehicleconsumption.config.vehicles.tree.VehicleTreeElement
 import com.ecotrekker.vehicleconsumption.config.vehicles.tree.VehicleTree_C;
 import com.ecotrekker.vehicleconsumption.messages.VehicleConsumptionReply_C;
 import com.ecotrekker.vehicleconsumption.messages.VehicleConsumptionRequest_C;
+import com.ecotrekker.vehicleconsumption.parser.implementations.TomlVehicleConfigLoader_C;
 
 @RestController
 @RequestMapping(value = "/v1")
 public class VehicleConsumptionV1Controller_C {
 
     @Autowired 
-    VehicleTree_C vehicles;
+    VehicleTree_C<TomlVehicleConfigLoader_C<VehicleTreeElement_C>> vehicles;
 
     @PostMapping("/consumption")
     public VehicleConsumptionReply_C getVehicleConsumption(@RequestBody VehicleConsumptionRequest_C request){
