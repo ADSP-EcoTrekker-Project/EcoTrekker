@@ -14,12 +14,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.springframework.test.annotation.DirtiesContext;
 
 import com.ecotrekker.vehicleconsumption.consumer.VehicleConsumptionConsumer_C;
+import com.ecotrekker.vehicleconsumption.messages.VehicleConsumptionMessage_C;
 import com.ecotrekker.vehicleconsumption.producer.VehicleConsumptionProducer_C;
 
 @SpringBootTest
 @DirtiesContext
 @EmbeddedKafka(partitions = 1, bootstrapServersProperty = "spring.kafka.bootstrap-servers")
-public class VehicleConsumptionSimpleKafka_Test {
+public class VehicleConsumptionKafka_Test {
 
     @Autowired
     private EmbeddedKafkaBroker kafkaEmbedded;
@@ -39,13 +40,14 @@ public class VehicleConsumptionSimpleKafka_Test {
         consumer.setDebugMode(true);
         consumer.resetLatch(1);
 
-        String data = "Sending with VehicleConsumptionProducer_C";
+        VehicleConsumptionMessage_C message = new VehicleConsumptionMessage_C("car", 50, 50);
 
-        producer.sendMessage(topic, data);
+        producer.sendMessage(topic, message);
 
         boolean messageConsumed = consumer.getCountdown().await(10, TimeUnit.SECONDS);
         assertTrue(messageConsumed);
-        assertTrue(consumer.getLastPayload().compareTo(data) == 0);
+        VehicleConsumptionMessage_C recvd_message = consumer.getLastPayload();
+        assertTrue(recvd_message.equals(message));
 
         consumer.setDebugMode(false);
     }

@@ -11,6 +11,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.support.serializer.JsonSerializer;
+
+import com.ecotrekker.vehicleconsumption.messages.VehicleConsumptionMessage_C;
 
 @Configuration
 public class VehicleConsumptionProducerConfig_C {
@@ -19,7 +22,7 @@ public class VehicleConsumptionProducerConfig_C {
     private String bootstrapAddress;
 
     @Bean
-    public ProducerFactory<String, String> producerFactory() {
+    public ProducerFactory<String, VehicleConsumptionMessage_C> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(
           ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, 
@@ -29,12 +32,12 @@ public class VehicleConsumptionProducerConfig_C {
           StringSerializer.class);
         configProps.put(
           ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, 
-          StringSerializer.class);
+          JsonSerializer.class);
         return new DefaultKafkaProducerFactory<>(configProps);
     }
 
     @Bean
-    public KafkaTemplate<String, String> kafkaTemplate() {
+    public KafkaTemplate<String, VehicleConsumptionMessage_C> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
     

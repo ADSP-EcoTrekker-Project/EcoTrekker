@@ -12,6 +12,9 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.support.serializer.JsonDeserializer;
+
+import com.ecotrekker.vehicleconsumption.messages.VehicleConsumptionMessage_C;
 
 @EnableKafka
 @Configuration
@@ -24,7 +27,7 @@ public class VehicleConsumptionConsumerConfig_C {
     private String groupId;
 
     @Bean
-    public ConsumerFactory<String, String> consumerFactory() {
+    public ConsumerFactory<String, VehicleConsumptionMessage_C> consumerFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put(
           ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, 
@@ -37,15 +40,17 @@ public class VehicleConsumptionConsumerConfig_C {
           StringDeserializer.class);
         props.put(
           ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, 
-          StringDeserializer.class);
-        return new DefaultKafkaConsumerFactory<>(props);
+          JsonDeserializer.class);
+        return new DefaultKafkaConsumerFactory<>(props,
+            new StringDeserializer(),
+            new JsonDeserializer<>(VehicleConsumptionMessage_C.class));
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, String> 
+    public ConcurrentKafkaListenerContainerFactory<String, VehicleConsumptionMessage_C> 
       kafkaListenerContainerFactory() {
    
-        ConcurrentKafkaListenerContainerFactory<String, String> factory =
+        ConcurrentKafkaListenerContainerFactory<String, VehicleConsumptionMessage_C> factory =
           new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         return factory;
