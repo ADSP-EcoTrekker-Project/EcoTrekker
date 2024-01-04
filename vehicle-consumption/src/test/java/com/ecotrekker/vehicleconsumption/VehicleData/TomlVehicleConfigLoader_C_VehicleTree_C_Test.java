@@ -9,8 +9,6 @@ import java.util.LinkedList;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.ecotrekker.vehicleconsumption.config.vehicles.tree.VehicleTreeElement_C;
 import com.ecotrekker.vehicleconsumption.config.vehicles.tree.VehicleTree_C;
@@ -19,8 +17,6 @@ import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
 
 public class TomlVehicleConfigLoader_C_VehicleTree_C_Test {
-
-    private static Logger logger = LoggerFactory.getLogger(TomlVehicleConfigLoader_C_VehicleTree_C_Test.class);
 
     private URI find_resource(String resource_relative_path) throws URISyntaxException {
         return Thread.currentThread().getContextClassLoader().getResource(resource_relative_path).toURI();

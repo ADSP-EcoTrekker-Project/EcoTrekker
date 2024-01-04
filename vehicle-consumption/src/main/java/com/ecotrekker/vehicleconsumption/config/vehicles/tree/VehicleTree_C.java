@@ -3,17 +3,14 @@ package com.ecotrekker.vehicleconsumption.config.vehicles.tree;
 import java.util.LinkedList;
 import java.util.Stack;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.ecotrekker.vehicleconsumption.parser.VehicleConfigLoader_I;
 import com.ecotrekker.vehicleconsumption.parser.VehicleDatastructureElement_A;
 import com.ecotrekker.vehicleconsumption.parser.VehicleDatastructure_A;
 
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class VehicleTree_C <T extends VehicleConfigLoader_I<VehicleTreeElement_C>> extends VehicleDatastructure_A<VehicleTreeElement_C> {
-
-    private static Logger logger = LoggerFactory.getLogger(VehicleTree_C.class);
 
     public LinkedList<VehicleTreeElement_C> asList(){
         LinkedList<VehicleTreeElement_C> results = new LinkedList<>();
@@ -82,7 +79,7 @@ public class VehicleTree_C <T extends VehicleConfigLoader_I<VehicleTreeElement_C
                 parent.getChildren().add(vehicle);
                 continue;
             }
-            logger.warn("Failed to insert Element into the Tree");
+            log.warn("Failed to insert Element into the Tree");
         }
     }
 
