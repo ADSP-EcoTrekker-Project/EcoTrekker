@@ -22,9 +22,6 @@ public class CalculatorController {
     @Autowired
     private CalculatorService calculatorService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @PostMapping("/calc/co2")
     public ResponseEntity<?> calculateCo2(@RequestBody Route route) throws JsonProcessingException {
         RouteResult resultJSON = calculatorService.requestCalculation(route);
