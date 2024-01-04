@@ -1,7 +1,9 @@
 package com.ecotrekker.vehicleconsumption.messages;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -9,9 +11,15 @@ import lombok.Setter;
 @JsonInclude(Include.NON_NULL)
 public class VehicleConsumptionRequest {
 
-    @Getter
     @Setter
+    @JsonProperty(required = true)
+    @JsonAlias({ "vehicle", "vehicle-name", "vehicle_name", "name", "vehicleName" })
     private String vehicleName;
+
+    @JsonProperty("vehicle")
+    public String getVehicleName() {
+        return vehicleName;
+    }
 
     public VehicleConsumptionRequest(){
         super();
