@@ -51,4 +51,22 @@ public class VehicleConsumptionKafka_Test {
 
         consumer.setDebugMode(false);
     }
+
+    @Test
+    public void givenEmbeddedKafkaBroker_whenSendingWithVehicleConsumptionProducer_withNulValues_thenMessageReceived()
+    throws Exception {
+        consumer.setDebugMode(true);
+        consumer.resetLatch(1);
+
+        VehicleConsumptionMessage_C message = new VehicleConsumptionMessage_C(null, 50, 50);
+
+        producer.sendMessage(topic, message);
+
+        boolean messageConsumed = consumer.getCountdown().await(10, TimeUnit.SECONDS);
+        assertTrue(messageConsumed);
+        VehicleConsumptionMessage_C recvd_message = consumer.getLastPayload();
+        assertTrue(recvd_message.equals(message));
+
+        consumer.setDebugMode(false);
+    }
 }

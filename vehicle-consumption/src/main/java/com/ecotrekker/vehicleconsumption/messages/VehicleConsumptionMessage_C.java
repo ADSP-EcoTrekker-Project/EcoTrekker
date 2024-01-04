@@ -1,8 +1,12 @@
 package com.ecotrekker.vehicleconsumption.messages;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 import lombok.Getter;
 import lombok.Setter;
 
+@JsonInclude(Include.NON_NULL)
 public class VehicleConsumptionMessage_C {
 
     @Getter
@@ -37,7 +41,8 @@ public class VehicleConsumptionMessage_C {
 
         VehicleConsumptionMessage_C reply = (VehicleConsumptionMessage_C) o;
 
-        boolean nameEquals = (this.getVehicle_name().compareTo(reply.getVehicle_name()) == 0);
+        boolean nameEquals = (this.getVehicle_name() == null && reply.getVehicle_name() == null) ||
+                             (this.getVehicle_name().compareTo(reply.getVehicle_name()) == 0);
         boolean consumptionEquals = (this.getConsumption_kwh_m() == reply.getConsumption_kwh_m());
         boolean co2Equals = (this.getCo2_m() == reply.getCo2_m());
 
