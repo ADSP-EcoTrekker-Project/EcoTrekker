@@ -19,11 +19,11 @@ abstract public class AbstractVehicleDatastructureElement {
 
     @Getter
     @Setter
-    private Integer co2;
+    private Double co2;
 
     @Getter
     @Setter
-    private Integer kwh;
+    private Double kwh;
 
     @Getter
     @Setter
@@ -45,7 +45,7 @@ abstract public class AbstractVehicleDatastructureElement {
 
     }
 
-    public AbstractVehicleDatastructureElement(String name, Integer co2, Integer kwh_per_pkm, String parent){
+    public AbstractVehicleDatastructureElement(String name, Double co2, Double kwh_per_pkm, String parent){
         if (name == null){
             new InvalidParameterException("The name of a vehicle datastructure element cannot be null!");
         }

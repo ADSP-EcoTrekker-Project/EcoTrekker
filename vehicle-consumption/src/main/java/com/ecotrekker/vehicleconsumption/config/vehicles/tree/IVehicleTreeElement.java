@@ -25,7 +25,7 @@ public class IVehicleTreeElement extends AbstractVehicleDatastructureElement{
         this.children = new LinkedList<>();
     }
 
-    public IVehicleTreeElement(String name, Integer g_co2_per_pkm, Integer kwh_per_pkm, String parent) {
+    public IVehicleTreeElement(String name, Double g_co2_per_pkm, Double kwh_per_pkm, String parent) {
         super(name, g_co2_per_pkm, kwh_per_pkm, parent);
         this.children = new LinkedList<>();
         //TODO Auto-generated constructor stub

@@ -31,10 +31,10 @@ public class VehicleConsumptionV1Controller {
             VehicleConsumptionReply reply = new VehicleConsumptionReply(name, v.getKwh(), v.getCo2());
             return new ResponseEntity<VehicleConsumptionReply>(reply, HttpStatus.OK);
         } catch (NoSuchElementException e) {
-            VehicleConsumptionReply reply = new VehicleConsumptionReply(name, -1, -1);
+            VehicleConsumptionReply reply = new VehicleConsumptionReply(name, -1D, -1D);
             return new ResponseEntity<>(reply, HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            VehicleConsumptionReply reply = new VehicleConsumptionReply(name, -1, -1);
+            VehicleConsumptionReply reply = new VehicleConsumptionReply(name, -1D, -1D);
             return new ResponseEntity<>(reply, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
