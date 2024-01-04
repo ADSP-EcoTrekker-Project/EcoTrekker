@@ -30,6 +30,15 @@ target "co2-calculator" {
     context = "co2-calculator/"
 }
 
+target "vehicle-consumption" {
+    dockerfile = "../docker/vehicle-consumption.Dockerfile"
+    tags = ["${REPO}/eco-vehicle-consumption:${TAG}"]
+    contexts = {
+        bake-base-image = "target:builder"
+    }
+    context = "vehicle-consumption/"
+}
+
 group "default" {
-    targets = ["rest-api", "co2-calculator"]
+    targets = ["rest-api", "co2-calculator", "vehicle-consumption"]
 }
