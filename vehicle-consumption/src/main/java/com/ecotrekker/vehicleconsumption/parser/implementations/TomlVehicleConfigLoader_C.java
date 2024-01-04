@@ -39,8 +39,11 @@ public class TomlVehicleConfigLoader_C implements VehicleConfigLoader_I {
      * recursively loads config files in TOML format 
      * @param pathToFile The Path object pointing to the top level config file
      * @return An ArrayList containing a map for each vehicle to be parsed into an object
+     * @throws IOException
+     * @throws DatabindException
+     * @throws StreamReadException
      */
-    public ArrayList<Map<String,Object>> loadConfigFile(Path pathToFile) {    
+    public ArrayList<Map<String,Object>> loadConfigFile(Path pathToFile) throws StreamReadException, DatabindException, IOException {    
         if (known_vehicle_config_files.contains(pathToFile)){
             logger.warn("There is a circular include in your vehicle config files!");
             logger.warn(String.format("You just tried to parse %s again!", pathToFile.toString()));
@@ -50,13 +53,8 @@ public class TomlVehicleConfigLoader_C implements VehicleConfigLoader_I {
         File tomlFile = pathToFile.toFile();
         ArrayList<Map<String,Object>> vehicles = new ArrayList<>();
         Map<String, Object> data;
-        try{
-            data = tomlMapper.readValue(tomlFile, Map.class);
-        }
-        catch (IOException e){
-            logger.error(String.format("Failed to parse %s", pathToFile.toString()));
-            return vehicles;
-        }
+
+        data = tomlMapper.readValue(tomlFile, Map.class);
 
         // Load Vehicles
         if (data.get("vehicle") != null){

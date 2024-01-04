@@ -28,4 +28,14 @@ public class VehicleTreeElement_C extends VehicleDatastructureElement_A{
         return this.getName().compareTo(o.getName());
     }
 
+    public int numParents(){
+        VehicleTreeElement_C e = this.parent;
+        int num = 0;
+        while (e != null) {
+            num += 1;
+            e = e.parent;
+        }
+        return num;
+    }
+
 }

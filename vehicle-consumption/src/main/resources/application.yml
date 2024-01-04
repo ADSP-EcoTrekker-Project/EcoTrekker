@@ -4,3 +4,5 @@ spring:
     consumer-topic: get-consum
     producer-topic: get-consum-reply
     bootstrap-servers: localhost:8080
+
+config: vehicle-config/vehicles.toml

@@ -1,0 +1,32 @@
+include = [
+    "cars.toml",
+    "trains.toml",
+    "bus.toml",
+    "tram.toml",
+    "metro.toml",
+    "bike.toml",
+    "scooter.toml"
+]
+[[vehicle]]
+name = "car"
+co2 = 162
+[[vehicle]]
+name = "train"
+co2 = 72
+[[vehicle]]
+name = "bus"
+co2 = 108
+[[vehicle]]
+name = "tram"
+co2 = 72
+[[vehicle]]
+name = "metro"
+co2 = 80
+
+[[vehicle]]
+name = "bike"
+co2 = 22
+[[vehicle]]
+name = "scooter"
+co2 = 80
+

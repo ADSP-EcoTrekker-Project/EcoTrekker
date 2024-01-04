@@ -19,9 +19,8 @@ public abstract class VehicleDatastructure_A<T extends VehicleDatastructureEleme
         return null;
     }
 
-    public T getElementByName(String name){
-        new UnsupportedOperationException("Please override in Subtypes");
-        return null;
+    public T getElementByName(String name) throws UnsupportedOperationException {
+        throw new UnsupportedOperationException("Please override in Subtypes");
     }
 
     public VehicleDatastructure_A(VehicleConfigLoader_I configLoader){

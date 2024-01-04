@@ -35,6 +35,32 @@ public class VehicleTree_C extends VehicleDatastructure_A<VehicleTreeElement_C> 
         return results;
     }
 
+    private String asPrettyString(){
+        String result = "";
+        Stack<VehicleTreeElement_C> nodeStack = new Stack<>();
+
+        nodeStack.push((VehicleTreeElement_C) this.getRoot());
+
+        while(nodeStack.empty() == false){
+            VehicleTreeElement_C currentE = nodeStack.pop();
+
+            if (currentE.getName() != ""){
+                int parents = currentE.numParents() - 1;
+                result += "|";
+                for (int i = 0; i < parents; i++) { result += "\t"; }
+                result += currentE.getName();
+                result += "\n";
+            }
+            
+            for (VehicleDatastructureElement_A vehicle : currentE.getChildren()){
+                VehicleTreeElement_C castV = (VehicleTreeElement_C) vehicle;
+                nodeStack.push(castV);
+            }
+        }
+
+        return result;
+    }
+
     public <T extends VehicleConfigLoader_I> VehicleTree_C(T configLoader) {
         super(configLoader);
         this.setRoot(new VehicleTreeElement_C("", null, null, null));
@@ -61,6 +87,11 @@ public class VehicleTree_C extends VehicleDatastructure_A<VehicleTreeElement_C> 
     @Override
     public VehicleTreeElement_C getElementByName(String name) {
         return VehicleDatastructureElement_A.findByString(this.asList(), name);
+    }
+
+    @Override
+    public String toString() {
+        return asPrettyString();
     }
 
 }
