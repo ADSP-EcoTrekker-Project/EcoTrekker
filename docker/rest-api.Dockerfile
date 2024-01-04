@@ -2,12 +2,12 @@ FROM bake-base-image as builder
 
 FROM eclipse-temurin:17-jdk-jammy
 
-VOLUME [ "/tmp" ]
+WORKDIR /app
 
 COPY --from=builder /ecotrekker/build/rest-api/build/libs/*.jar app.jar
 
 EXPOSE 8080
 
-ENV KAFKA_BOOTSTRAP_SERVERS=localhost:9092
+ENV CO2_CALCULATOR_ADDRESS=http://localhost:8081
 
-ENTRYPOINT ["java", "-jar", "/app.jar", "--spring.kafka.bootstrap-servers=${KAFKA_BOOTSTRAP_SERVERS}"]
+ENTRYPOINT ["java", "-jar", "app.jar", "--co2-calculator.address=${CO2_CALCULATOR_ADDRESS}"]
