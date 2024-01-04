@@ -1,6 +1,10 @@
 package com.ecotrekker.vehicleconsumption.controller;
 
+import java.util.NoSuchElementException;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,11 +24,19 @@ public class VehicleConsumptionV1Controller {
     IVehicleTree<ITomlVehicleConfigLoader<IVehicleTreeElement>> vehicles;
 
     @PostMapping("/consumption")
-    public VehicleConsumptionReply getVehicleConsumption(@RequestBody VehicleConsumptionRequest request){
+    public ResponseEntity<?> getVehicleConsumption(@RequestBody VehicleConsumptionRequest request){
         String name = request.getVehicleName();
-        IVehicleTreeElement v = vehicles.getElementByName(name);
-        VehicleConsumptionReply reply = new VehicleConsumptionReply(name, v.getKwh(), v.getCo2());
-        return reply;
+        try {
+            IVehicleTreeElement v = vehicles.getElementByName(name);
+            VehicleConsumptionReply reply = new VehicleConsumptionReply(name, v.getKwh(), v.getCo2());
+            return new ResponseEntity<VehicleConsumptionReply>(reply, HttpStatus.OK);
+        } catch (NoSuchElementException e) {
+            VehicleConsumptionReply reply = new VehicleConsumptionReply(name, -1, -1);
+            return new ResponseEntity<>(reply, HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            VehicleConsumptionReply reply = new VehicleConsumptionReply(name, -1, -1);
+            return new ResponseEntity<>(reply, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
 }

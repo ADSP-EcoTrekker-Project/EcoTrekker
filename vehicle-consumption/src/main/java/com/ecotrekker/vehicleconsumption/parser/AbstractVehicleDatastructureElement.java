@@ -2,6 +2,7 @@ package com.ecotrekker.vehicleconsumption.parser;
 
 import java.security.InvalidParameterException;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -30,15 +31,14 @@ abstract public class AbstractVehicleDatastructureElement {
     private String parentName;
 
 
-    public static <T extends AbstractVehicleDatastructureElement> T findByString(List<T> list, String name){
+    public static <T extends AbstractVehicleDatastructureElement> T findByString(List<T> list, String name) throws NoSuchElementException {
         for (T vehicle : list){
 
             if (vehicle.getName().compareTo(name) == 0) {
                 return vehicle;
             }
         }
-
-        return null;
+        throw new NoSuchElementException("Could not find the requested Vehicle");
     }
 
     public AbstractVehicleDatastructureElement(){

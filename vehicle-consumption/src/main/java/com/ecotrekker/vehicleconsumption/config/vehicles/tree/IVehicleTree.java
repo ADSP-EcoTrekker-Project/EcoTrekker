@@ -2,6 +2,7 @@ package com.ecotrekker.vehicleconsumption.config.vehicles.tree;
 
 import java.util.LinkedList;
 import java.util.Stack;
+import java.util.NoSuchElementException;
 
 import com.ecotrekker.vehicleconsumption.parser.VehicleConfigLoader;
 import com.ecotrekker.vehicleconsumption.parser.AbstractVehicleDatastructureElement;
@@ -84,7 +85,7 @@ public class IVehicleTree <T extends VehicleConfigLoader<IVehicleTreeElement>> e
     }
 
     @Override
-    public IVehicleTreeElement getElementByName(String name) {
+    public IVehicleTreeElement getElementByName(String name) throws NoSuchElementException {
         return AbstractVehicleDatastructureElement.findByString(this.asList(), name);
     }
 
