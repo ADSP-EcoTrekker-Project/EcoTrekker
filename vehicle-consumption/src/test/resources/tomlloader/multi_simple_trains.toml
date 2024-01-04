@@ -1,0 +1,12 @@
+[[vehicle]]
+name = "R"
+parent = "train"
+[[vehicle]]
+name = "RE"
+parent = "train"
+[[vehicle]]
+name = "IC"
+parent = "train"
+[[vehicle]]
+name = "ICE"
+parent = "train"

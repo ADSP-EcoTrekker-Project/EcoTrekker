@@ -14,6 +14,10 @@ More information on how to contribute can be found [here](./CONTRIBUTION.md)
 
 [here](co2-calculator/README.md)
 
+### Vehicle Consumption Service
+
+[here](./vehicle-consumption/README.md)
+
 
 ## Building Containers
 

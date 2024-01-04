@@ -15,7 +15,7 @@ public class VehicleTree_C extends VehicleDatastructure_A<VehicleTreeElement_C> 
 
     private static Logger logger = LoggerFactory.getLogger(VehicleTree_C.class);
 
-    public LinkedList<VehicleTreeElement_C> getTreeAsList(){
+    public LinkedList<VehicleTreeElement_C> asList(){
         LinkedList<VehicleTreeElement_C> results = new LinkedList<>();
         Stack<VehicleTreeElement_C> nodeStack = new Stack<>();
 
@@ -23,8 +23,9 @@ public class VehicleTree_C extends VehicleDatastructure_A<VehicleTreeElement_C> 
 
         while(nodeStack.empty() == false){
             VehicleTreeElement_C currentE = nodeStack.pop();
-            results.add(currentE);
 
+            if (currentE.getName() != "") results.add(currentE);
+            
             for (VehicleDatastructureElement_A vehicle : currentE.getChildren()){
                 VehicleTreeElement_C castV = (VehicleTreeElement_C) vehicle;
                 nodeStack.push(castV);
@@ -59,7 +60,7 @@ public class VehicleTree_C extends VehicleDatastructure_A<VehicleTreeElement_C> 
 
     @Override
     public VehicleTreeElement_C getElementByName(String name) {
-        return VehicleDatastructureElement_A.findByString(this.getTreeAsList(), name);
+        return VehicleDatastructureElement_A.findByString(this.asList(), name);
     }
 
 }

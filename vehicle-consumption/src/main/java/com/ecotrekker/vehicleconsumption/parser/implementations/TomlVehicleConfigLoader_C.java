@@ -61,8 +61,8 @@ public class TomlVehicleConfigLoader_C implements VehicleConfigLoader_I {
         }
 
         // Load Vehicles
-        if (data.get("vehicles") != null){
-            ArrayList<Map<String,Object>> vehicle_data = (ArrayList<Map<String,Object>>) data.get("vehicles");
+        if (data.get("vehicle") != null){
+            ArrayList<Map<String,Object>> vehicle_data = (ArrayList<Map<String,Object>>) data.get("vehicle");
             vehicles.addAll(vehicle_data);
         }
 
@@ -100,9 +100,11 @@ public class TomlVehicleConfigLoader_C implements VehicleConfigLoader_I {
         vehicles = this.loadConfigFile(pathToFile);
         for (Map<String, Object> vehicle : vehicles){
             String name = (String) vehicle.get("name");
+            if (name == "") name = null;
             Integer g_co2_per_pkm = (Integer) vehicle.get("co2");
             Integer kwh_per_pkm = (Integer) vehicle.get("kwh");
             String parent = (String) vehicle.get("parent");
+            if (parent == "")  parent = null;
             Class[] cArg = new Class[4];
             cArg[0] = String.class;
             cArg[1] = Integer.class;

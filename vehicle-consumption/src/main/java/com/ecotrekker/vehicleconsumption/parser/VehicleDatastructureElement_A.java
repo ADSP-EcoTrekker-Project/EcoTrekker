@@ -3,44 +3,27 @@ package com.ecotrekker.vehicleconsumption.parser;
 import java.security.InvalidParameterException;
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
+
 abstract public class VehicleDatastructureElement_A implements Comparable<VehicleDatastructureElement_A>{
 
+    @Getter
+    @Setter
     private String name;
+    @Getter
+    @Setter
     private Integer g_co2_per_pkm;
+    @Getter
+    @Setter
     private Integer kwh_per_pkm;
+    @Getter
+    @Setter
+    /*
+     * If the parent is missing `parent_string` should be null
+     */
     private String parent_string;
 
-    public String getName() {
-        return name;
-    }
-
-    void setName(String name) {
-        this.name = name;
-    }
-
-    public Integer getG_co2_per_pkm() {
-        return g_co2_per_pkm;
-    }
-
-    void setG_co2_per_pkm(Integer g_co2_per_pkm) {
-        this.g_co2_per_pkm = g_co2_per_pkm;
-    }
-
-    public Integer getKwh_per_pkm() {
-        return kwh_per_pkm;
-    }
-
-    void setKwh_per_pkm(Integer kwh_per_pkm) {
-        this.kwh_per_pkm = kwh_per_pkm;
-    }
-
-    public String getParent_string() {
-        return parent_string;
-    }
-
-    void setParent_string(String parent_string) {
-        this.parent_string = parent_string;
-    }
 
     public static <T extends VehicleDatastructureElement_A> T findByString(List<T> list, String name){
         for (T vehicle : list){
