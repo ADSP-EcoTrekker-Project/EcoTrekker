@@ -43,6 +43,7 @@ public class ITomlVehicleConfigLoader <T extends AbstractVehicleDatastructureEle
         while (todo.size() > 0){
             Path path = todo.pop();
 
+            // Check if file was already parsed
             for (Path p : knownVehicleConfigFiles){
                 if (p.compareTo(path) == 0) {
                     logger.warn("You tried to parse " + path + " again!");
@@ -50,6 +51,7 @@ public class ITomlVehicleConfigLoader <T extends AbstractVehicleDatastructureEle
                 }
             }
 
+            // Try to map file to Objects
             VehicleDataFile<T> data;
             try {
                 data = mapper.readValue(path.toFile(), mapper.getTypeFactory().constructParametricType(VehicleDataFile.class, typeParameterClass));
@@ -59,6 +61,7 @@ public class ITomlVehicleConfigLoader <T extends AbstractVehicleDatastructureEle
                 continue;
             }
 
+            // Check if more files are included
             if (data.getIncludes() != null) {
                 for (String new_path : data.getIncludes()) {
                     Path n_p = Paths.get(new_path);
@@ -68,12 +71,14 @@ public class ITomlVehicleConfigLoader <T extends AbstractVehicleDatastructureEle
                 }
             }
 
+            // Add parsed vehicles to List
             if (data.getVehicles() != null) {
                 for (T vehicle : data.getVehicles()){
                     vehicles.add(vehicle);
                 }
             }
 
+            // Mark the file as already parsed
             knownVehicleConfigFiles.add(path);
         }
     }
