@@ -26,12 +26,12 @@ public class TomlVehicleConfigLoader_C_VehicleTree_C_Test {
         return Thread.currentThread().getContextClassLoader().getResource(resource_relative_path).toURI();
     }
 
-    private VehicleTree_C load_config_into_tree(String resource_relative_path) throws URISyntaxException, StreamReadException, DatabindException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, IOException{
+    private VehicleTree_C<TomlVehicleConfigLoader_C<VehicleTreeElement_C>> load_config_into_tree(String resource_relative_path) throws URISyntaxException, StreamReadException, DatabindException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, IOException{
         final URI relative_config = find_resource(resource_relative_path);
 
-        TomlVehicleConfigLoader_C l = new TomlVehicleConfigLoader_C(Paths.get(relative_config), VehicleTreeElement_C.class);
+        TomlVehicleConfigLoader_C<VehicleTreeElement_C> l = new TomlVehicleConfigLoader_C<>(Paths.get(relative_config), VehicleTreeElement_C.class);
 
-        VehicleTree_C t = new VehicleTree_C(l);
+        VehicleTree_C<TomlVehicleConfigLoader_C<VehicleTreeElement_C>> t = new VehicleTree_C<>(l);
 
         return t;
     }
@@ -39,7 +39,7 @@ public class TomlVehicleConfigLoader_C_VehicleTree_C_Test {
     @Test
     public void single_vehicle_simple_config(){
         try {
-            VehicleTree_C t = load_config_into_tree("tomlloader/single_simple.toml");
+            VehicleTree_C<TomlVehicleConfigLoader_C<VehicleTreeElement_C>> t = load_config_into_tree("tomlloader/single_simple.toml");
 
             LinkedList<VehicleTreeElement_C> l = t.asList();
 
@@ -51,9 +51,9 @@ public class TomlVehicleConfigLoader_C_VehicleTree_C_Test {
 
             Assertions.assertTrue(e.getName().compareTo("car") == 0);
             // No kwh are set
-            Assertions.assertTrue(e.getKwh_per_pkm() == null);
+            Assertions.assertTrue(e.getKwh() == null);
             // no co2 is set
-            Assertions.assertTrue(e.getG_co2_per_pkm() == null);
+            Assertions.assertTrue(e.getCo2() == null);
             // The tree parent element is the parent
             Assertions.assertTrue(e.getParent() != null);
         }
@@ -66,7 +66,7 @@ public class TomlVehicleConfigLoader_C_VehicleTree_C_Test {
     @Test
     public void single_vehicle_complex_config(){
         try {
-            VehicleTree_C t = load_config_into_tree("tomlloader/single_complex.toml");
+            VehicleTree_C<TomlVehicleConfigLoader_C<VehicleTreeElement_C>> t = load_config_into_tree("tomlloader/single_complex.toml");
 
             LinkedList<VehicleTreeElement_C> l = t.asList();
 
@@ -78,9 +78,9 @@ public class TomlVehicleConfigLoader_C_VehicleTree_C_Test {
 
             Assertions.assertTrue(e.getName().compareTo("car") == 0);
             // No kwh are set
-            Assertions.assertTrue(e.getKwh_per_pkm() == 50);
+            Assertions.assertTrue(e.getKwh() == 50);
             // no co2 is set
-            Assertions.assertTrue(e.getG_co2_per_pkm() == 50);
+            Assertions.assertTrue(e.getCo2() == 50);
             // The tree parent element is the parent
             Assertions.assertTrue(e.getParent() != null);
         }
@@ -93,7 +93,7 @@ public class TomlVehicleConfigLoader_C_VehicleTree_C_Test {
     @Test
     public void multi_vehicle_simple_config(){
         try {
-            VehicleTree_C t = load_config_into_tree("tomlloader/multi_simple.toml");
+            VehicleTree_C<TomlVehicleConfigLoader_C<VehicleTreeElement_C>> t = load_config_into_tree("tomlloader/multi_simple.toml");
 
             LinkedList<VehicleTreeElement_C> l = t.asList();
 

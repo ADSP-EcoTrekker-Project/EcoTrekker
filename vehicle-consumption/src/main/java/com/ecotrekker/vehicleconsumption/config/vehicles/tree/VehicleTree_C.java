@@ -11,7 +11,7 @@ import com.ecotrekker.vehicleconsumption.parser.VehicleDatastructureElement_A;
 import com.ecotrekker.vehicleconsumption.parser.VehicleDatastructure_A;
 
 
-public class VehicleTree_C extends VehicleDatastructure_A<VehicleTreeElement_C> {
+public class VehicleTree_C <T extends VehicleConfigLoader_I<VehicleTreeElement_C>> extends VehicleDatastructure_A<VehicleTreeElement_C> {
 
     private static Logger logger = LoggerFactory.getLogger(VehicleTree_C.class);
 
@@ -26,9 +26,11 @@ public class VehicleTree_C extends VehicleDatastructure_A<VehicleTreeElement_C> 
 
             if (currentE.getName() != "") results.add(currentE);
             
-            for (VehicleDatastructureElement_A vehicle : currentE.getChildren()){
-                VehicleTreeElement_C castV = (VehicleTreeElement_C) vehicle;
-                nodeStack.push(castV);
+            if (currentE.getChildren() != null) {
+                for (VehicleDatastructureElement_A vehicle : currentE.getChildren()){
+                    VehicleTreeElement_C castV = (VehicleTreeElement_C) vehicle;
+                    nodeStack.push(castV);
+                }
             }
         }
 
@@ -61,20 +63,20 @@ public class VehicleTree_C extends VehicleDatastructure_A<VehicleTreeElement_C> 
         return result;
     }
 
-    public <T extends VehicleConfigLoader_I> VehicleTree_C(T configLoader) {
+    public VehicleTree_C(T configLoader) {
         super(configLoader);
         this.setRoot(new VehicleTreeElement_C("", null, null, null));
 
-        LinkedList<VehicleTreeElement_C> vehicles = configLoader.getVehicle_elements();
+        LinkedList<VehicleTreeElement_C> vehicles = configLoader.getVehicles();
 
         for (VehicleTreeElement_C vehicle : vehicles){
             
-            if (vehicle.getParent_string() == null || vehicle.getParent_string() == ""){
+            if (vehicle.getParentName() == null || vehicle.getParentName() == ""){
                 vehicle.setParent(this.getRoot());
                 this.getRoot().getChildren().add(vehicle);
                 continue;
             }
-            VehicleTreeElement_C parent = VehicleTreeElement_C.findByString(vehicles, vehicle.getParent_string());
+            VehicleTreeElement_C parent = VehicleTreeElement_C.findByString(vehicles, vehicle.getParentName());
             if (parent != null){
                 vehicle.setParent(parent);
                 parent.getChildren().add(vehicle);

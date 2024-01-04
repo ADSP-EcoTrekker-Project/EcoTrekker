@@ -2,8 +2,8 @@ package com.ecotrekker.vehicleconsumption.parser;
 
 import java.util.LinkedList;
 
-public interface VehicleConfigLoader_I extends Iterable<VehicleDatastructureElement_A> {
+public interface VehicleConfigLoader_I <T extends VehicleDatastructureElement_A> extends Iterable<T> {
 
-    public <T extends VehicleDatastructureElement_A> LinkedList<T> getVehicle_elements();
+    public LinkedList<T> getVehicles();
 
 }

@@ -2,126 +2,83 @@ package com.ecotrekker.vehicleconsumption.parser.implementations;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Stack;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
-import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import com.ecotrekker.vehicleconsumption.parser.VehicleConfigLoader_I;
+import com.ecotrekker.vehicleconsumption.parser.VehicleDataFile_C;
 import com.ecotrekker.vehicleconsumption.parser.VehicleDatastructureElement_A;
-import com.fasterxml.jackson.core.exc.StreamReadException;
-import com.fasterxml.jackson.databind.DatabindException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.dataformat.toml.TomlMapper;
 
-public class TomlVehicleConfigLoader_C implements VehicleConfigLoader_I {
+import lombok.Getter;
 
-    private static Logger logger = LoggerFactory.getLogger(TomlVehicleConfigLoader_C.class);
+public class TomlVehicleConfigLoader_C <T extends VehicleDatastructureElement_A> implements VehicleConfigLoader_I<T> {
 
-    private static LinkedList<Path> known_vehicle_config_files = new LinkedList<Path>();
+    private Logger logger = LoggerFactory.getLogger(TomlVehicleConfigLoader_C.class);
 
-    ArrayList<Map<String,Object>> vehicles = new ArrayList<Map<String,Object>>();
+    private LinkedList<Path> known_vehicle_config_files = new LinkedList<Path>();
 
-    private LinkedList<VehicleDatastructureElement_A> vehicle_elements = new LinkedList<VehicleDatastructureElement_A>();
+    private Stack<Path> todo = new Stack<>();
 
-    public LinkedList<VehicleDatastructureElement_A> getVehicle_elements() {
-        return vehicle_elements;
-    }
-
-    /**
-     * recursively loads config files in TOML format 
-     * @param pathToFile The Path object pointing to the top level config file
-     * @return An ArrayList containing a map for each vehicle to be parsed into an object
-     * @throws IOException
-     * @throws DatabindException
-     * @throws StreamReadException
-     */
-    public ArrayList<Map<String,Object>> loadConfigFile(Path pathToFile) throws StreamReadException, DatabindException, IOException {    
-        if (known_vehicle_config_files.contains(pathToFile)){
-            logger.warn("There is a circular include in your vehicle config files!");
-            logger.warn(String.format("You just tried to parse %s again!", pathToFile.toString()));
-        }
-
-        TomlMapper tomlMapper = new TomlMapper();
-        File tomlFile = pathToFile.toFile();
-        ArrayList<Map<String,Object>> vehicles = new ArrayList<>();
-        Map<String, Object> data;
-
-        data = tomlMapper.readValue(tomlFile, Map.class);
-
-        // Load Vehicles
-        if (data.get("vehicle") != null){
-            ArrayList<Map<String,Object>> vehicle_data = (ArrayList<Map<String,Object>>) data.get("vehicle");
-            vehicles.addAll(vehicle_data);
-        }
-
-        // Load included files and recursively parse them
-        if (data.get("include") != null){
-            ArrayList<String> files = (ArrayList<String>) data.get("include");
-            for (String file : files){
-                Path tpath = Paths.get(file);
-                if (tpath.isAbsolute() == false){
-                    tpath = Paths.get(pathToFile.getParent().toAbsolutePath().toString(), file);
-                }
-                ArrayList<Map<String,Object>> tvehicles = loadConfigFile(tpath);
-                vehicles.addAll(tvehicles);
-            }
-        }
-        return vehicles;
-    }
-
-    /**
-     * The TOMLVehicleConfigLoader_C loads a TOML file and has a field for a List of vehicle objects
-     * @param <T> The subtype of VehicleDatastructureElement_A that should be created
-     * @param pathToFile The path to the root config file
-     * @param desiredObject The subtype of VehicleDatastructureElement_A that should be created
-     * @throws StreamReadException
-     * @throws DatabindException
-     * @throws IOException
-     * @throws InstantiationException
-     * @throws IllegalAccessException
-     * @throws IllegalArgumentException
-     * @throws InvocationTargetException
-     * @throws NoSuchMethodException
-     * @throws SecurityException
-     */
-    public <T extends VehicleDatastructureElement_A> TomlVehicleConfigLoader_C(Path pathToFile, Class<T> desiredObject) throws StreamReadException, DatabindException, IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
-        vehicles = this.loadConfigFile(pathToFile);
-        for (Map<String, Object> vehicle : vehicles){
-            String name = (String) vehicle.get("name");
-            if (name == "") name = null;
-            Integer g_co2_per_pkm = (Integer) vehicle.get("co2");
-            Integer kwh_per_pkm = (Integer) vehicle.get("kwh");
-            String parent = (String) vehicle.get("parent");
-            if (parent == "")  parent = null;
-            Class[] cArg = new Class[4];
-            cArg[0] = String.class;
-            cArg[1] = Integer.class;
-            cArg[2] = Integer.class;
-            cArg[3] = String.class;
-            Constructor<T> desiredObjectConstructor = desiredObject.getDeclaredConstructor(cArg);
-            T vehicle_element = desiredObjectConstructor.newInstance(
-                name, g_co2_per_pkm, kwh_per_pkm, parent
-            );
-            vehicle_elements.add(
-                vehicle_element
-            );
-        }
-    }
+    @Getter
+    private LinkedList<T> vehicles = new LinkedList<T>();
 
     @Override
-    public Iterator<VehicleDatastructureElement_A> iterator() {
-        return vehicle_elements.iterator();
+    public Iterator<T> iterator() {
+        return vehicles.iterator();
     }
 
+    public TomlVehicleConfigLoader_C(Path pathToConfig, Class<T> typeParameterClass) {
+        todo.push(pathToConfig.toAbsolutePath());
+        
+        
+        TomlMapper mapper = new TomlMapper();
 
+        while (todo.size() > 0){
+            Path path = todo.pop();
 
+            for (Path p : known_vehicle_config_files){
+                if (p.compareTo(path) == 0) {
+                    logger.warn("You tried to parse " + path + " again!");
+                    continue;
+                }
+            }
+
+            VehicleDataFile_C<T> data;
+            try {
+                data = mapper.readValue(path.toFile(), mapper.getTypeFactory().constructParametricType(VehicleDataFile_C.class, typeParameterClass));
+            } catch (IOException e) {
+                e.printStackTrace();
+                logger.warn("Error when parsing " + path + ". Skipped!");
+                continue;
+            }
+
+            if (data.getIncludes() != null) {
+                for (String new_path : data.getIncludes()) {
+                    Path n_p = Paths.get(new_path);
+                    if (n_p.isAbsolute() == false)
+                        n_p = Paths.get(path.getParent().toAbsolutePath().toString(), n_p.toString());
+                    todo.push(n_p);
+                }
+            }
+
+            if (data.getVehicles() != null) {
+                for (T vehicle : data.getVehicles()){
+                    vehicles.add(vehicle);
+                }
+            }
+
+            known_vehicle_config_files.add(path);
+        }
+    }
     
 }

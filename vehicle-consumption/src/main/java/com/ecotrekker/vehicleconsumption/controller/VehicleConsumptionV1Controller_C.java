@@ -22,7 +22,7 @@ public class VehicleConsumptionV1Controller_C {
     public VehicleConsumptionReply_C getVehicleConsumption(@RequestBody VehicleConsumptionRequest_C request){
         String name = request.getVehicle_name();
         VehicleTreeElement_C v = vehicles.getElementByName(name);
-        VehicleConsumptionReply_C reply = new VehicleConsumptionReply_C(name, v.getKwh_per_pkm(), v.getG_co2_per_pkm());
+        VehicleConsumptionReply_C reply = new VehicleConsumptionReply_C(name, v.getKwh(), v.getCo2());
         return reply;
     }
     
