@@ -26,13 +26,11 @@ dependencies {
 	implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-toml:2.16.0-rc1") // https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-toml
 	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.kafka:spring-kafka'
 	annotationProcessor 'org.projectlombok:lombok'
 
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.kafka:spring-kafka-test'
 	testImplementation("ch.qos.logback:logback-classic:1.4.11") // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
 	testImplementation("org.assertj:assertj-core:3.11.1")
 }
