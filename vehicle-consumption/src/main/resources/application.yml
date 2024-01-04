@@ -1,0 +1,5 @@
+spring:
+  kafka:
+    consumer-group: vehicle-consumption-group
+    consumer-topic: vehicle-consumption-recv
+    bootstrap-servers: localhost:8080

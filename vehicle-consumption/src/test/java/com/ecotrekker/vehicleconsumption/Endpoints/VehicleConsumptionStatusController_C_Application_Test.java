@@ -1,4 +1,4 @@
-package com.ecotrekker.vehicleconsumption;
+package com.ecotrekker.vehicleconsumption.Endpoints;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

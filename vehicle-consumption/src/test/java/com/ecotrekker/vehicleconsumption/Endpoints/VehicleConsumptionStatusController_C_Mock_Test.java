@@ -1,4 +1,4 @@
-package com.ecotrekker.vehicleconsumption;
+package com.ecotrekker.vehicleconsumption.Endpoints;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

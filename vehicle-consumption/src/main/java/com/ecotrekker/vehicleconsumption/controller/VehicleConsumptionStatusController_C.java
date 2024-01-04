@@ -1,5 +1,6 @@
 package com.ecotrekker.vehicleconsumption.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,5 +20,5 @@ public class VehicleConsumptionStatusController_C {
     public ResponseEntity<String> getReady() {
         return new ResponseEntity<String>("Vehicle Consumption Service is ready!", null, HttpStatus.OK);
     }
-    
+
 }
