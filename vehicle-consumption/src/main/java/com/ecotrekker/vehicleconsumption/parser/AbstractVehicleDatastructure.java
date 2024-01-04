@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 
-public abstract class VehicleDatastructure_A <T extends VehicleDatastructureElement_A> {
+public abstract class AbstractVehicleDatastructure <T extends AbstractVehicleDatastructureElement> {
 
     @Getter
     @Setter
@@ -23,7 +23,7 @@ public abstract class VehicleDatastructure_A <T extends VehicleDatastructureElem
         throw new UnsupportedOperationException("Please override in Subtypes");
     }
 
-    public VehicleDatastructure_A(VehicleConfigLoader_I<T> configLoader){
+    public AbstractVehicleDatastructure(VehicleConfigLoader<T> configLoader){
 
     }
 

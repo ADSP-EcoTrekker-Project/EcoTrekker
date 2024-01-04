@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-abstract public class VehicleDatastructureElement_A {
+abstract public class AbstractVehicleDatastructureElement {
 
     @Getter
     @Setter
@@ -30,7 +30,7 @@ abstract public class VehicleDatastructureElement_A {
     private String parentName;
 
 
-    public static <T extends VehicleDatastructureElement_A> T findByString(List<T> list, String name){
+    public static <T extends AbstractVehicleDatastructureElement> T findByString(List<T> list, String name){
         for (T vehicle : list){
 
             if (vehicle.getName().compareTo(name) == 0) {
@@ -41,11 +41,11 @@ abstract public class VehicleDatastructureElement_A {
         return null;
     }
 
-    public VehicleDatastructureElement_A(){
+    public AbstractVehicleDatastructureElement(){
 
     }
 
-    public VehicleDatastructureElement_A(String name, Integer co2, Integer kwh_per_pkm, String parent){
+    public AbstractVehicleDatastructureElement(String name, Integer co2, Integer kwh_per_pkm, String parent){
         if (name == null){
             new InvalidParameterException("The name of a vehicle datastructure element cannot be null!");
         }

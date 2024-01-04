@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @JsonInclude(Include.NON_NULL)
-public class VehicleConsumptionReply_C {
+public class VehicleConsumptionReply {
 
     @Getter
     @Setter
@@ -21,11 +21,11 @@ public class VehicleConsumptionReply_C {
     @Setter
     private Integer co2_m;
 
-    public VehicleConsumptionReply_C(){
+    public VehicleConsumptionReply(){
         super();
     }
 
-    public VehicleConsumptionReply_C(String vehicle_name, Integer consumption_kwh_m, Integer co2_m) {
+    public VehicleConsumptionReply(String vehicle_name, Integer consumption_kwh_m, Integer co2_m) {
         this.setVehicle_name(vehicle_name);
         this.setConsumption_kwh_m(consumption_kwh_m);
         this.setCo2_m(co2_m);
@@ -39,7 +39,7 @@ public class VehicleConsumptionReply_C {
 
         if (this.getClass() != o.getClass()) return false;
 
-        VehicleConsumptionReply_C reply = (VehicleConsumptionReply_C) o;
+        VehicleConsumptionReply reply = (VehicleConsumptionReply) o;
 
         boolean nameEquals = (this.getVehicle_name() == null && reply.getVehicle_name() == null) ||
                              (this.getVehicle_name().compareTo(reply.getVehicle_name()) == 0);

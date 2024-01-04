@@ -9,8 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
-import com.ecotrekker.vehicleconsumption.messages.VehicleConsumptionReply_C;
-import com.ecotrekker.vehicleconsumption.messages.VehicleConsumptionRequest_C;
+import com.ecotrekker.vehicleconsumption.messages.VehicleConsumptionReply;
+import com.ecotrekker.vehicleconsumption.messages.VehicleConsumptionRequest;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class VehicleConsumptionV1Controller_C_Application_Test {
@@ -23,11 +23,11 @@ public class VehicleConsumptionV1Controller_C_Application_Test {
 
     @Test
     void testConsumptionEndpoint() throws Exception {
-        VehicleConsumptionRequest_C request = new VehicleConsumptionRequest_C("car");
-        VehicleConsumptionReply_C reply = this.restTemplate.postForObject(
+        VehicleConsumptionRequest request = new VehicleConsumptionRequest("car");
+        VehicleConsumptionReply reply = this.restTemplate.postForObject(
             "http://localhost:"  + port + "/v1/consumption",
             request, 
-            VehicleConsumptionReply_C.class);
+            VehicleConsumptionReply.class);
         assertTrue(reply.getVehicle_name().compareTo(request.getVehicle_name()) == 0);
     }
 }

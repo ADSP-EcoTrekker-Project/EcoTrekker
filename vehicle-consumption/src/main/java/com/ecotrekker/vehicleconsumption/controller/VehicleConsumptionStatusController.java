@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "/status")
-public class VehicleConsumptionStatusController_C {
+public class VehicleConsumptionStatusController {
 
     @GetMapping("/alive")
     public ResponseEntity<String> getAlive() {

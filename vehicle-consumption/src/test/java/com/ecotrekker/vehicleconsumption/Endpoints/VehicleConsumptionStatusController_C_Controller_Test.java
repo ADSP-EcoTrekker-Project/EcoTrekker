@@ -7,13 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 
-import com.ecotrekker.vehicleconsumption.controller.VehicleConsumptionStatusController_C;
+import com.ecotrekker.vehicleconsumption.controller.VehicleConsumptionStatusController;
 
 @SpringBootTest
 public class VehicleConsumptionStatusController_C_Controller_Test {
 
     @Autowired
-    private VehicleConsumptionStatusController_C controller;
+    private VehicleConsumptionStatusController controller;
     
     @Test
     void contextLoads() throws Exception {

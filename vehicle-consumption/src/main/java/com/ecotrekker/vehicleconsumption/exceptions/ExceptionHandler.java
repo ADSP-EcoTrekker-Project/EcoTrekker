@@ -11,13 +11,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.ecotrekker.vehicleconsumption.config.vehicles.VehicleBeanFactory_C;
+import com.ecotrekker.vehicleconsumption.config.vehicles.VehicleBeanFactory;
 
 @ControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class ExceptionHandler_C {
+public class ExceptionHandler {
     
-    private static Logger logger = LoggerFactory.getLogger(VehicleBeanFactory_C.class);
+    private static Logger logger = LoggerFactory.getLogger(VehicleBeanFactory.class);
 
     @ExceptionHandler
     public ResponseEntity<Map<String, Object>> anyException (Exception exception) {

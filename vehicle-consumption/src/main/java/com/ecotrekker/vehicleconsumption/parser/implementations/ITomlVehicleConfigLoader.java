@@ -11,16 +11,16 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import com.ecotrekker.vehicleconsumption.parser.VehicleConfigLoader_I;
-import com.ecotrekker.vehicleconsumption.parser.VehicleDataFile_C;
-import com.ecotrekker.vehicleconsumption.parser.VehicleDatastructureElement_A;
+import com.ecotrekker.vehicleconsumption.parser.VehicleConfigLoader;
+import com.ecotrekker.vehicleconsumption.parser.VehicleDataFile;
+import com.ecotrekker.vehicleconsumption.parser.AbstractVehicleDatastructureElement;
 import com.fasterxml.jackson.dataformat.toml.TomlMapper;
 
 import lombok.Getter;
 
-public class TomlVehicleConfigLoader_C <T extends VehicleDatastructureElement_A> implements VehicleConfigLoader_I<T> {
+public class ITomlVehicleConfigLoader <T extends AbstractVehicleDatastructureElement> implements VehicleConfigLoader<T> {
 
-    private Logger logger = LoggerFactory.getLogger(TomlVehicleConfigLoader_C.class);
+    private Logger logger = LoggerFactory.getLogger(ITomlVehicleConfigLoader.class);
 
     private LinkedList<Path> known_vehicle_config_files = new LinkedList<Path>();
 
@@ -34,7 +34,7 @@ public class TomlVehicleConfigLoader_C <T extends VehicleDatastructureElement_A>
         return vehicles.iterator();
     }
 
-    public TomlVehicleConfigLoader_C(Path pathToConfig, Class<T> typeParameterClass) {
+    public ITomlVehicleConfigLoader(Path pathToConfig, Class<T> typeParameterClass) {
         todo.push(pathToConfig.toAbsolutePath());
         
         
@@ -50,9 +50,9 @@ public class TomlVehicleConfigLoader_C <T extends VehicleDatastructureElement_A>
                 }
             }
 
-            VehicleDataFile_C<T> data;
+            VehicleDataFile<T> data;
             try {
-                data = mapper.readValue(path.toFile(), mapper.getTypeFactory().constructParametricType(VehicleDataFile_C.class, typeParameterClass));
+                data = mapper.readValue(path.toFile(), mapper.getTypeFactory().constructParametricType(VehicleDataFile.class, typeParameterClass));
             } catch (IOException e) {
                 e.printStackTrace();
                 logger.warn("Error when parsing " + path + ". Skipped!");

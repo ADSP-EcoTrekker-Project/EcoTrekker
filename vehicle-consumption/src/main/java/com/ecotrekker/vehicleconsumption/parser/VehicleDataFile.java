@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.Getter;
 import lombok.Setter;
 
-public class VehicleDataFile_C <T extends VehicleDatastructureElement_A> {
+public class VehicleDataFile <T extends AbstractVehicleDatastructureElement> {
     
     @JsonAlias({"include"})
     @Getter

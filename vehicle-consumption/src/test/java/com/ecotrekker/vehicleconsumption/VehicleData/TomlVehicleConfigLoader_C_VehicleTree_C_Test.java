@@ -10,9 +10,9 @@ import java.util.LinkedList;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import com.ecotrekker.vehicleconsumption.config.vehicles.tree.VehicleTreeElement_C;
-import com.ecotrekker.vehicleconsumption.config.vehicles.tree.VehicleTree_C;
-import com.ecotrekker.vehicleconsumption.parser.implementations.TomlVehicleConfigLoader_C;
+import com.ecotrekker.vehicleconsumption.config.vehicles.tree.IVehicleTreeElement;
+import com.ecotrekker.vehicleconsumption.config.vehicles.tree.IVehicleTree;
+import com.ecotrekker.vehicleconsumption.parser.implementations.ITomlVehicleConfigLoader;
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
 
@@ -22,12 +22,12 @@ public class TomlVehicleConfigLoader_C_VehicleTree_C_Test {
         return Thread.currentThread().getContextClassLoader().getResource(resource_relative_path).toURI();
     }
 
-    private VehicleTree_C<TomlVehicleConfigLoader_C<VehicleTreeElement_C>> load_config_into_tree(String resource_relative_path) throws URISyntaxException, StreamReadException, DatabindException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, IOException{
+    private IVehicleTree<ITomlVehicleConfigLoader<IVehicleTreeElement>> load_config_into_tree(String resource_relative_path) throws URISyntaxException, StreamReadException, DatabindException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, IOException{
         final URI relative_config = find_resource(resource_relative_path);
 
-        TomlVehicleConfigLoader_C<VehicleTreeElement_C> l = new TomlVehicleConfigLoader_C<>(Paths.get(relative_config), VehicleTreeElement_C.class);
+        ITomlVehicleConfigLoader<IVehicleTreeElement> l = new ITomlVehicleConfigLoader<>(Paths.get(relative_config), IVehicleTreeElement.class);
 
-        VehicleTree_C<TomlVehicleConfigLoader_C<VehicleTreeElement_C>> t = new VehicleTree_C<>(l);
+        IVehicleTree<ITomlVehicleConfigLoader<IVehicleTreeElement>> t = new IVehicleTree<>(l);
 
         return t;
     }
@@ -35,15 +35,15 @@ public class TomlVehicleConfigLoader_C_VehicleTree_C_Test {
     @Test
     public void single_vehicle_simple_config(){
         try {
-            VehicleTree_C<TomlVehicleConfigLoader_C<VehicleTreeElement_C>> t = load_config_into_tree("tomlloader/single_simple.toml");
+            IVehicleTree<ITomlVehicleConfigLoader<IVehicleTreeElement>> t = load_config_into_tree("tomlloader/single_simple.toml");
 
-            LinkedList<VehicleTreeElement_C> l = t.asList();
+            LinkedList<IVehicleTreeElement> l = t.asList();
 
             Assertions.assertTrue(l.size() > 0);
 
             Assertions.assertTrue(l.size() == 1);
 
-            VehicleTreeElement_C e = t.getElementByName("car");
+            IVehicleTreeElement e = t.getElementByName("car");
 
             Assertions.assertTrue(e.getName().compareTo("car") == 0);
             // No kwh are set
@@ -62,15 +62,15 @@ public class TomlVehicleConfigLoader_C_VehicleTree_C_Test {
     @Test
     public void single_vehicle_complex_config(){
         try {
-            VehicleTree_C<TomlVehicleConfigLoader_C<VehicleTreeElement_C>> t = load_config_into_tree("tomlloader/single_complex.toml");
+            IVehicleTree<ITomlVehicleConfigLoader<IVehicleTreeElement>> t = load_config_into_tree("tomlloader/single_complex.toml");
 
-            LinkedList<VehicleTreeElement_C> l = t.asList();
+            LinkedList<IVehicleTreeElement> l = t.asList();
 
             Assertions.assertTrue(l.size() > 0);
 
             Assertions.assertTrue(l.size() == 1);
 
-            VehicleTreeElement_C e = t.getElementByName("car");
+            IVehicleTreeElement e = t.getElementByName("car");
 
             Assertions.assertTrue(e.getName().compareTo("car") == 0);
             // No kwh are set
@@ -89,15 +89,15 @@ public class TomlVehicleConfigLoader_C_VehicleTree_C_Test {
     @Test
     public void multi_vehicle_simple_config(){
         try {
-            VehicleTree_C<TomlVehicleConfigLoader_C<VehicleTreeElement_C>> t = load_config_into_tree("tomlloader/multi_simple.toml");
+            IVehicleTree<ITomlVehicleConfigLoader<IVehicleTreeElement>> t = load_config_into_tree("tomlloader/multi_simple.toml");
 
-            LinkedList<VehicleTreeElement_C> l = t.asList();
+            LinkedList<IVehicleTreeElement> l = t.asList();
 
             Assertions.assertTrue(l.size() > 0);
 
             Assertions.assertTrue(l.size() == 9);
 
-            VehicleTreeElement_C e = t.getElementByName("car");
+            IVehicleTreeElement e = t.getElementByName("car");
 
             Assertions.assertTrue(e != null);
 
