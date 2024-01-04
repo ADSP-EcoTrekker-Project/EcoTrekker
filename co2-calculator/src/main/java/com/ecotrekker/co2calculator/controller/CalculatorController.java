@@ -27,7 +27,7 @@ public class CalculatorController {
         RouteResult resultJSON = calculatorService.requestCalculation(route);
         if (resultJSON == null) {
             CalculationErrorResponse errorResponse = (new CalculationErrorResponseBuilder()).setErrorMessage("Invalid Route Data").build();
-            return ResponseEntity.status(400).body(objectMapper.writeValueAsString(errorResponse));
+            return ResponseEntity.status(400).body(errorResponse);
         }
         return ResponseEntity.ok(resultJSON);
     }
