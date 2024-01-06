@@ -1,6 +1,9 @@
 package com.ecotrekker.vehicleconsumption.parser.implementations;
 
 import java.util.Stack;
+
+import org.springframework.stereotype.Component;
+
 import java.util.LinkedList;
 
 import java.io.IOException;
@@ -16,6 +19,7 @@ import com.fasterxml.jackson.dataformat.toml.TomlMapper;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Component
 public class ITomlVehicleConfigLoader <E extends AbstractVehicleDatastructureElement, T extends AbstractVehicleDatastructure<E>> implements VehicleConfigLoader<E, T> {
 
     @Override

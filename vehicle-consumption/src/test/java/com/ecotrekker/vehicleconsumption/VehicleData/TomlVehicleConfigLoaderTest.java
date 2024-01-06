@@ -8,11 +8,13 @@ import java.util.Map;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import com.ecotrekker.vehicleconsumption.config.vehicles.tree.IVehicleTreeElement;
 import com.ecotrekker.vehicleconsumption.config.vehicles.tree.IVehicleTree;
 import com.ecotrekker.vehicleconsumption.parser.implementations.ITomlVehicleConfigLoader;
 
+@SpringBootTest
 public class TomlVehicleConfigLoaderTest {
 
     @Autowired
