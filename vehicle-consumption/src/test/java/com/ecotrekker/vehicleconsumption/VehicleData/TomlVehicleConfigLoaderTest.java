@@ -7,12 +7,16 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ecotrekker.vehicleconsumption.config.vehicles.tree.IVehicleTreeElement;
 import com.ecotrekker.vehicleconsumption.config.vehicles.tree.IVehicleTree;
 import com.ecotrekker.vehicleconsumption.parser.implementations.ITomlVehicleConfigLoader;
 
-public class TomlVehicleConfigLoader_C_VehicleTree_C_Test {
+public class TomlVehicleConfigLoaderTest {
+
+    @Autowired
+    private ITomlVehicleConfigLoader<IVehicleTreeElement, IVehicleTree> tomlConfigLoader;
 
     private URI find_resource(String resource_relative_path) throws URISyntaxException {
         return Thread.currentThread().getContextClassLoader().getResource(resource_relative_path).toURI();
@@ -21,9 +25,7 @@ public class TomlVehicleConfigLoader_C_VehicleTree_C_Test {
     private IVehicleTree load_config_into_tree(String resource_relative_path) throws Exception {
         final URI relative_config = find_resource(resource_relative_path);
 
-        ITomlVehicleConfigLoader<IVehicleTreeElement, IVehicleTree> l = new ITomlVehicleConfigLoader<>(Paths.get(relative_config));
-
-        IVehicleTree t = l.getVehicles(IVehicleTree.class, IVehicleTreeElement.class);
+        IVehicleTree t = tomlConfigLoader.getVehicles(Paths.get(relative_config), IVehicleTree.class, IVehicleTreeElement.class);
 
         return t;
     }

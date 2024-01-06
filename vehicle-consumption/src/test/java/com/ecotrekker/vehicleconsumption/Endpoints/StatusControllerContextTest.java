@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.ecotrekker.vehicleconsumption.controller.VehicleConsumptionStatusController;
 
 @SpringBootTest
-public class VehicleConsumptionStatusController_C_Controller_Test {
+public class StatusControllerContextTest {
 
     @Autowired
     private VehicleConsumptionStatusController controller;

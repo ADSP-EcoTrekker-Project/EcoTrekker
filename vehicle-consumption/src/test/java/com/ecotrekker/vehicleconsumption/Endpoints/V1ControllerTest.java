@@ -13,7 +13,7 @@ import com.ecotrekker.vehicleconsumption.messages.VehicleConsumptionReply;
 import com.ecotrekker.vehicleconsumption.messages.VehicleConsumptionRequest;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class VehicleConsumptionV1Controller_C_Application_Test {
+public class V1ControllerTest {
 
     @LocalServerPort
     private int port;
