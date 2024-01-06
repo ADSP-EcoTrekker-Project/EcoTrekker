@@ -3,14 +3,11 @@ package com.ecotrekker.vehicleconsumption.parser;
 import java.lang.UnsupportedOperationException;
 import java.util.Map;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-
+@Data
 public abstract class AbstractVehicleDatastructure <T extends AbstractVehicleDatastructureElement> {
 
-    @Getter
-    @Setter
     private T root = null;
 
     public Map<String, T> asMap() {

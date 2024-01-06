@@ -5,20 +5,16 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import lombok.Setter;
+import lombok.Data;
 
+@Data
 @JsonInclude(Include.NON_NULL)
 public class VehicleConsumptionRequest {
 
-    @Setter
-    @JsonProperty(required = true)
+    @JsonProperty(value = "vehicle", required = true)
     @JsonAlias({ "vehicle", "vehicle-name", "vehicle_name", "name", "vehicleName" })
     private String vehicleName;
 
-    @JsonProperty("vehicle")
-    public String getVehicleName() {
-        return vehicleName;
-    }
 
     public VehicleConsumptionRequest(){
         super();

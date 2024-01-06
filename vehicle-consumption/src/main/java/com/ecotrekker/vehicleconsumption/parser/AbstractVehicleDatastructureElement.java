@@ -7,26 +7,18 @@ import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
+@Data
 abstract public class AbstractVehicleDatastructureElement {
 
-    @Getter
-    @Setter
     @JsonProperty(required = true)
     private String name;
 
-    @Getter
-    @Setter
     private Double co2;
 
-    @Getter
-    @Setter
     private Double kwh;
 
-    @Getter
-    @Setter
     @JsonAlias({"parent"})
     private String parentName;
 
