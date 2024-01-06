@@ -22,14 +22,14 @@ public class VehicleBeanFactory {
     private static Logger logger = LoggerFactory.getLogger(VehicleBeanFactory.class);
 
     @Bean
-    public IVehicleTree<ITomlVehicleConfigLoader<IVehicleTreeElement>> getVehicleTree() throws Exception{
+    public IVehicleTree getVehicleTree() throws Exception{
         Path config = Paths.get(pathToConfig).toAbsolutePath();
 
         logger.info("Parsing config at " + config.toString());
 
-        ITomlVehicleConfigLoader<IVehicleTreeElement> l = new ITomlVehicleConfigLoader<>(config, IVehicleTreeElement.class);
+        ITomlVehicleConfigLoader<IVehicleTreeElement, IVehicleTree> l = new ITomlVehicleConfigLoader<>(config);
 
-        IVehicleTree<ITomlVehicleConfigLoader<IVehicleTreeElement>> t = new IVehicleTree<>(l);
+        IVehicleTree t = l.getVehicles(IVehicleTree.class, IVehicleTreeElement.class);
 
         logger.info("Tree: \n" + t.toString());
 

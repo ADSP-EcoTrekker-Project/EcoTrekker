@@ -14,20 +14,19 @@ import com.ecotrekker.vehicleconsumption.config.vehicles.tree.IVehicleTreeElemen
 import com.ecotrekker.vehicleconsumption.config.vehicles.tree.IVehicleTree;
 import com.ecotrekker.vehicleconsumption.messages.VehicleConsumptionReply;
 import com.ecotrekker.vehicleconsumption.messages.VehicleConsumptionRequest;
-import com.ecotrekker.vehicleconsumption.parser.implementations.ITomlVehicleConfigLoader;
 
 @RestController
 @RequestMapping(value = "/v1")
 public class VehicleConsumptionV1Controller {
 
     @Autowired 
-    IVehicleTree<ITomlVehicleConfigLoader<IVehicleTreeElement>> vehicles;
+    IVehicleTree vehicles;
 
     @PostMapping("/consumption")
     public ResponseEntity<?> getVehicleConsumption(@RequestBody VehicleConsumptionRequest request){
         String name = request.getVehicleName();
         try {
-            IVehicleTreeElement v = vehicles.getElementByName(name);
+            IVehicleTreeElement v = vehicles.getElement(name);
             VehicleConsumptionReply reply = new VehicleConsumptionReply(name, v.getKwh(), v.getCo2());
             return new ResponseEntity<VehicleConsumptionReply>(reply, HttpStatus.OK);
         } catch (NoSuchElementException e) {

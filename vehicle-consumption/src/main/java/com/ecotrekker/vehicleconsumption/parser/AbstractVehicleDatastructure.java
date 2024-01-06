@@ -1,7 +1,7 @@
 package com.ecotrekker.vehicleconsumption.parser;
 
 import java.lang.UnsupportedOperationException;
-import java.util.List;
+import java.util.Map;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -13,18 +13,25 @@ public abstract class AbstractVehicleDatastructure <T extends AbstractVehicleDat
     @Setter
     private T root = null;
 
-
-    public List<T> asList(){
+    public Map<String, T> asMap() {
         new UnsupportedOperationException("Please override in Subtypes");
         return null;
     }
 
-    public T getElementByName(String name) throws UnsupportedOperationException {
+    public void addElement(T element) {
         throw new UnsupportedOperationException("Please override in Subtypes");
     }
 
-    public AbstractVehicleDatastructure(VehicleConfigLoader<T> configLoader){
+    public void removeElement(T element, boolean removeChildren) {
+        throw new UnsupportedOperationException("Please override in Subtypes");
+    }
 
+    public void removeElement(T element) {
+        throw new UnsupportedOperationException("Please override in Subtypes");
+    }
+
+    public T getElement(String name) {
+        throw new UnsupportedOperationException("Please override in Subtypes");
     }
 
 }

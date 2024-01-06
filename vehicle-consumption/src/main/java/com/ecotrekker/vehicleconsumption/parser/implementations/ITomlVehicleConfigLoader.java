@@ -1,11 +1,7 @@
 package com.ecotrekker.vehicleconsumption.parser.implementations;
 
-import java.util.Iterator;
 import java.util.Stack;
 import java.util.LinkedList;
-
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -13,32 +9,29 @@ import java.nio.file.Paths;
 
 import com.ecotrekker.vehicleconsumption.parser.VehicleConfigLoader;
 import com.ecotrekker.vehicleconsumption.parser.VehicleDataFile;
+import com.ecotrekker.vehicleconsumption.parser.AbstractVehicleDatastructure;
 import com.ecotrekker.vehicleconsumption.parser.AbstractVehicleDatastructureElement;
 import com.fasterxml.jackson.dataformat.toml.TomlMapper;
 
-import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
-public class ITomlVehicleConfigLoader <T extends AbstractVehicleDatastructureElement> implements VehicleConfigLoader<T> {
+@Slf4j
+public class ITomlVehicleConfigLoader <E extends AbstractVehicleDatastructureElement, T extends AbstractVehicleDatastructure<E>> implements VehicleConfigLoader<E, T> {
 
-    private Logger logger = LoggerFactory.getLogger(ITomlVehicleConfigLoader.class);
+    TomlMapper mapper;
 
     private LinkedList<Path> knownVehicleConfigFiles = new LinkedList<Path>();
 
     private Stack<Path> todo = new Stack<>();
 
-    @Getter
-    private LinkedList<T> vehicles = new LinkedList<T>();
-
-    @Override
-    public Iterator<T> iterator() {
-        return vehicles.iterator();
+    public ITomlVehicleConfigLoader(Path pathToConfig) {
+        todo.push(pathToConfig.toAbsolutePath());
+        mapper = new TomlMapper();
     }
 
-    public ITomlVehicleConfigLoader(Path pathToConfig, Class<T> typeParameterClass) {
-        todo.push(pathToConfig.toAbsolutePath());
-        
-        
-        TomlMapper mapper = new TomlMapper();
+    @Override
+    public T getVehicles(Class<T> vehiclesClass, Class<E> typeParameterClass) throws Exception{
+        T vehicles = vehiclesClass.getDeclaredConstructor().newInstance();
 
         while (todo.size() > 0){
             Path path = todo.pop();
@@ -46,18 +39,18 @@ public class ITomlVehicleConfigLoader <T extends AbstractVehicleDatastructureEle
             // Check if file was already parsed
             for (Path p : knownVehicleConfigFiles){
                 if (p.compareTo(path) == 0) {
-                    logger.warn("You tried to parse " + path + " again!");
+                    log.warn("You tried to parse " + path + " again!");
                     continue;
                 }
             }
 
             // Try to map file to Objects
-            VehicleDataFile<T> data;
+            VehicleDataFile<E> data;
             try {
                 data = mapper.readValue(path.toFile(), mapper.getTypeFactory().constructParametricType(VehicleDataFile.class, typeParameterClass));
             } catch (IOException e) {
                 e.printStackTrace();
-                logger.warn("Error when parsing " + path + ". Skipped!");
+                log.warn("Error when parsing " + path + ". Skipped!");
                 continue;
             }
 
@@ -73,14 +66,16 @@ public class ITomlVehicleConfigLoader <T extends AbstractVehicleDatastructureEle
 
             // Add parsed vehicles to List
             if (data.getVehicles() != null) {
-                for (T vehicle : data.getVehicles()){
-                    vehicles.add(vehicle);
+                for (E vehicle : data.getVehicles()){
+                    vehicles.addElement(vehicle);
                 }
             }
 
             // Mark the file as already parsed
             knownVehicleConfigFiles.add(path);
         }
+
+        return vehicles;
     }
     
 }
