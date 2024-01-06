@@ -18,19 +18,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ITomlVehicleConfigLoader <E extends AbstractVehicleDatastructureElement, T extends AbstractVehicleDatastructure<E>> implements VehicleConfigLoader<E, T> {
 
-    TomlMapper mapper;
-
-    private LinkedList<Path> knownVehicleConfigFiles = new LinkedList<Path>();
-
-    private Stack<Path> todo = new Stack<>();
-
-    public ITomlVehicleConfigLoader(Path pathToConfig) {
-        todo.push(pathToConfig.toAbsolutePath());
-        mapper = new TomlMapper();
-    }
-
     @Override
-    public T getVehicles(Class<T> vehiclesClass, Class<E> typeParameterClass) throws Exception{
+    public T getVehicles(Path pathToConfig, Class<T> vehiclesClass, Class<E> typeParameterClass) throws Exception{
+        LinkedList<Path> knownVehicleConfigFiles = new LinkedList<Path>();
+        Stack<Path> todo = new Stack<>();
+        todo.push(pathToConfig.toAbsolutePath());
+
+        TomlMapper mapper = new TomlMapper();
+
         T vehicles = vehiclesClass.getDeclaredConstructor().newInstance();
 
         while (todo.size() > 0){
