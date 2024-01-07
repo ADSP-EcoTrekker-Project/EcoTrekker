@@ -1,19 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: {{ .Values.namespace }}
   name: {{ lower (include "ecotrekker.name" .) }}-vehicle-consumption-deployment
   labels:
     {{- include "ecotrekker.labels" . | nindent 4 }}
+    app.kubernetes.io/microservice: vehicle-consumption
 spec:
   replicas: {{ .Values.ecotrekker.co2calculator.replicas }}
   selector:
     matchLabels:
       {{- include "ecotrekker.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/microservice: vehicle-consumption
   template:
     metadata:
       labels:
         {{- include "ecotrekker.labels" . | nindent 8 }}
+        app.kubernetes.io/microservice: vehicle-consumption
     spec:
       containers:
       - name: {{ lower (include "ecotrekker.name" .) }}-vehicle-consumption
@@ -24,19 +26,16 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: {{ .Values.namespace }}
-  name: {{ lower (include "ecotrekker.name" .) }}-vehicle-consumption-deployment
+  name: {{ lower (include "ecotrekker.name" .) }}-vehicle-consumption-service
   labels:
     {{- include "ecotrekker.labels" . | nindent 4 }}
+    app.kubernetes.io/microservice: vehicle-consumption
 spec:
   selector:
     {{- include "ecotrekker.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/microservice: vehicle-consumption
   ports:
-    - name: http
+    - name: rest
       protocol: TCP
-      port: 80
-      targetPort: 8080
-    - name: https
-      protocol: TCP
-      port: 443
+      port: 8080
       targetPort: 8080
