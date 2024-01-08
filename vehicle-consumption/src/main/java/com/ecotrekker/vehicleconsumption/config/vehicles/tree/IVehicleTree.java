@@ -18,29 +18,7 @@ public class IVehicleTree extends AbstractVehicleDatastructure<IVehicleTreeEleme
     private Map<String, IVehicleTreeElement> vehicleTreeMap;
 
     public Map<String, IVehicleTreeElement> asMap() {
-        if (vehicleTreeMap != null) return vehicleTreeMap;
-
-        Map<String, IVehicleTreeElement> results = new HashMap<>();
-        
-        Stack<IVehicleTreeElement> nodeStack = new Stack<>();
-
-        nodeStack.push((IVehicleTreeElement) this.getRoot());
-
-        while(nodeStack.empty() == false){
-            IVehicleTreeElement currentE = nodeStack.pop();
-
-            if (currentE.getName() != "") results.put(currentE.getName(), currentE);
-            
-            if (currentE.getChildren() != null) {
-                for (AbstractVehicleDatastructureElement vehicle : currentE.getChildren()){
-                    IVehicleTreeElement castV = (IVehicleTreeElement) vehicle;
-                    nodeStack.push(castV);
-                }
-            }
-        }
-
-        vehicleTreeMap = results;
-        return results;
+        return vehicleTreeMap;
     }
 
     private String asPrettyString(){
@@ -88,26 +66,14 @@ public class IVehicleTree extends AbstractVehicleDatastructure<IVehicleTreeEleme
     }
 
     @Override
-    public void removeElement(IVehicleTreeElement element, boolean removeChildren) {
+    public void removeElement(IVehicleTreeElement element) {
         try {
-            List<IVehicleTreeElement> children = element.getChildren();
             IVehicleTreeElement parent = element.getParent();
-            if (removeChildren) {
-                parent.getChildren().remove(element);
-                element.setParent(null);
-            } else {
-                parent.getChildren().remove(element);
-                parent.getChildren().addAll(children);
-                element.setParent(null);
-            }
+            parent.getChildren().remove(element);
+            element.setParent(null);
         } catch (NoSuchElementException e) {
             return;
         }
-    }
-
-    @Override
-    public void removeElement(IVehicleTreeElement element) {
-        removeElement(element, true);
     }
 
     @Override

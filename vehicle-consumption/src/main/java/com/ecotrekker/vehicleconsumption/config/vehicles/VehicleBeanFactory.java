@@ -17,7 +17,7 @@ import com.ecotrekker.vehicleconsumption.parser.implementations.ITomlVehicleConf
 @Configuration
 public class VehicleBeanFactory {
     
-    @Value("${config}")
+    @Value("${configPath}")
     private String pathToConfig;
 
     private static Logger logger = LoggerFactory.getLogger(VehicleBeanFactory.class);
