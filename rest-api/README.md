@@ -3,5 +3,5 @@
 # To test the Endpoint
 
 ```powershell
-curl http://localhost:8080/v1/calc/co2 -i -H '"Accept": application/json' -H '"Content-Type": application/json' -X GET -d '{\"routes\":[{\"steps\":[{\"start\":null,\"end\":null,\"vehicle\":null,\"distance\":null},{\"start\":null,\"end\":null,\"vehicle\":null,\"distance\":null}]}]}'
+curl http://localhost:8080/v1/calc/co2 -X POST -H '"Accept": application/json' -H '"Content-Type": application/json' -d '{\"routes\":[{\"steps\":[{\"vehicle\":\"car\",\"distance\":1000},{\"vehicle\":\"e-bike\",\"distance\":1500}]}]}'
 ```

@@ -1,8 +1,8 @@
 [[vehicle]]
 name = "e-bike"
-co2 = 22
+co2 = 0.022
 parent = "bike"
 [[vehicle]]
 name = "bicycle"
-co2 = 21
+co2 = 0.021
 parent = "bike"

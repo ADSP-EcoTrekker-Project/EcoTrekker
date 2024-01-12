@@ -1,0 +1,10 @@
+# Ignore the .json files used to access the Google Cloud API
+*.json
+
+.terraform/
+.terraform.tfstate.lock.info
+terraform.tfstate
+terraform.tfstate.backup
+
+*.password
+*.address

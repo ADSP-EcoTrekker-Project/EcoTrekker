@@ -4,18 +4,75 @@ metadata:
   name: {{ lower (include "ecotrekker.name" .) }}-rest-api-deployment
   labels:
     {{- include "ecotrekker.labels" . | nindent 4 }}
+    app.kubernetes.io/microservice: rest-api
 spec:
   replicas: {{ .Values.ecotrekker.restapi.replicas }}
   selector:
     matchLabels:
       {{- include "ecotrekker.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/microservice: rest-api
   template:
     metadata:
       labels:
         {{- include "ecotrekker.labels" . | nindent 8 }}
+        app.kubernetes.io/microservice: rest-api
     spec:
       containers:
       - name: {{ lower (include "ecotrekker.name" .) }}-rest-api
         image: {{ .Values.ecotrekker.restapi.image }}
+        env:
+        - name: CO2_CALCULATOR_ADDRESS
+          value: {{ lower (include "ecotrekker.name" .) }}-co2-calculator-service.{{ .Release.Namespace }}.svc.cluster.local:8080
         ports:
         - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /status/alive
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /status/ready
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ lower (include "ecotrekker.name" .) }}-rest-api-service
+  labels:
+    {{- include "ecotrekker.labels" . | nindent 4 }}
+    app.kubernetes.io/microservice: rest-api
+spec:
+  selector:
+    {{- include "ecotrekker.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/microservice: rest-api
+  ports:
+    - name: rest
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ lower (include "ecotrekker.name" .) }}-rest-api-ingress
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: "ecotrekker-static-address"
+  labels:
+    {{- include "ecotrekker.labels" . | nindent 4 }}
+    app.kubernetes.io/microservice: rest-api
+spec:
+  rules:
+  - host: "rest-api.leolierse.de"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ lower (include "ecotrekker.name" .) }}-rest-api-service
+            port:
+              number: 8080
