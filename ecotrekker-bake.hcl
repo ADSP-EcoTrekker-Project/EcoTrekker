@@ -39,6 +39,15 @@ target "vehicle-consumption" {
     context = "vehicle-consumption/"
 }
 
+target "vehicle-depot" {
+    dockerfile = "../docker/vehicle-depot.Dockerfile"
+    tags = ["${REPO}/eco-vehicle-depot:${TAG}"]
+    contexts = {
+        bake-base-image = "target:builder"
+    }
+    context = "vehicle-depot/"
+}
+
 group "default" {
-    targets = ["rest-api", "co2-calculator", "vehicle-consumption"]
+    targets = ["rest-api", "co2-calculator", "vehicle-consumption", "vehicle-depot"]
 }
