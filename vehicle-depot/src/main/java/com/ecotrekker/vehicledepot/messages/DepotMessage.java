@@ -1,5 +1,7 @@
 package com.ecotrekker.vehicledepot.messages;
 
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
@@ -8,6 +10,6 @@ import lombok.Data;
 public class DepotMessage {
     private String line;
 
-    @JsonProperty(value = "share-electrical", required = false)
-    private Double shareElectrical;
+    @JsonProperty(required = false)
+    private Map<String, Double> vehicles;
 }

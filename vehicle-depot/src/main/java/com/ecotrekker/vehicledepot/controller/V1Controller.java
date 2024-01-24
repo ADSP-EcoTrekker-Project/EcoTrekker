@@ -30,7 +30,7 @@ public class V1Controller {
                 throw new NoSuchElementException("Could not find line!");
             }
             VehicleDepot depot = line.getDepot();
-            request.setShareElectrical(depot.getShareElectrical());
+            request.setVehicles(depot.getVehicles());
             return new ResponseEntity<DepotMessage>(request, HttpStatus.OK);
         } catch (NoSuchElementException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

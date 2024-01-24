@@ -1,5 +1,8 @@
 [[depot]]
-shareElectrical = 0.5
+vehicles = [
+    {"name" = "e-bus", "share" = 0.5},
+    {"name" = "bus", "share" = 0.5},
+]
 lines = [
     "169",
     "X69",

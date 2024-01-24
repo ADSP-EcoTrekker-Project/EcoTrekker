@@ -3,6 +3,8 @@ package com.ecotrekker.vehicledepot.parser;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.springframework.stereotype.Component;
 
@@ -62,7 +64,11 @@ public class VehicleDepotParser {
             if (data.getDepots() != null) {
                 for (DepotLineConfig depot : data.getDepots()) {
                     VehicleDepot newDepot = new VehicleDepot();
-                    newDepot.setShareElectrical(depot.getShareElectrical());
+                    Map<String, Double> vehicleMap = new HashMap<>();
+                    for (DepotVehicle vehicle : depot.getVehicles()) {
+                        vehicleMap.put(vehicle.getName(), vehicle.getShare());
+                    }
+                    newDepot.setVehicles(vehicleMap);
                     for (String line : depot.getLines()) {
                         TransportLine newLine = new TransportLine();
                         newLine.setName(line);

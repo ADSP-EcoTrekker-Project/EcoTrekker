@@ -17,7 +17,7 @@ public class VehicleDepot {
 
     @Getter
     @Setter
-    private Double shareElectrical;
+    private Map<String, Double> vehicles;
 
     
 

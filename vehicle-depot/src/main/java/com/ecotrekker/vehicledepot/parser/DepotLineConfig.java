@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class DepotLineConfig {
     
-    Double shareElectrical;
+    List<DepotVehicle> vehicles;
 
     List<String> lines;
 }
