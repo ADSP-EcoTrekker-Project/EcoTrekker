@@ -26,13 +26,11 @@ spec:
           httpGet:
             path: /status/alive
             port: 8080
-          initialDelaySeconds: 60
           periodSeconds: 30
         readinessProbe:
           httpGet:
             path: /status/ready
             port: 8080
-          initialDelaySeconds: 60
           periodSeconds: 30
 ---
 apiVersion: v1
