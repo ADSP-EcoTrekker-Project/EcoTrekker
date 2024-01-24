@@ -8,8 +8,8 @@ import lombok.Data;
 @Data
 public class DepotVehicle {
     @JsonKey
-    public String name;
+    private String name;
 
     @JsonValue
-    public Double share;
+    private Double share;
 }
