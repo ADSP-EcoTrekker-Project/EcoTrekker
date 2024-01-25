@@ -11,3 +11,5 @@ Each Dockerfile is named after the subdirectory of their microservice.
 
 - rest-api.Dockerfile
 - co2-calculator.Dockerfile
+- vehicle-consumption.Dockerfile
+- vehicle-depot.Dockerfile
