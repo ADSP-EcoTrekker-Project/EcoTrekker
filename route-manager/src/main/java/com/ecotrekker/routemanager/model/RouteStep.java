@@ -2,6 +2,7 @@ package com.ecotrekker.routemanager.model;
 
 import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -10,10 +11,12 @@ import lombok.AllArgsConstructor;
 @Data
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class RouteStep {
     private String start;
     private String end;
     private String vehicle;
+    private String line;
     @JsonIgnore
     private Double distance = null;
 

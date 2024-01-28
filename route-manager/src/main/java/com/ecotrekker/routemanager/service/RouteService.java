@@ -19,7 +19,7 @@ import com.ecotrekker.routemanager.model.RouteServiceException;
 import com.ecotrekker.routemanager.model.RouteResult;
 import com.ecotrekker.routemanager.model.RouteStep;
 import com.ecotrekker.routemanager.model.RouteStepResult;
-import com.ecotrekker.routemanager.model.RouteRequest;
+import com.ecotrekker.routemanager.model.RoutesRequest;
 import com.ecotrekker.routemanager.model.RoutesResult;
 
 @Service
@@ -35,7 +35,7 @@ public class RouteService {
     private GamificationServiceClient gamificationServiceClient;
 
 
-    private ConcurrentMap<RouteStep, CompletableFuture<DistanceReply>> calculateDistances(RouteRequest routeRequest) {
+    private ConcurrentMap<RouteStep, CompletableFuture<DistanceReply>> calculateDistances(RoutesRequest routeRequest) {
         return routeRequest.getRoutes()
             .parallelStream()
             .flatMap(route -> route.getSteps().stream())
@@ -55,7 +55,7 @@ public class RouteService {
                 (existing, replacement) -> existing));
     }
     
-    private List<RouteResult> calculateResults(RouteRequest routeRequest, ConcurrentMap<RouteStep, CompletableFuture<RouteStepResult>> co2Futures) {
+    private List<RouteResult> calculateResults(RoutesRequest routeRequest, ConcurrentMap<RouteStep, CompletableFuture<RouteStepResult>> co2Futures) {
         return routeRequest
             .getRoutes()
             .parallelStream()
@@ -80,7 +80,7 @@ public class RouteService {
     }
     
 
-    public RoutesResult requestCalculation(RouteRequest routeRequest) throws RouteServiceException {
+    public RoutesResult requestCalculation(RoutesRequest routeRequest) throws RouteServiceException {
         try {
             ConcurrentMap<RouteStep, CompletableFuture<DistanceReply>> distanceFutures = calculateDistances(routeRequest);
             ConcurrentMap<RouteStep, CompletableFuture<RouteStepResult>> co2Futures = calculateCo2(distanceFutures);
