@@ -2,9 +2,8 @@ package com.ecotrekker.gridco2cache.service;
 
 import com.ecotrekker.gridco2cache.model.CarbonIntensityResponse;
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -17,24 +16,19 @@ public class CarbonIntensityService {
     @Getter
     private volatile Double latestCarbonIntensity;
 
-    private final ElectricityMapsClient client;
-    private final CacheManager cacheManager;
+    @Autowired
+    private ElectricityMapsClient client;
 
-    public CarbonIntensityService(ElectricityMapsClient client, CacheManager cacheManager) {
-        this.client = client;
-        this.cacheManager = cacheManager;
-    }
-
-    @Cacheable("carbonIntensity")
     public Double getCarbonIntensityForZone(String zone) {
         CarbonIntensityResponse response = client.getLatestCarbonIntensity(apiToken, zone);
         latestCarbonIntensity = response.getCarbonIntensity();
         return latestCarbonIntensity;
     }
 
-    @Scheduled(fixedRate = 3600000) // 3600000 milliseconds = 1 hour
+
+    @Scheduled(cron = "0 * * * * *")
     public void updateCarbonIntensityCache() {
-        cacheManager.getCache("carbonIntensity").clear(); // Clear the old cache
-        getCarbonIntensityForZone("DE"); // Fetch new data which will be cached
+        CarbonIntensityResponse response = client.getLatestCarbonIntensity(apiToken, "DE");
+        latestCarbonIntensity = response.getCarbonIntensity();
     }
 }

@@ -1,5 +1,6 @@
 package com.ecotrekker.gridco2cache.controller;
 
+import com.ecotrekker.gridco2cache.model.CarbonResponse;
 import com.ecotrekker.gridco2cache.service.CarbonIntensityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,24 +12,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class CarbonIntensityController {
 
-    private final CarbonIntensityService carbonIntensityService;
-
     @Autowired
-    public CarbonIntensityController(CarbonIntensityService carbonIntensityService) {
-        this.carbonIntensityService = carbonIntensityService;
-    }
+    private CarbonIntensityService carbonIntensityService;
 
     @GetMapping("/carbon-intensity")
-    public ResponseEntity<Double> getCarbonIntensity() {
+    public ResponseEntity<?> getCarbonIntensity() {
         Double carbonIntensity = carbonIntensityService.getLatestCarbonIntensity();
-
-        if (carbonIntensity == null) {
-            // Fetch from API if not available in cache
-            carbonIntensity = carbonIntensityService.getCarbonIntensityForZone("DE");
-        }
-
-        return ResponseEntity.ok(carbonIntensity);
+        CarbonResponse response = new CarbonResponse();
+        response.setCarbonIntensity(carbonIntensity);
+        return ResponseEntity.ok(response);
     }
-
-
 }
