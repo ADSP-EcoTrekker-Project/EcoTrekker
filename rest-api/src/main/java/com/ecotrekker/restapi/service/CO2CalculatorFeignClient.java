@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.ecotrekker.restapi.config.FeignClientConfig;
-import com.ecotrekker.restapi.model.Route;
-import com.ecotrekker.restapi.model.RouteResult;
+import com.ecotrekker.restapi.model.RoutesRequest;
+import com.ecotrekker.restapi.model.RoutesResult;
 
-@FeignClient(value = "co2-calculator-client", url="${co2-calculator.address}", configuration = FeignClientConfig.class)
+@FeignClient(value = "route-service-client", url="${route-service.address}", configuration = FeignClientConfig.class)
 public interface CO2CalculatorFeignClient {
 
-    @RequestMapping(method = RequestMethod.POST, value = "/v1/calc/co2", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    RouteResult getRouteResult(@RequestBody Route data);
+    @RequestMapping(method = RequestMethod.POST, value = "${route-service.uri}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    RoutesResult getRoutesResult(@RequestBody RoutesRequest data);
 }

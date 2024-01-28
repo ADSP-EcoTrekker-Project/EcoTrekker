@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import com.ecotrekker.restapi.model.Routes;
+import com.ecotrekker.restapi.model.RoutesRequest;
 import com.ecotrekker.restapi.model.RoutesResult;
 import com.ecotrekker.restapi.service.EcotrekkerService;
 
@@ -28,7 +28,7 @@ public class EcotrekkerController {
     }
 
     @PostMapping("/calc/co2")
-    public ResponseEntity<RoutesResult> calculateCo2(@RequestBody @Valid Routes routes) throws JsonProcessingException {
+    public ResponseEntity<RoutesResult> calculateCo2(@RequestBody @Valid RoutesRequest routes) throws JsonProcessingException {
         RoutesResult resultJSON = ecotrekkerService.requestCalculation(routes);
         if (resultJSON != null) { return ResponseEntity.ok(resultJSON); }
         return ResponseEntity.status(HttpStatus.GATEWAY_TIMEOUT).build();
