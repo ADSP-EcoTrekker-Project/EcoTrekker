@@ -18,9 +18,8 @@ import org.springframework.http.ResponseEntity;
 
 import com.ecotrekker.co2calculator.model.ConsumptionRequest;
 import com.ecotrekker.co2calculator.model.ConsumptionResponse;
-import com.ecotrekker.co2calculator.model.Route;
-import com.ecotrekker.co2calculator.model.RouteResult;
 import com.ecotrekker.co2calculator.model.RouteStep;
+import com.ecotrekker.co2calculator.model.RouteStepResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import okhttp3.mockwebserver.Dispatcher;
@@ -30,8 +29,6 @@ import okhttp3.mockwebserver.RecordedRequest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.LinkedList;
 
 @SpringBootTest(
     webEnvironment = WebEnvironment.RANDOM_PORT,
@@ -107,26 +104,28 @@ public class CalculatorApplicationTests {
 	}
 
     @Test
-    void testResponse() {
-        Route testRoute = new Route();
-        LinkedList<RouteStep> testSteps = new LinkedList<>();
-        RouteStep step1 = new RouteStep();
-        step1.setDistance(300L);
-        step1.setVehicle("car");
-        RouteStep step2 = new RouteStep();
-        step2.setDistance(300L);
-        step2.setVehicle("e-bike");
-        testSteps.add(step1);
-        testSteps.add(step2);
-        testRoute.setSteps(testSteps); 
-        
-        ResponseEntity<RouteResult> result = testRestTemplate.exchange(
+    void testResponseCar() {
+        RouteStep testRouteStep = new RouteStep("a", "b", "car",null, 300.0);
+        ResponseEntity<RouteStepResult> result = testRestTemplate.exchange(
             "http://localhost:"+port+"/v1/calc/co2", 
             HttpMethod.POST, 
-            new HttpEntity<Route>(testRoute), 
-            RouteResult.class);
+            new HttpEntity<RouteStep>(testRouteStep), 
+            RouteStepResult.class);
         assertTrue(result.getStatusCode().is2xxSuccessful());
-        assertEquals(54300.0, result.getBody().getCo2());
+        assertEquals(160*300.0, result.getBody().getCo2());
+        
+    }
+
+    @Test
+    void testResponseEbike() {
+        RouteStep testRouteStep = new RouteStep("b", "c", "e-bike",null, 300.0);
+        ResponseEntity<RouteStepResult> result = testRestTemplate.exchange(
+            "http://localhost:"+port+"/v1/calc/co2", 
+            HttpMethod.POST, 
+            new HttpEntity<RouteStep>(testRouteStep), 
+            RouteStepResult.class);
+        assertTrue(result.getStatusCode().is2xxSuccessful());
+        assertEquals(21.0*300.0, result.getBody().getCo2());
         
     }
 }
