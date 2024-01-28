@@ -12,6 +12,9 @@ ecotrekker:
   vehicleconsumption:
     image: lierseleow/eco-vehicle-consumption:latest
     replicas: 1
+  vehicledepot:
+    image: lierseleow/eco-vehicle-depot:latest
+    replicas: 1
 
 # replicaCount: 1
 

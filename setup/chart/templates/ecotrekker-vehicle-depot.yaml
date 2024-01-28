@@ -1,25 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ lower (include "ecotrekker.name" .) }}-vehicle-consumption-deployment
+  name: {{ lower (include "ecotrekker.name" .) }}-vehicle-depot-deployment
   labels:
     {{- include "ecotrekker.labels" . | nindent 4 }}
-    app.kubernetes.io/microservice: vehicle-consumption
+    app.kubernetes.io/microservice: vehicle-depot
 spec:
-  replicas: {{ .Values.ecotrekker.co2calculator.replicas }}
+  replicas: {{ .Values.ecotrekker.vehicledepot.replicas }}
   selector:
     matchLabels:
       {{- include "ecotrekker.selectorLabels" . | nindent 6 }}
-      app.kubernetes.io/microservice: vehicle-consumption
+      app.kubernetes.io/microservice: vehicle-depot
   template:
     metadata:
       labels:
         {{- include "ecotrekker.labels" . | nindent 8 }}
-        app.kubernetes.io/microservice: vehicle-consumption
+        app.kubernetes.io/microservice: vehicle-depot
     spec:
       containers:
-      - name: {{ lower (include "ecotrekker.name" .) }}-vehicle-consumption
-        image: {{ .Values.ecotrekker.vehicleconsumption.image }}
+      - name: {{ lower (include "ecotrekker.name" .) }}-vehicle-depot
+        image: {{ .Values.ecotrekker.vehicledepot.image }}
         ports:
         - containerPort: 8080
         livenessProbe:
@@ -36,14 +36,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ lower (include "ecotrekker.name" .) }}-vehicle-consumption-service
+  name: {{ lower (include "ecotrekker.name" .) }}-vehicle-depot-service
   labels:
     {{- include "ecotrekker.labels" . | nindent 4 }}
-    app.kubernetes.io/microservice: vehicle-consumption
+    app.kubernetes.io/microservice: vehicle-depot
 spec:
   selector:
     {{- include "ecotrekker.selectorLabels" . | nindent 4 }}
-    app.kubernetes.io/microservice: vehicle-consumption
+    app.kubernetes.io/microservice: vehicle-depot
   ports:
     - name: rest
       protocol: TCP
