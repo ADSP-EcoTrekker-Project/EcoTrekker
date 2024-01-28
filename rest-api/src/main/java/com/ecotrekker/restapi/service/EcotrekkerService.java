@@ -1,6 +1,5 @@
 package com.ecotrekker.restapi.service;
 
-import java.util.concurrent.CompletableFuture;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ecotrekker.restapi.model.RoutesRequest;
@@ -14,7 +13,7 @@ public class EcotrekkerService {
 
     public RoutesResult requestCalculation(RoutesRequest routes) {
         try {
-            return CompletableFuture.completedFuture(fclient.getRoutesResult(routes)).get();    
+            return fclient.getRoutesResult(routes);
         } catch (Exception e) {
             return null;
         }

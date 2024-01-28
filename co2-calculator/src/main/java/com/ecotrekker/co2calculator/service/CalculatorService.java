@@ -24,7 +24,7 @@ public class CalculatorService {
 
     public RouteStepResult requestCalculation(RouteStep step) {
         try {
-            ConsumptionResponse consumption = CompletableFuture.completedFuture(client.getConsumption(new ConsumptionRequest(step.getVehicle()))).get();
+            ConsumptionResponse consumption = client.getConsumption(new ConsumptionRequest(step.getVehicle()));
             if (consumption.getKwh() != null) {
                 //TODO talk to grid service
             }
