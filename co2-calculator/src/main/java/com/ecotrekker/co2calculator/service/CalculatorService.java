@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.ecotrekker.co2calculator.clients.VehicleConsumptionClient;
 import com.ecotrekker.co2calculator.model.ConsumptionRequest;
 import com.ecotrekker.co2calculator.model.ConsumptionResponse;
 import com.ecotrekker.co2calculator.model.RouteStep;
@@ -20,7 +21,7 @@ import com.ecotrekker.co2calculator.model.RouteStepResult;
 public class CalculatorService {
     
     @Autowired
-    private VehicleConsumptionFeignClient client;
+    private VehicleConsumptionClient client;
 
     public RouteStepResult requestCalculation(RouteStep step) {
         try {
