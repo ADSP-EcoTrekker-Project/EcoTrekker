@@ -1,0 +1,10 @@
+include = [
+    'multi_simple_cars.toml',
+    'multi_simple_trains.toml'
+]
+[[vehicle]]
+name = "car"
+[[vehicle]]
+name = "tram"
+[[vehicle]]
+name = "train"

@@ -1,1 +1,0 @@
-Example Setup using minikube: [strimzi quickstart](https://strimzi.io/quickstarts/)

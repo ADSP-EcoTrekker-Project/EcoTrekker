@@ -1,0 +1,9 @@
+server:
+  port: 8080
+
+client:
+  timeout: 200
+
+route-service:
+  address: http://localhost:8081
+  uri: /v1/calc/co2

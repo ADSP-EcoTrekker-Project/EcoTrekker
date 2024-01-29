@@ -1,0 +1,7 @@
+[[depot]]
+lines = ["169", "X69", "165", "164"]
+vehicles = [
+    {"name" = "e-bus", "share" = 0.5},
+    {"name" = "bus", "share" = 0.5},
+]
+    

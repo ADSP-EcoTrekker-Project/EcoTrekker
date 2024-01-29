@@ -1,22 +1,45 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: {{ .Values.namespace }}
   name: {{ lower (include "ecotrekker.name" .) }}-co2-calculator-deployment
   labels:
     {{- include "ecotrekker.labels" . | nindent 4 }}
+    app.kubernetes.io/microservice: co2-calculator
 spec:
   replicas: {{ .Values.ecotrekker.co2calculator.replicas }}
   selector:
     matchLabels:
       {{- include "ecotrekker.labels" . | nindent 6 }}
+      app.kubernetes.io/microservice: co2-calculator
   template:
     metadata:
       labels:
         {{- include "ecotrekker.labels" . | nindent 8 }}
+        app.kubernetes.io/microservice: co2-calculator
     spec:
       containers:
       - name: {{ lower (include "ecotrekker.name" .) }}-co2-calculator
         image: {{ .Values.ecotrekker.co2calculator.image }}
+        env:
+        - name: CONSUMPTION_SERVICE_ADDRESS
+          value: {{ lower (include "ecotrekker.name" .) }}-vehicle-consumption-service.{{ .Release.Namespace }}.svc.cluster.local:8080
         ports:
         - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ lower (include "ecotrekker.name" .) }}-co2-calculator-service
+  labels:
+    {{- include "ecotrekker.labels" . | nindent 4 }}
+    app.kubernetes.io/microservice: co2-calculator
+spec:
+  selector:
+    {{- include "ecotrekker.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/microservice: co2-calculator
+  ports:
+    - name: rest
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+

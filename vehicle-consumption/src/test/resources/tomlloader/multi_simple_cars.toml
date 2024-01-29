@@ -1,0 +1,6 @@
+[[vehicle]]
+name = "ice-car"
+parent = "car"
+[[vehicle]]
+name = "e-car"
+parent = "car"

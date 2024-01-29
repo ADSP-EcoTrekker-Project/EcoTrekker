@@ -2,19 +2,18 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-namespace: "ecotrekker" # Required!
-
-kafka:
-  operator: {}
-  cluster: {}
-  namespace: {}
-
 ecotrekker:
   restapi:
     image: lierseleow/eco-rest-api:latest
     replicas: 1
   co2calculator:
     image: lierseleow/eco-co2-calculator:latest
+    replicas: 1
+  vehicleconsumption:
+    image: lierseleow/eco-vehicle-consumption:latest
+    replicas: 1
+  vehicledepot:
+    image: lierseleow/eco-vehicle-depot:latest
     replicas: 1
 
 # replicaCount: 1

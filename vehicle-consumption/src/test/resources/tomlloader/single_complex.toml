@@ -1,0 +1,4 @@
+[[vehicle]]
+name = "car"
+co2 = 50
+kwh = 50
