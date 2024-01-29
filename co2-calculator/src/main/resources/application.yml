@@ -10,4 +10,4 @@ consumption-service:
 
 depot-service:
   address: http://localhost:8083
-  uri: /v1/line
+  uri: /v1/depot
