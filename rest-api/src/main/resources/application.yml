@@ -4,5 +4,6 @@ server:
 client:
   timeout: 200
 
-co2-calculator:
+route-service:
   address: http://localhost:8081
+  uri: /v1/calc/co2

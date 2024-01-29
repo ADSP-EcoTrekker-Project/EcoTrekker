@@ -1,4 +1,4 @@
-package com.ecotrekker.restapi.model;
+package com.ecotrekker.routemanager.model;
 
 import java.util.List;
 

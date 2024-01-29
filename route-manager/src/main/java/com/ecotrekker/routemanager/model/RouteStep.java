@@ -1,22 +1,17 @@
-package com.ecotrekker.restapi.model;
+package com.ecotrekker.routemanager.model;
 
-import com.ecotrekker.restapi.validation.ValidRouteStep;
-import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 @Data
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@ValidRouteStep
 public class RouteStep {
-
     private String start;
     private String end;
-    @NotBlank(message = "Vehicle must not be null or empty!")
     private String vehicle;
     private String line;
     private Double distance = null;

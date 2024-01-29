@@ -1,4 +1,4 @@
-package com.ecotrekker.restapi.model;
+package com.ecotrekker.routemanager.model;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RoutesResult {
+public class GamificationReply {
     private List<RouteResult> routes;
     
 }

@@ -1,11 +1,12 @@
-package com.ecotrekker.restapi.model;
+package com.ecotrekker.routemanager.model;
 
-
-import lombok.Data;
 import java.util.List;
 import java.util.UUID;
+
+import lombok.Data;
+
 @Data
-public class RouteResult extends Route {
+public class RouteResult extends Route{
     private Double co2;
 
     public RouteResult(List<RouteStep> steps, UUID id, Double co2) {

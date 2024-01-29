@@ -1,6 +1,4 @@
-package com.ecotrekker.restapi.model;
-
-import java.util.List;
+package com.ecotrekker.routemanager.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RoutesResult {
-    private List<RouteResult> routes;
-    
+public class DistanceRequest {
+    private RouteStep step;
 }
