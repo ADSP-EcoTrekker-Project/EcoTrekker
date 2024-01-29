@@ -13,5 +13,5 @@ import com.ecotrekker.co2calculator.model.VehicleDepotMessage;
 public interface VehicleDepotClient {
     
     @RequestMapping(method = RequestMethod.POST, value = "${depot-service.uri}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    VehicleDepotMessage getConsumption(@RequestBody VehicleDepotMessage data);
+    VehicleDepotMessage getVehicleShareInDepot(@RequestBody VehicleDepotMessage data);
 }

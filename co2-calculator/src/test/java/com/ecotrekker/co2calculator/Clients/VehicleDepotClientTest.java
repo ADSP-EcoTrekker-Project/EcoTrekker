@@ -84,7 +84,7 @@ public class VehicleDepotClientTest {
         VehicleDepotMessage request = new VehicleDepotMessage();
         request.setLine("169");
 
-        VehicleDepotMessage response = vehicleDepotClient.getConsumption(request);
+        VehicleDepotMessage response = vehicleDepotClient.getVehicleShareInDepot(request);
 
         assertTrue(response.getLine().equals(response.getLine()));
 
