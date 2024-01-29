@@ -1,6 +1,8 @@
 package com.ecotrekker.gridco2cache.service;
 
 import com.ecotrekker.gridco2cache.model.CarbonIntensityResponse;
+
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,7 +27,7 @@ public class CarbonIntensityService {
         return latestCarbonIntensity;
     }
 
-
+    @PostConstruct
     @Scheduled(cron = "0 * * * * *")
     public void updateCarbonIntensityCache() {
         CarbonIntensityResponse response = client.getLatestCarbonIntensity(apiToken, "DE");
