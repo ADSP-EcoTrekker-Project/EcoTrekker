@@ -16,8 +16,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
-import com.ecotrekker.co2calculator.clients.VehicleDepotClient;
-import com.ecotrekker.co2calculator.model.VehicleDepotMessage;
+import com.ecotrekker.co2calculator.clients.GridCO2CacheClient;
+import com.ecotrekker.co2calculator.model.CO2Response;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import okhttp3.mockwebserver.Dispatcher;
@@ -28,10 +28,10 @@ import okhttp3.mockwebserver.RecordedRequest;
 @SpringBootTest(
     webEnvironment = WebEnvironment.RANDOM_PORT
 )
-public class VehicleDepotClientTest {
+public class GridCO2CacheClientTest {
     public MockWebServer mockBackEnd;
 
-    @Value("${depot-service.address}")
+    @Value("${grid-co2-cache.address}")
     private String targetUrl;
 
     private ObjectMapper mapper = new ObjectMapper();
@@ -41,14 +41,8 @@ public class VehicleDepotClientTest {
         @Override
         public MockResponse dispatch (RecordedRequest request) {
             try {
-                VehicleDepotMessage requestBody = mapper.readValue(request.getBody().readUtf8(), VehicleDepotMessage.class);
-
-                VehicleDepotMessage response = new VehicleDepotMessage();
-                Map<String, Double> responseMap = new HashMap<>();
-                responseMap.put("e-bus", 0.5);
-                responseMap.put("bus", 0.5);
-                response.setLine(requestBody.getLine());
-                response.setVehicles(responseMap);
+                CO2Response response = new CO2Response();
+                response.setCarbonIntensity(400);
 
                 return new MockResponse()
                     .setResponseCode(200)
@@ -74,17 +68,13 @@ public class VehicleDepotClientTest {
     }
 
     @Autowired
-    private VehicleDepotClient vehicleDepotClient;
+    private GridCO2CacheClient gridCO2CacheClient;
 
     @Test
     public void testClient() {
-        VehicleDepotMessage request = new VehicleDepotMessage();
-        request.setLine("169");
 
-        VehicleDepotMessage response = vehicleDepotClient.getVehicleShareInDepot(request);
+        CO2Response response = gridCO2CacheClient.getCO2Intensity();
 
-        assertTrue(response.getLine().equals(response.getLine()));
-
-        assertTrue(response.getVehicles().size() == 2);
+        assertTrue(response.getCarbonIntensity() == 400);
     }
 }

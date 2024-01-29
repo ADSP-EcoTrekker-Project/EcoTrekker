@@ -12,5 +12,5 @@ import com.ecotrekker.co2calculator.model.CO2Response;
 public interface GridCO2CacheClient {
     
     @RequestMapping(method = RequestMethod.GET, value = "${grid-co2-cache.uri}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    CO2Response getConsumption();
+    CO2Response getCO2Intensity();
 }
