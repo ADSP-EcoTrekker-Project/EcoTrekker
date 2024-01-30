@@ -1,27 +1,22 @@
-package com.ecotrekker.publictransportdistance.service;
+package com.ecotrekker.publictransportdistance;
+
+import com.ecotrekker.publictransportdistance.service.PublicTransportDistanceService;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.io.IOException;
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
+public class ServiceTest {
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-
-public class DistanceCalculatorTest {
-
+    @Autowired
     private PublicTransportDistanceService distanceService;
-
-    @BeforeEach
-    public void setUp() throws IOException {
-        String filePath = "/Users/yassinelazreg/IdeaProjects/EcoTrekker/public-transport-distance/src/main/resources/data_modified_imputed.json";
-        Resource resource = new FileSystemResource(filePath);
-        distanceService = new PublicTransportDistanceService(resource);
-    }
 
     @Test
     public void testDistanceCalculation() {
+
         //test1
         String start = "S+U panKoW (Berlin)";
         String end = "s SchöneFeld (bei Berlin) Bhf";

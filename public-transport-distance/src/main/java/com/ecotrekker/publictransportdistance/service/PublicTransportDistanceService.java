@@ -1,11 +1,21 @@
 package com.ecotrekker.publictransportdistance.service;
 
 import com.ecotrekker.publictransportdistance.model.PublicTransportRoutes;
+import com.ecotrekker.publictransportdistance.model.Route;
+import com.ecotrekker.publictransportdistance.model.Stop;
+import com.ecotrekker.publictransportdistance.model.VehicleRoute;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.core.io.Resource;
+import jakarta.annotation.PostConstruct;
+import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -13,17 +23,30 @@ import java.util.Optional;
 @Service
 public class PublicTransportDistanceService {
 
-    private Map<String, PublicTransportRoutes.VehicleRoute> publicTransportRoutes;
+    private Map<String, VehicleRoute> publicTransportRoutes;
 
-    public PublicTransportDistanceService(Resource resource) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        PublicTransportRoutes routes = null;
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Value("${configPath}")
+    private String configPath;
+
+    @PostConstruct
+    public void initialize() {
+        if (configPath == null || configPath.isEmpty()) {
+            throw new IllegalArgumentException("Config path is null or empty");
+        }
+
         try {
-            routes = objectMapper.readValue(resource.getInputStream(), PublicTransportRoutes.class);
+            ClassPathResource resource = new ClassPathResource(configPath);
+            InputStream inputStream = resource.getInputStream();
+            File configFile = File.createTempFile("temp-config", ".json");
+            FileUtils.copyInputStreamToFile(inputStream, configFile);
+            PublicTransportRoutes routes = objectMapper.readValue(configFile, PublicTransportRoutes.class);
+            this.publicTransportRoutes = routes != null ? routes.getVehicles() : Collections.emptyMap();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        this.publicTransportRoutes = routes.getVehicles();
     }
 
     public double calculateDistance(String start, String end, String vehicle) {
@@ -32,8 +55,8 @@ public class PublicTransportDistanceService {
             return -1;
         }
 
-        PublicTransportRoutes.VehicleRoute line = publicTransportRoutes.get(vehicle);
-        Optional<PublicTransportRoutes.VehicleRoute.Route> matchingRoute = line.getRoutes().stream()
+        VehicleRoute line = publicTransportRoutes.get(vehicle);
+        Optional<Route> matchingRoute = line.getRoutes().stream()
                 .filter(route -> containsStops(route, start, end))
                 .findFirst();
 
@@ -50,26 +73,26 @@ public class PublicTransportDistanceService {
         }
     }
 
-    private boolean containsStops(PublicTransportRoutes.VehicleRoute.Route route, String start, String end) {
-        List<PublicTransportRoutes.VehicleRoute.Route.Stop> stops = route.getStops();
+    private boolean containsStops(Route route, String start, String end) {
+        List<Stop> stops = route.getStops();
         boolean containsStart = stops.stream().anyMatch(stop -> stop.getStopName().toLowerCase().contains(start.toLowerCase()));
         boolean containsEnd = stops.stream().anyMatch(stop -> stop.getStopName().toLowerCase().contains(end.toLowerCase()));
         return containsStart && containsEnd;
     }
 
-    private double calculateDistanceInRoute(PublicTransportRoutes.VehicleRoute.Route route, String start, String end) {
-        List<PublicTransportRoutes.VehicleRoute.Route.Stop> stops = route.getStops();
+    private double calculateDistanceInRoute(Route route, String start, String end) {
+        List<Stop> stops = route.getStops();
         double distance = 0.0;
         boolean started = false;
 
-        for (PublicTransportRoutes.VehicleRoute.Route.Stop stop : stops) {
+        for (Stop stop : stops) {
             if (stop.getStopName().toLowerCase().contains(start.toLowerCase())) {
                 started = true;
             }
 
             if (started) {
                 Double distanceToNextStopKm = stop.getDistanceToNextStopKm();
-                // if null then 0, although after imputation there shouldn't be any null values anymore
+                // if null then 0, although after imputation there shouldnt be any null values anymore
                 double distanceToAdd = (distanceToNextStopKm != null) ? distanceToNextStopKm * 1000 : 0; // Convert km to meters
                 distance += distanceToAdd;
 
