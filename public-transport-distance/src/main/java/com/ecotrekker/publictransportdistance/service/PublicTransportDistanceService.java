@@ -6,15 +6,14 @@ import com.ecotrekker.publictransportdistance.model.Stop;
 import com.ecotrekker.publictransportdistance.model.VehicleRoute;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
-import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -33,15 +32,14 @@ public class PublicTransportDistanceService {
 
     @PostConstruct
     public void initialize() {
+        System.out.println(Paths.get(configPath).toAbsolutePath());
         if (configPath == null || configPath.isEmpty()) {
             throw new IllegalArgumentException("Config path is null or empty");
         }
 
         try {
-            ClassPathResource resource = new ClassPathResource(configPath);
-            InputStream inputStream = resource.getInputStream();
-            File configFile = File.createTempFile("temp-config", ".json");
-            FileUtils.copyInputStreamToFile(inputStream, configFile);
+            Path configPath = Paths.get(this.configPath).toAbsolutePath();
+            File configFile = configPath.toFile();
             PublicTransportRoutes routes = objectMapper.readValue(configFile, PublicTransportRoutes.class);
             this.publicTransportRoutes = routes != null ? routes.getVehicles() : Collections.emptyMap();
         } catch (IOException e) {
@@ -92,7 +90,6 @@ public class PublicTransportDistanceService {
 
             if (started) {
                 Double distanceToNextStopKm = stop.getDistanceToNextStopKm();
-                // if null then 0, although after imputation there shouldnt be any null values anymore
                 double distanceToAdd = (distanceToNextStopKm != null) ? distanceToNextStopKm * 1000 : 0; // Convert km to meters
                 distance += distanceToAdd;
 

@@ -20,6 +20,13 @@ configurations {
         extendsFrom annotationProcessor
     }
 }
+sourceSets {
+    main {
+        resources {
+            srcDirs = ['src/main/resources']
+        }
+    }
+}
 
 repositories {
     mavenCentral()

@@ -12,12 +12,8 @@ import org.springframework.web.bind.annotation.*;
 public class PublicTransportDistanceController {
 
     @Autowired
-    private final PublicTransportDistanceService distanceService;
+    private PublicTransportDistanceService distanceService;
 
-    @Autowired
-    public PublicTransportDistanceController(PublicTransportDistanceService distanceService) {
-        this.distanceService = distanceService;
-    }
 
     @PostMapping("/distance")
     public ResponseEntity<DistanceResponse> calculateDistance(@RequestBody RouteStep step) {
