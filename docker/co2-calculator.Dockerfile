@@ -7,6 +7,6 @@ COPY --from=builder /ecotrekker/build/co2-calculator/build/libs/*.jar app.jar
 
 EXPOSE 8080
 
-ENV CONSUMPTION_SERVICE_ADDRESS = http://localhost:8082
+ENV CONSUMPTION_SERVICE_ADDRESS=http://localhost:8085
 
 ENTRYPOINT ["java", "-jar", "/app.jar", "--consumption-service.address=${CONSUMPTION_SERVICE_ADDRESS}"]
