@@ -3,5 +3,5 @@
 ## Test Endpoint
 
 ```powershell
-curl localhost:8080/api/carbon-intensity
+curl localhost:8080/v1/grid
 ```
