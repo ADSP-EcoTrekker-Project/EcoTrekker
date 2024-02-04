@@ -8,4 +8,10 @@ consumption-service:
   address: http://localhost:8082
   uri: /v1/consumption
 
-          
+depot-service:
+  address: http://localhost:8083
+  uri: /v1/depot
+
+grid-co2-cache:
+  address: http://localhost:8084
+  uri: /api/carbon-intensity

@@ -31,12 +31,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(
-    webEnvironment = WebEnvironment.RANDOM_PORT,
-    properties = {
-        "consumption-service.address=http://localhost:8082",
-    }
+    webEnvironment = WebEnvironment.RANDOM_PORT
 )
-public class CalculatorApplicationTests {
+public class CalculatorE2ETest {
 
     public MockWebServer mockBackEnd;
 
@@ -98,10 +95,6 @@ public class CalculatorApplicationTests {
 
     @LocalServerPort
     private Integer port;
-
-	@Test
-	void contextLoads() {
-	}
 
     @Test
     void testResponseCar() {

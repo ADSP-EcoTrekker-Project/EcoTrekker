@@ -22,7 +22,7 @@ public class V1Controller {
     @Autowired
     private Map<String, TransportLine> lineMap;
 
-    @GetMapping(value = "/line")
+    @GetMapping(value = "/depot")
     public ResponseEntity<?> getLineElectricalShare(@RequestBody DepotMessage request) {
         try {
             TransportLine line = lineMap.get(request.getLine());
