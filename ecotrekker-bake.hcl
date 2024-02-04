@@ -39,6 +39,15 @@ target "co2-calculator" {
     context = "co2-calculator/"
 }
 
+target "grid-co2-cache" {
+    dockerfile = "../docker/grid-co2-cache.Dockerfile"
+    tags = ["${REPO}/eco-grid-co2-cache:${TAG}"]
+    contexts = {
+        bake-base-image = "target:builder"
+    }
+    context = "grid-co2-cache/"
+}
+
 target "vehicle-consumption" {
     dockerfile = "../docker/vehicle-consumption.Dockerfile"
     tags = ["${REPO}/eco-vehicle-consumption:${TAG}"]
@@ -58,5 +67,5 @@ target "vehicle-depot" {
 }
 
 group "default" {
-    targets = ["rest-api", "route-manager", "co2-calculator", "vehicle-consumption", "vehicle-depot"]
+    targets = ["rest-api", "route-manager", "co2-calculator", "grid-co2-cache", "vehicle-consumption", "vehicle-depot"]
 }
