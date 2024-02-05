@@ -30,6 +30,15 @@ target "route-manager" {
     context = "route-manager/"
 }
 
+target "public-transport-distance" {
+    dockerfile = "../docker/public-transport-distance.Dockerfile"
+    tags = ["${REPO}/eco-public-transport-distance:${TAG}"]
+    contexts = {
+        bake-base-image = "target:builder"
+    }
+    context = "public-transport-distance/"
+}
+
 target "co2-calculator" {
     dockerfile = "../docker/co2-calculator.Dockerfile"
     tags = ["${REPO}/eco-co2-calculator:${TAG}"]
@@ -67,5 +76,5 @@ target "vehicle-depot" {
 }
 
 group "default" {
-    targets = ["rest-api", "route-manager", "co2-calculator", "grid-co2-cache", "vehicle-consumption", "vehicle-depot"]
+    targets = ["rest-api", "route-manager", "public-transport-distance", "co2-calculator", "grid-co2-cache", "vehicle-consumption", "vehicle-depot"]
 }

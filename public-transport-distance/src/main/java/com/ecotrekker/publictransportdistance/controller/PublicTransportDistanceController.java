@@ -19,9 +19,9 @@ public class PublicTransportDistanceController {
     public ResponseEntity<DistanceResponse> calculateDistance(@RequestBody RouteStep step) {
         String start = step.getStart();
         String end = step.getEnd();
-        String vehicle = step.getVehicle();
+        String line = step.getLine();
 
-        double distance = distanceService.calculateDistance(start, end, vehicle);
+        double distance = distanceService.calculateDistance(start, end, line);
         DistanceResponse response = new DistanceResponse(distance);
 
         return ResponseEntity.ok(response);
