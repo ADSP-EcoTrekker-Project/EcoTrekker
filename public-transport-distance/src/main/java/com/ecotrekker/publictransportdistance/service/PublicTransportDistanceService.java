@@ -47,14 +47,14 @@ public class PublicTransportDistanceService {
         }
     }
 
-    public double calculateDistance(String start, String end, String vehicle) {
-        if (publicTransportRoutes == null || !publicTransportRoutes.containsKey(vehicle)) {
+    public double calculateDistance(String start, String end, String line) {
+        if (publicTransportRoutes == null || !publicTransportRoutes.containsKey(line)) {
             System.out.println("Vehicle not found");
             return -1;
         }
 
-        VehicleRoute line = publicTransportRoutes.get(vehicle);
-        Optional<Route> matchingRoute = line.getRoutes().stream()
+        VehicleRoute vRoute = publicTransportRoutes.get(line);
+        Optional<Route> matchingRoute = vRoute.getRoutes().stream()
                 .filter(route -> containsStops(route, start, end))
                 .findFirst();
 
@@ -63,7 +63,7 @@ public class PublicTransportDistanceService {
             if (distance == -1){
                 distance = calculateDistanceInRoute(matchingRoute.get(), end, start);
             }
-            System.out.println("Distance between " + start + " and " + end + " for vehicle " + vehicle + ": " + distance + " meters");
+            System.out.println("Distance between " + start + " and " + end + " for vehicle " + line + ": " + distance + " meters");
             return distance;
         } else {
             System.out.println("Route does not exist for provided start and end stops");
