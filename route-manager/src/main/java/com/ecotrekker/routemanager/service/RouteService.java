@@ -42,7 +42,13 @@ public class RouteService {
             .distinct()
             .collect(Collectors.toConcurrentMap(
                 step -> step,
-                step -> CompletableFuture.supplyAsync(() -> distanceServiceClient.getDistance(new DistanceRequest(step))),
+                step -> CompletableFuture.supplyAsync(() -> {
+                    if (step.getDistance() == null) {
+                        step.setDistance(distanceServiceClient.getDistance(new DistanceRequest(step)).getDistance());   
+                    }
+                    return null;
+                }
+                ),
                 (existing, replacement) -> existing));
     }
     
