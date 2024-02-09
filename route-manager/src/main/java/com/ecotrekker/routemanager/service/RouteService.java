@@ -89,6 +89,7 @@ public class RouteService {
     public RoutesResult requestCalculation(RoutesRequest routeRequest) throws RouteServiceException {
         try {
             ConcurrentMap<RouteStep, CompletableFuture<DistanceReply>> distanceFutures = calculateDistances(routeRequest);
+            CompletableFuture.allOf(distanceFutures.values().toArray(new CompletableFuture[distanceFutures.size()])).get();
             ConcurrentMap<RouteStep, CompletableFuture<RouteStepResult>> co2Futures = calculateCo2(distanceFutures);
             List<RouteResult> results = calculateResults(routeRequest, co2Futures);
     
