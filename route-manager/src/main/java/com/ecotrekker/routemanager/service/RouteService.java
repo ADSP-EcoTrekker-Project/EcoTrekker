@@ -48,11 +48,18 @@ public class RouteService {
     
     private ConcurrentMap<RouteStep, CompletableFuture<RouteStepResult>> calculateCo2(ConcurrentMap<RouteStep, CompletableFuture<DistanceReply>> distanceFutures) {
         return distanceFutures.keySet()
-            .parallelStream()
-            .collect(Collectors.toConcurrentMap(
-                step -> step,
-                step -> CompletableFuture.supplyAsync(() -> co2ServiceClient.getCo2Result(step)),
-                (existing, replacement) -> existing));
+        .parallelStream()
+        .collect(Collectors.toConcurrentMap(
+            step -> step,
+            step -> {
+                try {
+                    step.setDistance(distanceFutures.get(step).get().getDistance());  
+                } catch (Exception e) {
+                    throw new RuntimeException();
+                }  
+                return CompletableFuture.supplyAsync(() -> co2ServiceClient.getCo2Result(step));
+            },
+            (existing, replacement) -> existing));
     }
     
     private List<RouteResult> calculateResults(RoutesRequest routeRequest, ConcurrentMap<RouteStep, CompletableFuture<RouteStepResult>> co2Futures) {
