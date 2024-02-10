@@ -20,6 +20,10 @@ spec:
       containers:
       - name: {{ lower (include "ecotrekker.name" .) }}-public-transport-distance
         image: {{ .Values.ecotrekker.publictransportdistance.image }}
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "512Mi"
         ports:
         - containerPort: 8080
         livenessProbe:

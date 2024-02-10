@@ -20,6 +20,10 @@ spec:
       containers:
       - name: {{ lower (include "ecotrekker.name" .) }}-grid-co2-cache
         image: {{ .Values.ecotrekker.gridco2cache.image }}
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "512Mi"
         ports:
         - containerPort: 8080
         livenessProbe:

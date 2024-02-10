@@ -20,6 +20,10 @@ spec:
       containers:
       - name: {{ lower (include "ecotrekker.name" .) }}-route-manager
         image: {{ .Values.ecotrekker.routemanager.image }}
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "512Mi"
         env:
         - name: DISTANCE_SERVICE_ADDRESS
           value: {{ lower (include "ecotrekker.name" .) }}-public-transport-distance-service.{{ .Release.Namespace }}.svc.cluster.local:8080
