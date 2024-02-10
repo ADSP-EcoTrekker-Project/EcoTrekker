@@ -62,11 +62,11 @@ public class V1ControllerTest {
 
         // send POST request to /v1/calc/points endpoint
         HttpEntity<GamificationRequest> requestEntity = new HttpEntity<>(request);
-        ResponseEntity<Route[]> response = restTemplate.exchange(
+        ResponseEntity<GamificationRequest> response = restTemplate.exchange(
                 "http://localhost:" + port + "/v1/calc/points",
                 HttpMethod.POST,
                 requestEntity,
-                Route[].class);
+                GamificationRequest.class);
 
         // check response status code
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -75,7 +75,7 @@ public class V1ControllerTest {
         assertNotNull(response.getBody());
 
         // check if the calculated points are set for the route
-        Route resultRoute = response.getBody()[0];
+        Route resultRoute = response.getBody().getRoutes().get(0);
 
         /*
         manually calculate the points

@@ -25,6 +25,9 @@ docker run -d --restart unless-stopped -p 8083:8080 \
 docker run -d --restart unless-stopped -p 8084:8080 \
     ${REPO}/eco-public-transport-distance:latest
 
+docker run -d --restart unless-stopped -p 8082:8080 \
+    ${REPO}/eco-gamification:latest
+
 docker run -d --restart unless-stopped -p 8081:8080 \
     -e DISTANCE_SERVICE_ADDRESS="172.17.0.1:8084" \
     -e CO2_SERVICE_ADDRESS="172.17.0.1:8083" \

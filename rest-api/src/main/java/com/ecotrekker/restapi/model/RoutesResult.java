@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RoutesResult {
     private List<RouteResult> routes;
+    private boolean gamification = false;
     
 }

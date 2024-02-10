@@ -1,6 +1,8 @@
 package com.ecotrekker.restapi.controller;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,7 @@ import com.ecotrekker.restapi.model.RoutesRequest;
 import com.ecotrekker.restapi.model.RoutesResult;
 import com.ecotrekker.restapi.service.EcotrekkerService;
 
+@Slf4j
 @Validated
 @RestController
 @RequestMapping(value = "/v1")
@@ -29,6 +32,7 @@ public class EcotrekkerController {
 
     @PostMapping("/calc/co2")
     public ResponseEntity<RoutesResult> calculateCo2(@RequestBody @Valid RoutesRequest routes) throws JsonProcessingException {
+        log.info(routes.toString());
         RoutesResult resultJSON = ecotrekkerService.requestCalculation(routes);
         if (resultJSON != null) { return ResponseEntity.ok(resultJSON); }
         return ResponseEntity.status(HttpStatus.GATEWAY_TIMEOUT).build();

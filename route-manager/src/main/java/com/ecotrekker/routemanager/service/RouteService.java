@@ -96,13 +96,13 @@ public class RouteService {
             CompletableFuture.allOf(distanceFutures.values().toArray(new CompletableFuture[distanceFutures.size()])).get();
             ConcurrentMap<RouteStep, CompletableFuture<RouteStepResult>> co2Futures = calculateCo2(distanceFutures);
             List<RouteResult> results = calculateResults(routeRequest, co2Futures);
-    
+
             if (routeRequest.isGamification()) {
                 GamificationReply gamificationReply = gamificationServiceClient.getPoints(new GamificationRequest(results));
-                //TODO Gamification Handling
+                return new RoutesResult(gamificationReply.getRoutes(), true);
             }
     
-            return new RoutesResult(results);
+            return new RoutesResult(results, false);
         } catch (Exception e) {
             throw new RouteServiceException("Error calculating Route data", e);
         }

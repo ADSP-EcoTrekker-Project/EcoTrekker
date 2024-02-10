@@ -4,7 +4,7 @@ FROM eclipse-temurin:17-jdk-jammy
 
 WORKDIR /app
 
-COPY --from=builder /ecotrekker/build/grid-co2-cache/build/libs/*.jar app.jar
+COPY --from=builder /ecotrekker/build/gamification/build/libs/*.jar app.jar
 
 EXPOSE 8080
 

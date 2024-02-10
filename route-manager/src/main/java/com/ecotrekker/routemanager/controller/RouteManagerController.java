@@ -13,6 +13,9 @@ import com.ecotrekker.routemanager.model.RouteServiceException;
 import com.ecotrekker.routemanager.service.RouteService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestController
 @RequestMapping(value = "/v1")
 public class RouteManagerController {
@@ -22,6 +25,7 @@ public class RouteManagerController {
 
     @PostMapping("/calc/routes")
     public ResponseEntity<?> calculateRouteData(@RequestBody RoutesRequest routeRequest) throws JsonProcessingException {
+        log.info(routeRequest.toString());
         try {
             return ResponseEntity.ok(routeService.requestCalculation(routeRequest));
         } catch (RouteServiceException e) {

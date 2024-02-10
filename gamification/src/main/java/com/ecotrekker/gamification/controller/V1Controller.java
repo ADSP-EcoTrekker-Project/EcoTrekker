@@ -14,10 +14,13 @@ import com.ecotrekker.gamification.service.BasePoints;
 import com.ecotrekker.gamification.service.Preferred;
 import com.ecotrekker.gamification.service.RushHour;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Controller class that handles HTTP requests for the /v1 endpoint.
  * It contains methods to calculate points for a set of routes.
  */
+@Slf4j
 @RestController
 @RequestMapping(value = "/v1")
 public class V1Controller {
@@ -39,6 +42,7 @@ public class V1Controller {
      */
     @PostMapping("/calc/points")
     public ResponseEntity<?> calculatePoints(@RequestBody GamificationRequest request) {
+        log.info(request.toString());
         for (Route route : request.getRoutes()) {
             // calculate base points
             BasePoints basePoints = new BasePoints();
@@ -54,6 +58,6 @@ public class V1Controller {
         }
 
         // return the modified routes in the response
-        return new ResponseEntity<>(request.getRoutes(), HttpStatus.OK);
+        return new ResponseEntity<GamificationRequest>(request, HttpStatus.OK);
     }
 }
