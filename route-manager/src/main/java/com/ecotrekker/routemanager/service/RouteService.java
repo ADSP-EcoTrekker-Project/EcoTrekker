@@ -57,14 +57,7 @@ public class RouteService {
         .parallelStream()
         .collect(Collectors.toConcurrentMap(
             step -> step,
-            step -> {
-                try {
-                    step.setDistance(distanceFutures.get(step).get().getDistance());  
-                } catch (Exception e) {
-                    throw new RuntimeException();
-                }  
-                return CompletableFuture.supplyAsync(() -> co2ServiceClient.getCo2Result(step));
-            },
+            step -> CompletableFuture.supplyAsync(() -> co2ServiceClient.getCo2Result(step)),
             (existing, replacement) -> existing));
     }
     
