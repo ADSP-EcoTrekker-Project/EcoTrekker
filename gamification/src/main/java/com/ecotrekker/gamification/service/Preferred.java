@@ -76,15 +76,17 @@ public class Preferred {
      */
     private double getFactorForVehicle(String vehicle) {
         switch (vehicle) {
+            case "e-bike":
+            case "bicycle":
             case "bike":
                 return BIKE_FACTOR;
             case "walking":
                 return WALK_FACTOR;
-            case "e_scooter":
+            case "scooter":
                 return E_SCOOTER_FACTOR;
             case "suburban":
                 return SUBURBAN_FACTOR;
-            case "subway":
+            case "metro":
                 return SUBWAY_FACTOR;
             case "tram":
                 return TRAM_FACTOR;
