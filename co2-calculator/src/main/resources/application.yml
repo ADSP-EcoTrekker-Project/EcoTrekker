@@ -14,4 +14,4 @@ depot-service:
 
 grid-co2-cache:
   address: http://localhost:8084
-  uri: /api/carbon-intensity
+  uri: /v1/grid

@@ -1,11 +1,14 @@
 package com.ecotrekker.publictransportdistance.service;
 
+import java.util.NoSuchElementException;
 import com.ecotrekker.publictransportdistance.model.PublicTransportRoutes;
 import com.ecotrekker.publictransportdistance.model.Route;
 import com.ecotrekker.publictransportdistance.model.Stop;
 import com.ecotrekker.publictransportdistance.model.VehicleRoute;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -19,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class PublicTransportDistanceService {
 
@@ -49,8 +53,11 @@ public class PublicTransportDistanceService {
 
     public double calculateDistance(String start, String end, String line) {
         if (publicTransportRoutes == null || !publicTransportRoutes.containsKey(line)) {
-            System.out.println("Vehicle not found");
-            return -1;
+            log.error("Vehicle not found");
+            log.error(start);
+            log.error(end);
+            log.error(line);
+            throw new NoSuchElementException();
         }
 
         VehicleRoute vRoute = publicTransportRoutes.get(line);
@@ -66,8 +73,8 @@ public class PublicTransportDistanceService {
             System.out.println("Distance between " + start + " and " + end + " for vehicle " + line + ": " + distance + " meters");
             return distance;
         } else {
-            System.out.println("Route does not exist for provided start and end stops");
-            return -1;
+            log.error("Route does not exist for provided start and end stops");
+            throw new IllegalArgumentException();
         }
     }
 
