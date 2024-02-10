@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ lower (include "ecotrekker.name" .) }}-route-manager-deployment
+  labels:
+    {{- include "ecotrekker.labels" . | nindent 4 }}
+    app.kubernetes.io/microservice: route-manager
+spec:
+  replicas: {{ .Values.ecotrekker.routemanager.replicas }}
+  selector:
+    matchLabels:
+      {{- include "ecotrekker.labels" . | nindent 6 }}
+      app.kubernetes.io/microservice: route-manager
+  template:
+    metadata:
+      labels:
+        {{- include "ecotrekker.labels" . | nindent 8 }}
+        app.kubernetes.io/microservice: route-manager
+    spec:
+      containers:
+      - name: {{ lower (include "ecotrekker.name" .) }}-route-manager
+        image: {{ .Values.ecotrekker.routemanager.image }}
+        env:
+        - name: DISTANCE_SERVICE_ADDRESS
+          value: {{ lower (include "ecotrekker.name" .) }}-public-transport-distance-service.{{ .Release.Namespace }}.svc.cluster.local:8080
+        - name: CO2_SERVICE_ADDRESS
+          value: {{ lower (include "ecotrekker.name" .) }}-co2-calculator-service.{{ .Release.Namespace }}.svc.cluster.local:8080
+        - name: GAMIFICATION_SERVICE_ADDRESS
+          value: {{ lower (include "ecotrekker.name" .) }}-gamification-service.{{ .Release.Namespace }}.svc.cluster.local:8080
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ lower (include "ecotrekker.name" .) }}-route-manager-service
+  labels:
+    {{- include "ecotrekker.labels" . | nindent 4 }}
+    app.kubernetes.io/microservice: route-manager
+spec:
+  selector:
+    {{- include "ecotrekker.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/microservice: route-manager
+  ports:
+    - name: rest
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+

@@ -12,8 +12,17 @@ ecotrekker:
   vehicleconsumption:
     image: lierseleow/eco-vehicle-consumption:latest
     replicas: 1
+  gridco2cache:
+    image: lierseleow/eco-grid-co2-cache:latest
+    replicas: 1
   vehicledepot:
     image: lierseleow/eco-vehicle-depot:latest
+    replicas: 1
+  publictransportdistance:
+    image: lierseleow/eco-public-transport-distance:latest
+    replicas: 1
+  routemanager:
+    image: lierseleow/eco-route-manager:latest
     replicas: 1
 
 # replicaCount: 1

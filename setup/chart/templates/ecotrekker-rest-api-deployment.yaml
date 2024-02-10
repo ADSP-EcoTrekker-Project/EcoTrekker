@@ -21,8 +21,8 @@ spec:
       - name: {{ lower (include "ecotrekker.name" .) }}-rest-api
         image: {{ .Values.ecotrekker.restapi.image }}
         env:
-        - name: CO2_CALCULATOR_ADDRESS
-          value: {{ lower (include "ecotrekker.name" .) }}-co2-calculator-service.{{ .Release.Namespace }}.svc.cluster.local:8080
+        - name: ROUTE_SERVICE_ADDRESS
+          value: {{ lower (include "ecotrekker.name" .) }}-route-manager-service.{{ .Release.Namespace }}.svc.cluster.local:8080
         ports:
         - containerPort: 8080
         livenessProbe:
