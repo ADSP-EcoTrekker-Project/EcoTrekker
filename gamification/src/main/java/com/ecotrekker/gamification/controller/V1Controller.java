@@ -1,5 +1,6 @@
 package com.ecotrekker.gamification.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,22 +22,10 @@ import com.ecotrekker.gamification.service.RushHour;
 @RequestMapping(value = "/v1")
 public class V1Controller {
 
-    private final BasePoints basePoints;
-    private final Preferred preferred;
-    private final RushHour rushHour;
-
-    /**
-     * Constructs a new V1Controller with the given BasePoints, Preferred, and RushHour services.
-     *
-     * @param basePoints The BasePoints service to use for calculating base points.
-     * @param preferred The Preferred service to use for applying preferential treatment.
-     * @param rushHour The RushHour service to use for applying rush hour factors.
-     */
-    public V1Controller(BasePoints basePoints, Preferred preferred, RushHour rushHour) {
-        this.basePoints = basePoints;
-        this.preferred = preferred;
-        this.rushHour = rushHour;
-    }
+    @Autowired
+    private Preferred preferred;
+    @Autowired
+    private RushHour rushHour;
 
     /**
      * Handles a POST request to the /calc/points endpoint.

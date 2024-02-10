@@ -2,7 +2,6 @@ package com.ecotrekker.gamification.service;
 
 import org.springframework.stereotype.Service;
 
-import com.ecotrekker.gamification.model.GamificationRequest;
 import com.ecotrekker.gamification.model.Route;
 import com.ecotrekker.gamification.model.Step;
 
