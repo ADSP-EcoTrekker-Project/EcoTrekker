@@ -12,8 +12,12 @@ import com.ecotrekker.gamification.model.Step;
 @Service
 public class BasePoints {
 
+    private Double car_ratio = 6D;
+
     private Double calculate(Double co2, Double distance) {
-        Double result = distance / co2;
+        Double ratio = Math.max(1, 
+            ((distance / co2) - car_ratio));
+        Double result = Math.log10(1 + ratio) * distance;
         return result;
     }
 
