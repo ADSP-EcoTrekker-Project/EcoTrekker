@@ -59,6 +59,7 @@ public class IVehicleTree extends AbstractVehicleDatastructure<IVehicleTreeEleme
             element.setParent(parent);
         } catch (NoSuchElementException e) {
             element.setParent(getRoot());
+            getRoot().getChildren().add(element);
         } finally {
             vehicleTreeMap.put(element.getName(), element);
         }
