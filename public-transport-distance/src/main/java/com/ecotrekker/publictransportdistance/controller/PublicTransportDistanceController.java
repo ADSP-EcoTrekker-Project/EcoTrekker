@@ -31,7 +31,7 @@ public class PublicTransportDistanceController {
             DistanceResponse response = new DistanceResponse(distance);
 
             return ResponseEntity.ok(response);
-        } catch ( NoSuchElementException e) {
+        } catch ( NoSuchElementException e ) {
             return ResponseEntity.notFound().build();
         } catch ( IllegalArgumentException e ) {
             return ResponseEntity.badRequest().build();

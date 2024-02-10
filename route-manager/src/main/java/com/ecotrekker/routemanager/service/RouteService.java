@@ -22,6 +22,9 @@ import com.ecotrekker.routemanager.model.RouteStepResult;
 import com.ecotrekker.routemanager.model.RoutesRequest;
 import com.ecotrekker.routemanager.model.RoutesResult;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class RouteService {
     
@@ -74,6 +77,7 @@ public class RouteService {
                     .stream()
                     .mapToDouble(step -> {
                         try {
+                            log.error(step.toString());
                             return co2Futures.get(step).get().getCo2();
                         } catch (Exception e) {
                             throw new RuntimeException();
