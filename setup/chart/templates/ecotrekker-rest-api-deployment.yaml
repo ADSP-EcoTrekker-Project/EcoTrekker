@@ -68,7 +68,7 @@ metadata:
     app.kubernetes.io/microservice: rest-api
 spec:
   rules:
-  - host: "rest-api.leolierse.de"
+  - host: "ecotrekker.leolierse.de"
     http:
       paths:
       - path: /
