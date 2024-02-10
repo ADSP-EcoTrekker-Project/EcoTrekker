@@ -21,15 +21,12 @@ public class BasePoints {
         return result;
     }
 
-    public void calculatePoints(GamificationRequest request) {
-        for (Route route : request.getRoutes()) {
-            Double distance = 0D;
-            for (Step step : route.getSteps()) {
-                distance += step.getDistance();
-            }
-            Double co2 = route.getCo2();
-            route.setPoints(calculate(co2, distance));
+    public Double calculatePoints(Route route) {
+        Double distance = 0D;
+        for (Step step : route.getSteps()) {
+            distance += step.getDistance();
         }
+        Double co2 = route.getCo2();
+        return calculate(co2, distance);
     }
-    
 }
