@@ -47,7 +47,7 @@ public class V1ControllerTest {
 
         Step step3 = new Step();
         step3.setDistance(7.0);
-        step3.setVehicle("subway");
+        step3.setVehicle("metro");
         stepList.add(step3);
 
         // create a route with the steps
