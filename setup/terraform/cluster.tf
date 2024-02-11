@@ -22,7 +22,7 @@ resource "google_container_node_pool" "ecotrekker_nodes" {
   location       = "europe-west3"
   node_locations = ["europe-west3-a"]
   cluster        = google_container_cluster.ecotrekker.name
-  node_count     = 2
+  node_count     = 3
 
   node_config {
     preemptible  = true

@@ -12,7 +12,7 @@ import com.ecotrekker.gamification.model.Step;
 @Service
 public class BasePoints {
 
-    public Double car_ratio = 6D;
+    public Double car_ratio = 10D;
     public Double points = 0D;
     public Double distance = 0D;
 
