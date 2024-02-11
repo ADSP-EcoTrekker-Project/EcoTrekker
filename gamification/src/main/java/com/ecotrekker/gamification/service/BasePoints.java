@@ -5,11 +5,15 @@ import org.springframework.stereotype.Service;
 import com.ecotrekker.gamification.model.Route;
 import com.ecotrekker.gamification.model.Step;
 
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Class that calculates the base points for a route.
  * The base points are calculated based on the CO2 emissions and distance of the route.
  */
-@Service
+@Data
+@Slf4j
 public class BasePoints {
 
     public Double car_ratio = 10D;
@@ -28,12 +32,14 @@ public class BasePoints {
     private Double calculate(Double co2, Double distance) {
         // calculate the ratio of distance to CO2 emissions
         // ratio = max(1, (distance / co2) - car_ratio)
-        Double ratio = Math.max(1, 
+        Double ratio = Math.max(1D, 
             ((distance / co2) - car_ratio));
+
+        log.info(ratio.toString());
 
         // calculate the points using a logarithmic function
         // result = log10(1 + ratio) * distance
-        Double result = Math.log10(1 + ratio) * distance;
+        Double result = Math.log10(ratio) * distance;
 
         return result;
     }

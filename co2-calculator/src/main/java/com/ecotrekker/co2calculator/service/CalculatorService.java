@@ -17,8 +17,12 @@ import com.ecotrekker.co2calculator.model.ConsumptionResponse;
 import com.ecotrekker.co2calculator.model.RouteStep;
 import com.ecotrekker.co2calculator.model.RouteStepResult;
 import com.ecotrekker.co2calculator.model.VehicleDepotResponse;
+
+import lombok.extern.slf4j.Slf4j;
+
 import com.ecotrekker.co2calculator.model.VehicleDepotRequest;
 
+@Slf4j
 @Service
 public class CalculatorService {
     
@@ -36,24 +40,29 @@ public class CalculatorService {
             double co2;
             if (step.getVehicle().equals("bus")) {
                 //Get Vehicles
+                log.info("Handling Bus");
                 VehicleDepotResponse depotData = depotClient.getVehicleShareInDepot(new VehicleDepotRequest(step.getLine()));
                 //Get Vehicle Consumptions
+                log.info(depotData.toString());
                 ConcurrentMap<String, CompletableFuture<ConsumptionResponse>> data = depotData.getVehicles()
                     .entrySet()
                     .parallelStream()
-                    .filter(entry -> entry.getValue() == 0)
+                    .filter(entry -> entry.getValue() > 0D)
                     .collect(Collectors.toConcurrentMap(
                         entry -> entry.getKey(),
                         entry -> CompletableFuture.supplyAsync(() -> vehicleClient.getConsumption(new ConsumptionRequest(entry.getKey())))));
+                log.info(data.toString());
                 List<ConsumptionResponse> consumptions = data.values().stream()
                 .map(entry -> {
                     try {
                         return entry.get();
                     } catch (Exception e) {
+                        e.printStackTrace();
                         throw new RuntimeException();
                     }
                 })
                 .collect(Collectors.toList());
+                log.info(consumptions.toString());
                 //Request co2 if needed
                 double gridCo2Response = 0;
                 if (consumptions.stream().anyMatch(entry -> entry.getKwh() != null)) {
@@ -63,10 +72,15 @@ public class CalculatorService {
                 double gridCo2 = gridCo2Response; //effectively final for stream scope
                 co2 = consumptions.stream().mapToDouble(entry -> {
                     String vehicle = entry.getVehicle();
+                    log.info(vehicle);
                     if (entry.getKwh() != null) {
-                        return depotData.getVehicles().get(vehicle) * entry.getKwh() * gridCo2 * step.getDistance();    
+                        Double t = depotData.getVehicles().get(vehicle) * entry.getKwh() * gridCo2 * step.getDistance();
+                        log.info(t.toString());
+                        return t;
                     } else {
-                        return depotData.getVehicles().get(vehicle) * entry.getCo2() * step.getDistance();
+                        Double t = depotData.getVehicles().get(vehicle) * entry.getCo2() * step.getDistance();
+                        log.info(t.toString());
+                        return t;
                     }
                 }).sum();
             } else {

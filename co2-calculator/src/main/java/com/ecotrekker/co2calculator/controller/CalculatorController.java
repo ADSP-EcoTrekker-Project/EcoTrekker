@@ -13,6 +13,9 @@ import com.ecotrekker.co2calculator.model.RouteStepResult;
 import com.ecotrekker.co2calculator.service.CalculatorService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestController
 @RequestMapping(value = "/v1")
 public class CalculatorController {
@@ -22,11 +25,13 @@ public class CalculatorController {
 
     @PostMapping("/calc/co2")
     public ResponseEntity<?> calculateCo2(@RequestBody RouteStep routeStep) throws JsonProcessingException {
+        log.info(routeStep.toString());
         RouteStepResult result = calculatorService.requestCalculation(routeStep);
         if (result == null) {
             CalculationErrorResponse error = CalculationErrorResponse.builder().error("Invalid Route Data").build();
             return ResponseEntity.status(400).body(error);
         }
+        log.info(result.toString());
         return ResponseEntity.ok(result);
     }
 

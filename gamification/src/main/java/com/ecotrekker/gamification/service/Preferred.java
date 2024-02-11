@@ -4,12 +4,15 @@ import org.springframework.stereotype.Service;
 import com.ecotrekker.gamification.model.Route;
 import com.ecotrekker.gamification.model.Step;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Class that applies preferential treatment to certain vehicle types.
  * The preferential treatment is applied by adjusting the points calculated for a route based on the vehicle used in
  * each step of the route. The adjustment factors for different vehicle types are defined as constants.
  */
 @Service
+@Slf4j
 public class Preferred {
     // define factors for different transportation types
     // according to documentation, the transportation types are: suburban, subway, tram, bus, ferry, express, regional
@@ -62,10 +65,14 @@ public class Preferred {
         Double factor = getFactorForVehicle(step.getVehicle());
 
         // calculate the partial basePoints for the step
-        Double basePointsMultiplier = stepDistance / (basePoints.distance / 100);
+        Double basePointsMultiplier = stepDistance / (basePoints.distance);
+        log.info("Preferred: ");
+        log.info(stepDistance.toString());
+        log.info(factor.toString());
+        log.info(basePointsMultiplier.toString());
 
         // calculate the points for the step
-        return basePoints.points * factor * basePointsMultiplier;
+        return basePoints.points * (factor * basePointsMultiplier);
     }
 
     /**

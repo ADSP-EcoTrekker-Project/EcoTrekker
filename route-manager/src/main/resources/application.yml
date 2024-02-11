@@ -5,7 +5,7 @@ client:
   timeout: 200
 
 distance-service:
-  address: http://localhost:8082
+  address: http://localhost:8084
   uri: /v1/calc/distance
 
 co2-service:
@@ -13,6 +13,6 @@ co2-service:
   uri: /v1/calc/co2
 
 gamification-service:
-  address: http://localhost:8084
+  address: http://localhost:8082
   uri: /v1/calc/points
           

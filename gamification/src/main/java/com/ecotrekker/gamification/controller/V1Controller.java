@@ -47,11 +47,14 @@ public class V1Controller {
             // calculate base points
             BasePoints basePoints = new BasePoints();
             basePoints.calculatePoints(route);
+            log.info(basePoints.toString());
 
             // apply preferred treatment and rush hour modifiers
             Double newPoints = 0D;
             newPoints = preferred.applyPreferred(route, basePoints);
+            log.info(newPoints.toString());
             newPoints = rushHour.applyRushHour(newPoints);
+            log.info(newPoints.toString());
 
             // set the final point value for the route
             route.setPoints(newPoints);

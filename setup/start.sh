@@ -14,8 +14,6 @@ docker run -d --restart unless-stopped -p 8086:8080 \
 docker run -d --restart unless-stopped -p 8085:8080 \
     ${REPO}/eco-vehicle-consumption:latest
 
-# Gamification here
-
 docker run -d --restart unless-stopped -p 8083:8080 \
     -e VEHICLE_DEPOT_SERVICE_ADDRESS="172.17.0.1:8087" \
     -e GRID_CO2_SERVICE_ADDRESS="172.17.0.1:8086" \

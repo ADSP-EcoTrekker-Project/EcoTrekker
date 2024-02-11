@@ -47,3 +47,7 @@ provider "helm" {
 
 data "google_client_config" "current" {
 }
+
+resource "terraform_data" "always_run" {
+  input = timestamp()
+}
