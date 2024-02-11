@@ -1,11 +1,31 @@
 [[depot]]
 vehicles = [
+    {"name" = "e-bus", "share" = 0.2},
+    {"name" = "bus", "share" = 0.8},
+]
+lines = [
+    "169",
+    "369"
+]
+
+[[depot]]
+vehicles = [
+    {"name" = "e-bus", "share" = 0.8},
+    {"name" = "bus", "share" = 0.2},
+]
+lines = [
+    "269",
+    "X69",
+    "165",
+    "164"
+]
+
+[[depot]]
+vehicles = [
     {"name" = "e-bus", "share" = 0.5},
     {"name" = "bus", "share" = 0.5},
 ]
 lines = [
-    "169",
-    "X69",
-    "165",
-    "164"
+    "363",
+    "161",
 ]

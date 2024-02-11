@@ -1,0 +1,8 @@
+[[vehicle]]
+name = "e-car"
+co2 = 0.037
+parent = "bike"
+[[vehicle]]
+name = "ice-car"
+co2 = 0.160
+parent = "bike"
