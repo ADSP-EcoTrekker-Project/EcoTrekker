@@ -1,4 +1,4 @@
-from locust import HttpUser, task
+from locust import HttpUser, between, constant_throughput, task
 
 car_request = {
     "gamification" : True,
@@ -20,6 +20,10 @@ bike_request = {
         {
             "steps" : [
                 {
+                    "vehicle" : "car",
+                    "distance" : 3000.0,
+                },
+                {
                     "vehicle" : "e-bike",
                     "distance" : 12000.0,
                 }
@@ -33,6 +37,14 @@ metro_request = {
     "routes" : [
         {
             "steps" : [
+                {
+                    "vehicle" : "car",
+                    "distance" : 3000.0,
+                },
+                {
+                    "vehicle" : "e-bike",
+                    "distance" : 12000.0,
+                },
                 {
                     "vehicle" : "metro",
                     "distance" : 6000.0,
@@ -65,6 +77,7 @@ uni_request = {
 }
 
 class EcoTrekkerUser(HttpUser):
+    wait_time = constant_throughput(5)
 
     @task
     def car(self):

@@ -22,7 +22,7 @@ spec:
         image: {{ .Values.ecotrekker.gamification.image }}
         resources:
           requests:
-            cpu: "500m"
+            cpu: "1"
             memory: "512Mi"
         ports:
         - containerPort: 8080

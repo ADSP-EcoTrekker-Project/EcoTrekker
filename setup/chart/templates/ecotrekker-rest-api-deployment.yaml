@@ -22,7 +22,7 @@ spec:
         image: {{ .Values.ecotrekker.restapi.image }}
         resources:
           requests:
-            cpu: "500m"
+            cpu: "1"
             memory: "512Mi"
         env:
         - name: ROUTE_SERVICE_ADDRESS
