@@ -5,13 +5,13 @@ client:
   timeout: 200
 
 consumption-service:
-  address: http://localhost:8082
+  address: http://localhost:8085
   uri: /v1/consumption
 
 depot-service:
-  address: http://localhost:8083
+  address: http://localhost:8087
   uri: /v1/depot
 
 grid-co2-cache:
-  address: http://localhost:8084
-  uri: /api/carbon-intensity
+  address: http://localhost:8086
+  uri: /v1/grid

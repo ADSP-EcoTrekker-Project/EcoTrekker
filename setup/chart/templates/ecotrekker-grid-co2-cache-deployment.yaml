@@ -1,25 +1,29 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ lower (include "ecotrekker.name" .) }}-vehicle-depot-deployment
+  name: {{ lower (include "ecotrekker.name" .) }}-grid-co2-cache-deployment
   labels:
     {{- include "ecotrekker.labels" . | nindent 4 }}
-    app.kubernetes.io/microservice: vehicle-depot
+    app.kubernetes.io/microservice: grid-co2-cache
 spec:
-  replicas: {{ .Values.ecotrekker.vehicledepot.replicas }}
+  replicas: {{ .Values.ecotrekker.gridco2cache.replicas }}
   selector:
     matchLabels:
       {{- include "ecotrekker.selectorLabels" . | nindent 6 }}
-      app.kubernetes.io/microservice: vehicle-depot
+      app.kubernetes.io/microservice: grid-co2-cache
   template:
     metadata:
       labels:
         {{- include "ecotrekker.labels" . | nindent 8 }}
-        app.kubernetes.io/microservice: vehicle-depot
+        app.kubernetes.io/microservice: grid-co2-cache
     spec:
       containers:
-      - name: {{ lower (include "ecotrekker.name" .) }}-vehicle-depot
-        image: {{ .Values.ecotrekker.vehicledepot.image }}
+      - name: {{ lower (include "ecotrekker.name" .) }}-grid-co2-cache
+        image: {{ .Values.ecotrekker.gridco2cache.image }}
+        resources:
+          requests:
+            cpu: "1"
+            memory: "512Mi"
         ports:
         - containerPort: 8080
         livenessProbe:
@@ -36,14 +40,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ lower (include "ecotrekker.name" .) }}-vehicle-depot-service
+  name: {{ lower (include "ecotrekker.name" .) }}-grid-co2-cache-service
   labels:
     {{- include "ecotrekker.labels" . | nindent 4 }}
-    app.kubernetes.io/microservice: vehicle-depot
+    app.kubernetes.io/microservice: grid-co2-cache
 spec:
   selector:
     {{- include "ecotrekker.selectorLabels" . | nindent 4 }}
-    app.kubernetes.io/microservice: vehicle-depot
+    app.kubernetes.io/microservice: grid-co2-cache
   ports:
     - name: rest
       protocol: TCP

@@ -6,7 +6,7 @@ import java.util.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,6 +15,9 @@ import com.ecotrekker.vehicledepot.config.depot.TransportLine;
 import com.ecotrekker.vehicledepot.config.depot.VehicleDepot;
 import com.ecotrekker.vehicledepot.messages.DepotMessage;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestController
 @RequestMapping(value = "/v1")
 public class V1Controller {
@@ -22,13 +25,11 @@ public class V1Controller {
     @Autowired
     private Map<String, TransportLine> lineMap;
 
-    @GetMapping(value = "/depot")
+    @PostMapping(value = "/depot")
     public ResponseEntity<?> getLineElectricalShare(@RequestBody DepotMessage request) {
+        log.info(request.toString());
         try {
             TransportLine line = lineMap.get(request.getLine());
-            if (line == null) {
-                throw new NoSuchElementException("Could not find line!");
-            }
             VehicleDepot depot = line.getDepot();
             request.setVehicles(depot.getVehicles());
             return new ResponseEntity<DepotMessage>(request, HttpStatus.OK);

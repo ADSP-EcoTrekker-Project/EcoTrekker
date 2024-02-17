@@ -1,6 +1,5 @@
 package com.ecotrekker.gamification.service;
 
-import com.ecotrekker.gamification.model.Route;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -20,7 +20,15 @@ spec:
       containers:
       - name: {{ lower (include "ecotrekker.name" .) }}-co2-calculator
         image: {{ .Values.ecotrekker.co2calculator.image }}
+        resources:
+          requests:
+            cpu: "1"
+            memory: "512Mi"
         env:
+        - name: VEHICLE_DEPOT_SERVICE_ADDRESS
+          value: {{ lower (include "ecotrekker.name" .) }}-vehicle-depot-service.{{ .Release.Namespace }}.svc.cluster.local:8080
+        - name: GRID_CO2_SERVICE_ADDRESS
+          value: {{ lower (include "ecotrekker.name" .) }}-grid-co2-cache-service.{{ .Release.Namespace }}.svc.cluster.local:8080
         - name: CONSUMPTION_SERVICE_ADDRESS
           value: {{ lower (include "ecotrekker.name" .) }}-vehicle-consumption-service.{{ .Release.Namespace }}.svc.cluster.local:8080
         ports:

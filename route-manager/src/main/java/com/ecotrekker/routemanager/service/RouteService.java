@@ -22,6 +22,9 @@ import com.ecotrekker.routemanager.model.RouteStepResult;
 import com.ecotrekker.routemanager.model.RoutesRequest;
 import com.ecotrekker.routemanager.model.RoutesResult;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class RouteService {
     
@@ -42,17 +45,23 @@ public class RouteService {
             .distinct()
             .collect(Collectors.toConcurrentMap(
                 step -> step,
-                step -> CompletableFuture.supplyAsync(() -> distanceServiceClient.getDistance(new DistanceRequest(step))),
+                step -> CompletableFuture.supplyAsync(() -> {
+                    if (step.getDistance() == null) {
+                        step.setDistance(distanceServiceClient.getDistance(new DistanceRequest(step)).getDistance());   
+                    }
+                    return null;
+                }
+                ),
                 (existing, replacement) -> existing));
     }
     
     private ConcurrentMap<RouteStep, CompletableFuture<RouteStepResult>> calculateCo2(ConcurrentMap<RouteStep, CompletableFuture<DistanceReply>> distanceFutures) {
         return distanceFutures.keySet()
-            .parallelStream()
-            .collect(Collectors.toConcurrentMap(
-                step -> step,
-                step -> CompletableFuture.supplyAsync(() -> co2ServiceClient.getCo2Result(step)),
-                (existing, replacement) -> existing));
+        .parallelStream()
+        .collect(Collectors.toConcurrentMap(
+            step -> step,
+            step -> CompletableFuture.supplyAsync(() -> co2ServiceClient.getCo2Result(step)),
+            (existing, replacement) -> existing));
     }
     
     private List<RouteResult> calculateResults(RoutesRequest routeRequest, ConcurrentMap<RouteStep, CompletableFuture<RouteStepResult>> co2Futures) {
@@ -68,6 +77,7 @@ public class RouteService {
                     .stream()
                     .mapToDouble(step -> {
                         try {
+                            log.error(step.toString());
                             return co2Futures.get(step).get().getCo2();
                         } catch (Exception e) {
                             throw new RuntimeException();
@@ -83,15 +93,16 @@ public class RouteService {
     public RoutesResult requestCalculation(RoutesRequest routeRequest) throws RouteServiceException {
         try {
             ConcurrentMap<RouteStep, CompletableFuture<DistanceReply>> distanceFutures = calculateDistances(routeRequest);
+            CompletableFuture.allOf(distanceFutures.values().toArray(new CompletableFuture[distanceFutures.size()])).get();
             ConcurrentMap<RouteStep, CompletableFuture<RouteStepResult>> co2Futures = calculateCo2(distanceFutures);
             List<RouteResult> results = calculateResults(routeRequest, co2Futures);
-    
+
             if (routeRequest.isGamification()) {
                 GamificationReply gamificationReply = gamificationServiceClient.getPoints(new GamificationRequest(results));
-                //TODO Gamification Handling
+                return new RoutesResult(gamificationReply.getRoutes(), true);
             }
     
-            return new RoutesResult(results);
+            return new RoutesResult(results, false);
         } catch (Exception e) {
             throw new RouteServiceException("Error calculating Route data", e);
         }

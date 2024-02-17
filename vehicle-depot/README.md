@@ -31,5 +31,5 @@ The output looks like this.
 You can use curl to test the Endpoint:
 
 ```powershell
-curl -X GET localhost:8080/v1/line -H '"Accept": application/json' -H '"Content-Type": application/json' -d '{\"line\":\"169\"}'
+curl -X POST localhost:8080/v1/depot -H '"Accept": application/json' -H '"Content-Type": application/json' -d '{\"line\":\"169\"}'
 ```

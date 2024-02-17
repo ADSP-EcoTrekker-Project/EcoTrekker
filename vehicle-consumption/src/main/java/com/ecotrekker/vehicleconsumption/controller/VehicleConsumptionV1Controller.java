@@ -15,6 +15,9 @@ import com.ecotrekker.vehicleconsumption.config.vehicles.tree.IVehicleTree;
 import com.ecotrekker.vehicleconsumption.messages.VehicleConsumptionReply;
 import com.ecotrekker.vehicleconsumption.messages.VehicleConsumptionRequest;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestController
 @RequestMapping(value = "/v1")
 public class VehicleConsumptionV1Controller {
@@ -24,6 +27,7 @@ public class VehicleConsumptionV1Controller {
 
     @PostMapping("/consumption")
     public ResponseEntity<?> getVehicleConsumption(@RequestBody VehicleConsumptionRequest request){
+        
         String name = request.getVehicleName();
         try {
             IVehicleTreeElement v = vehicles.getElement(name);

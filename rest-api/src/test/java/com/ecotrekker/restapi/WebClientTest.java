@@ -76,7 +76,7 @@ public class WebClientTest {
         RoutesResult testResponse = new RoutesResult(Stream.of(
             new RouteResult(stepsRoute1, testRoutes.getRoutes().get(0).getId(), 126.0),
             new RouteResult(stepsRoute1, testRoutes.getRoutes().get(1).getId(), 84.0)
-        ).collect(Collectors.toList()));
+        ).collect(Collectors.toList()), false);
         mockBackEnd.enqueue(new MockResponse()
             .setBody(mapper.writeValueAsString(testResponse))
             .addHeader("Content-Type", "application/json"));

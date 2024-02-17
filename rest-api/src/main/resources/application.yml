@@ -6,4 +6,4 @@ client:
 
 route-service:
   address: http://localhost:8081
-  uri: /v1/calc/co2
+  uri: /v1/calc/routes

@@ -9,24 +9,27 @@ include = [
 ]
 [[vehicle]]
 name = "car"
-co2 = 0.162
+co2 = 0.1
 [[vehicle]]
 name = "train"
-co2 = 0.072
+kwh = 0.0000724
+#co2 = 0.072
 [[vehicle]]
 name = "bus"
-co2 = 0.108
+co2 = 0.030
 [[vehicle]]
 name = "tram"
-co2 = 0.072
+kwh = 0.00002
+# co2 = 0.072
 [[vehicle]]
 name = "metro"
-co2 = 0.080
+kwh = 0.000044
+#co2 = 0.080
 
 [[vehicle]]
 name = "bike"
-co2 = 0.022
+co2 = 0.016
 [[vehicle]]
 name = "scooter"
-co2 = 0.080
+co2 = 0.030
 

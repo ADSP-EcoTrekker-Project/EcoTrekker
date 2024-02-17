@@ -10,4 +10,4 @@ EXPOSE 8080
 
 ENV ROUTE_SERVICE_ADDRESS=http://localhost:8081
 
-ENTRYPOINT ["java", "-jar", "app.jar", "--route-service.address=${ROUTE_MANAGER_ADDRESS}"]
+ENTRYPOINT ["java", "-jar", "app.jar", "--route-service.address=${ROUTE_SERVICE_ADDRESS}"]

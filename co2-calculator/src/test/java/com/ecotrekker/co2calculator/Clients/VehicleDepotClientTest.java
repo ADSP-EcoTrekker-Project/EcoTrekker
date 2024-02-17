@@ -14,10 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.server.LocalServerPort;
 
 import com.ecotrekker.co2calculator.clients.VehicleDepotClient;
-import com.ecotrekker.co2calculator.model.VehicleDepotMessage;
+import com.ecotrekker.co2calculator.model.VehicleDepotRequest;
+import com.ecotrekker.co2calculator.model.VehicleDepotResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import okhttp3.mockwebserver.Dispatcher;
@@ -41,9 +41,9 @@ public class VehicleDepotClientTest {
         @Override
         public MockResponse dispatch (RecordedRequest request) {
             try {
-                VehicleDepotMessage requestBody = mapper.readValue(request.getBody().readUtf8(), VehicleDepotMessage.class);
+                VehicleDepotResponse requestBody = mapper.readValue(request.getBody().readUtf8(), VehicleDepotResponse.class);
 
-                VehicleDepotMessage response = new VehicleDepotMessage();
+                VehicleDepotResponse response = new VehicleDepotResponse();
                 Map<String, Double> responseMap = new HashMap<>();
                 responseMap.put("e-bus", 0.5);
                 responseMap.put("bus", 0.5);
@@ -78,10 +78,9 @@ public class VehicleDepotClientTest {
 
     @Test
     public void testClient() {
-        VehicleDepotMessage request = new VehicleDepotMessage();
-        request.setLine("169");
+        VehicleDepotRequest request = new VehicleDepotRequest("169");
 
-        VehicleDepotMessage response = vehicleDepotClient.getVehicleShareInDepot(request);
+        VehicleDepotResponse response = vehicleDepotClient.getVehicleShareInDepot(request);
 
         assertTrue(response.getLine().equals(response.getLine()));
 

@@ -1,25 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ lower (include "ecotrekker.name" .) }}-vehicle-consumption-deployment
+  name: {{ lower (include "ecotrekker.name" .) }}-public-transport-distance-deployment
   labels:
     {{- include "ecotrekker.labels" . | nindent 4 }}
-    app.kubernetes.io/microservice: vehicle-consumption
+    app.kubernetes.io/microservice: public-transport-distance
 spec:
-  replicas: {{ .Values.ecotrekker.co2calculator.replicas }}
+  replicas: {{ .Values.ecotrekker.publictransportdistance.replicas }}
   selector:
     matchLabels:
       {{- include "ecotrekker.selectorLabels" . | nindent 6 }}
-      app.kubernetes.io/microservice: vehicle-consumption
+      app.kubernetes.io/microservice: public-transport-distance
   template:
     metadata:
       labels:
         {{- include "ecotrekker.labels" . | nindent 8 }}
-        app.kubernetes.io/microservice: vehicle-consumption
+        app.kubernetes.io/microservice: public-transport-distance
     spec:
       containers:
-      - name: {{ lower (include "ecotrekker.name" .) }}-vehicle-consumption
-        image: {{ .Values.ecotrekker.vehicleconsumption.image }}
+      - name: {{ lower (include "ecotrekker.name" .) }}-public-transport-distance
+        image: {{ .Values.ecotrekker.publictransportdistance.image }}
         resources:
           requests:
             cpu: "1"
@@ -40,14 +40,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ lower (include "ecotrekker.name" .) }}-vehicle-consumption-service
+  name: {{ lower (include "ecotrekker.name" .) }}-public-transport-distance-service
   labels:
     {{- include "ecotrekker.labels" . | nindent 4 }}
-    app.kubernetes.io/microservice: vehicle-consumption
+    app.kubernetes.io/microservice: public-transport-distance
 spec:
   selector:
     {{- include "ecotrekker.selectorLabels" . | nindent 4 }}
-    app.kubernetes.io/microservice: vehicle-consumption
+    app.kubernetes.io/microservice: public-transport-distance
   ports:
     - name: rest
       protocol: TCP
