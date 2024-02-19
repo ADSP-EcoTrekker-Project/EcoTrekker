@@ -22,7 +22,10 @@ spec:
         image: {{ .Values.ecotrekker.vehicledepot.image }}
         resources:
           requests:
-            cpu: "1"
+            cpu: "128m"
+            memory: "512Mi"
+          limits:
+            cpu: "384m"
             memory: "512Mi"
         ports:
         - containerPort: 8080

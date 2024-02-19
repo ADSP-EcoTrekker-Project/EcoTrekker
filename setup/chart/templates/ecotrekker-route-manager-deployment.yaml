@@ -22,7 +22,10 @@ spec:
         image: {{ .Values.ecotrekker.routemanager.image }}
         resources:
           requests:
-            cpu: "1"
+            cpu: "2"
+            memory: "512Mi"
+          limits:
+            cpu: "3"
             memory: "512Mi"
         env:
         - name: DISTANCE_SERVICE_ADDRESS
