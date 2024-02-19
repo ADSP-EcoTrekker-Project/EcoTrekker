@@ -31,4 +31,8 @@ public abstract class AbstractVehicleDatastructure <T extends AbstractVehicleDat
         throw new UnsupportedOperationException("Please override in Subtypes");
     }
 
+    public T getElement(String[] name) {
+        throw new UnsupportedOperationException("Please override in Subtypes");
+    }
+
 }
