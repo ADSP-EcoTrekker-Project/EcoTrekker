@@ -2,8 +2,6 @@ package com.ecotrekker.publictransportdistance.service;
 
 import java.util.NoSuchElementException;
 import com.ecotrekker.publictransportdistance.model.PublicTransportRoutes;
-import com.ecotrekker.publictransportdistance.model.Route;
-import com.ecotrekker.publictransportdistance.model.Stop;
 import com.ecotrekker.publictransportdistance.model.VehicleRoute;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
@@ -18,9 +16,10 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -36,7 +35,7 @@ public class PublicTransportDistanceService {
 
     @PostConstruct
     public void initialize() {
-        System.out.println(Paths.get(configPath).toAbsolutePath());
+        log.info("Loading routes from "+Paths.get(configPath).toAbsolutePath());
         if (configPath == null || configPath.isEmpty()) {
             throw new IllegalArgumentException("Config path is null or empty");
         }
@@ -53,59 +52,42 @@ public class PublicTransportDistanceService {
 
     public double calculateDistance(String start, String end, String line) {
         if (publicTransportRoutes == null || !publicTransportRoutes.containsKey(line)) {
-            log.error("Vehicle not found");
-            log.error(start);
-            log.error(end);
-            log.error(line);
+            log.error("Received invalid parameters. start: " + start + " end: " + end + " line: " + line);
             throw new NoSuchElementException();
         }
 
         VehicleRoute vRoute = publicTransportRoutes.get(line);
-        Optional<Route> matchingRoute = vRoute.getRoutes().stream()
-                .filter(route -> containsStops(route, start, end))
-                .findFirst();
-
-        if (matchingRoute.isPresent()) {
-            double distance = calculateDistanceInRoute(matchingRoute.get(), start, end);
-            if (distance == -1){
-                distance = calculateDistanceInRoute(matchingRoute.get(), end, start);
+        Optional<Double> distance = vRoute.getRoutes()
+        .parallelStream()
+        .map(route -> {
+            AtomicBoolean isAdding = new AtomicBoolean(false);
+            double totalDistance = route.getStops()
+                .stream()
+                .mapToDouble(stop -> {
+                    if (stop.getStopName().equals(start)) {
+                        isAdding.set(true);
+                    }
+                    if (stop.getStopName().equals(end)) {
+                        isAdding.set(false);
+                    }
+                    if (isAdding.get()) {
+                        return stop.getDistanceToNextStopKm();
+                    }
+                    return 0;
+                })
+                .sum();
+            if (totalDistance == 0) {
+                return null;
             }
-            System.out.println("Distance between " + start + " and " + end + " for vehicle " + line + ": " + distance + " meters");
-            return distance;
+            return totalDistance;
+        })
+        .filter(Objects::nonNull)
+        .findAny();
+        if (distance.isPresent()) {
+            return distance.get();
         } else {
             log.error("Route does not exist for provided start and end stops");
             throw new IllegalArgumentException();
         }
-    }
-
-    private boolean containsStops(Route route, String start, String end) {
-        List<Stop> stops = route.getStops();
-        boolean containsStart = stops.stream().anyMatch(stop -> stop.getStopName().toLowerCase().contains(start.toLowerCase()));
-        boolean containsEnd = stops.stream().anyMatch(stop -> stop.getStopName().toLowerCase().contains(end.toLowerCase()));
-        return containsStart && containsEnd;
-    }
-
-    private double calculateDistanceInRoute(Route route, String start, String end) {
-        List<Stop> stops = route.getStops();
-        double distance = 0.0;
-        boolean started = false;
-
-        for (Stop stop : stops) {
-            if (stop.getStopName().toLowerCase().contains(start.toLowerCase())) {
-                started = true;
-            }
-
-            if (started) {
-                Double distanceToNextStopKm = stop.getDistanceToNextStopKm();
-                double distanceToAdd = (distanceToNextStopKm != null) ? distanceToNextStopKm * 1000 : 0; // Convert km to meters
-                distance += distanceToAdd;
-
-                if (stop.getStopName().toLowerCase().contains(end.toLowerCase())) {
-                    distance -= distanceToAdd; // remove "distance to next stop" of the end station
-                    return distance;
-                }
-            }
-        }
-        return -1;
     }
 }
