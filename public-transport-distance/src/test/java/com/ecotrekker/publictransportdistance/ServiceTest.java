@@ -18,8 +18,8 @@ public class ServiceTest {
     public void testDistanceCalculation() {
 
         //test1
-        String start = "S+U panKoW (Berlin)";
-        String end = "s SchöneFeld (bei Berlin) Bhf";
+        String start = "S+U Pankow (Berlin)";
+        String end = "S Schönefeld (bei Berlin) Bhf";
         String vehicle = "S85";
         long startTime = System.currentTimeMillis();
         distanceService.calculateDistance(start, end, vehicle);
@@ -28,7 +28,7 @@ public class ServiceTest {
         System.out.println(elapsedTime);
 
         //test2
-        String start1 = "S Lankwitz";
+        String start1 = "S Lankwitz (Berlin)";
         String end1 = "S Lichtenrade (Berlin)";
         String vehicle1 = "S2B";
         long startTime1 = System.currentTimeMillis();
