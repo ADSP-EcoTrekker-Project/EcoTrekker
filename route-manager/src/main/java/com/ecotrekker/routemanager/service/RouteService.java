@@ -48,8 +48,8 @@ public class RouteService {
                 step -> step,
                 step -> {
                     if (step.getDistance() == null) {
-                        DistanceReply reply = distanceServiceClient.getDistance(new DistanceRequest(step);
-                        step.setDistance(reply).getDistance());   
+                        DistanceReply reply = distanceServiceClient.getDistance(new DistanceRequest(step));
+                        step.setDistance(reply.getDistance());   
                         return reply;
                     }
                     return null;
