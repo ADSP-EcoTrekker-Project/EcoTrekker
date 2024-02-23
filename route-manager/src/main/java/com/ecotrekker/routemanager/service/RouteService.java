@@ -39,32 +39,34 @@ public class RouteService {
     private GamificationServiceClient gamificationServiceClient;
 
 
-    private ConcurrentMap<RouteStep, CompletableFuture<DistanceReply>> calculateDistances(RoutesRequest routeRequest) {
+    private Map<RouteStep, DistanceReply> calculateDistances(RoutesRequest routeRequest) {
         return routeRequest.getRoutes()
-            .parallelStream()
+            .stream()
             .flatMap(route -> route.getSteps().stream())
             .distinct()
-            .collect(Collectors.toConcurrentMap(
+            .collect(Collectors.toMap(
                 step -> step,
-                step -> CompletableFuture.supplyAsync(() -> {
+                step -> {
                     if (step.getDistance() == null) {
-                        step.setDistance(distanceServiceClient.getDistance(new DistanceRequest(step)).getDistance());   
+                        DistanceReply reply = distanceServiceClient.getDistance(new DistanceRequest(step));
+                        step.setDistance(reply.getDistance());   
+                        return reply;
                     }
                     return null;
                 }
-                ),
-                (existing, replacement) -> existing));
+                )
+                );
     }
     
-    private Map<RouteStep, CompletableFuture<RouteStepResult>> calculateCo2(ConcurrentMap<RouteStep, CompletableFuture<DistanceReply>> distanceFutures) {
+    private Map<RouteStep, RouteStepResult> calculateCo2(Map<RouteStep, DistanceReply> distanceFutures) {
         return distanceFutures.keySet()
         .stream()
         .collect(Collectors.toMap(
             step -> step, 
-            step -> CompletableFuture.supplyAsync(() -> co2ServiceClient.getCo2Result(step))));
+            step -> co2ServiceClient.getCo2Result(step)));
     }
     
-    private List<RouteResult> calculateResults(RoutesRequest routeRequest, Map<RouteStep, CompletableFuture<RouteStepResult>> co2Futures) {
+    private List<RouteResult> calculateResults(RoutesRequest routeRequest, Map<RouteStep, RouteStepResult> co2Futures) {
         return routeRequest
             .getRoutes()
             .parallelStream()
@@ -78,7 +80,7 @@ public class RouteService {
                     .mapToDouble(step -> {
                         try {
                             log.error(step.toString());
-                            return co2Futures.get(step).get().getCo2();
+                            return co2Futures.get(step).getCo2();
                         } catch (Exception e) {
                             throw new RuntimeException();
                         }
@@ -92,9 +94,9 @@ public class RouteService {
 
     public RoutesResult requestCalculation(RoutesRequest routeRequest) throws RouteServiceException {
         try {
-            ConcurrentMap<RouteStep, CompletableFuture<DistanceReply>> distanceFutures = calculateDistances(routeRequest);
-            CompletableFuture.allOf(distanceFutures.values().toArray(new CompletableFuture[distanceFutures.size()])).get();
-            Map<RouteStep, CompletableFuture<RouteStepResult>> co2Futures = calculateCo2(distanceFutures);
+            Map<RouteStep, DistanceReply> distanceFutures = calculateDistances(routeRequest);
+            // CompletableFuture.allOf(distanceFutures.values().toArray(new CompletableFuture[distanceFutures.size()])).get();
+            Map<RouteStep, RouteStepResult> co2Futures = calculateCo2(distanceFutures);
             List<RouteResult> results = calculateResults(routeRequest, co2Futures);
 
             if (routeRequest.isGamification()) {
