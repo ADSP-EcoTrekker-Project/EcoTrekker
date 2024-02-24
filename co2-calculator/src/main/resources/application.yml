@@ -5,13 +5,13 @@ client:
   timeout: 200
 
 consumption-service:
-  address: http://localhost:8085
+  address: http://localhost:8084
   uri: /v1/consumption
 
 depot-service:
-  address: http://localhost:8087
+  address: http://localhost:8082
   uri: /v1/depot
 
 grid-co2-cache:
-  address: http://localhost:8086
+  address: http://localhost:8083
   uri: /v1/grid

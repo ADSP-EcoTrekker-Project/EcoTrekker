@@ -26,13 +26,14 @@ public class CalculatorController {
     @PostMapping("/calc/co2")
     public ResponseEntity<?> calculateCo2(@RequestBody RouteStep routeStep) throws JsonProcessingException {
         log.info(routeStep.toString());
-        RouteStepResult result = calculatorService.requestCalculation(routeStep);
-        if (result == null) {
+        try {
+            RouteStepResult result = calculatorService.requestCalculation(routeStep);
+            return ResponseEntity.ok(result);
+        } catch (Exception e){
+            e.printStackTrace();
             CalculationErrorResponse error = CalculationErrorResponse.builder().error("Invalid Route Data").build();
             return ResponseEntity.status(400).body(error);
-        }
-        log.info(result.toString());
-        return ResponseEntity.ok(result);
+        }       
     }
 
 }

@@ -30,6 +30,9 @@ public class V1Controller {
         log.info(request.toString());
         try {
             TransportLine line = lineMap.get(request.getLine());
+            if (line == null) {
+                throw new NoSuchElementException(String.format("Element {0} not found in Depot Map", request.getLine()));
+            }
             VehicleDepot depot = line.getDepot();
             request.setVehicles(depot.getVehicles());
             return new ResponseEntity<DepotMessage>(request, HttpStatus.OK);
