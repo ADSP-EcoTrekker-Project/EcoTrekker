@@ -58,13 +58,13 @@ public class WebClientTest {
     @Test
     public void getResults() throws Exception {
         List<RouteStep> stepsRoute1 = Stream.of(
-            new RouteStep("a", "b", "bus","m36", null),
-            new RouteStep("b", "c", "bus","137", null),
-            new RouteStep("c", "d", "bus","m38", null))
+            new RouteStep("a", "b", "/bus","m36", null),
+            new RouteStep("b", "c", "/bus","137", null),
+            new RouteStep("c", "d", "/bus","m38", null))
             .collect(Collectors.toList());
         List<RouteStep> stepsRoute2 = Stream.of(
-            new RouteStep("a", "b", "bus","m36", null),
-            new RouteStep("b", "d", "bus","m38", null))
+            new RouteStep("a", "b", "/bus","m36", null),
+            new RouteStep("b", "d", "/bus","m38", null))
             .collect(Collectors.toList());
         RoutesRequest testRoutes = new RoutesRequest(
             Stream.of(

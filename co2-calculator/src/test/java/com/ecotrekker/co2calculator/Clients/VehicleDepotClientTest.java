@@ -45,8 +45,8 @@ public class VehicleDepotClientTest {
 
                 VehicleDepotResponse response = new VehicleDepotResponse();
                 Map<String, Double> responseMap = new HashMap<>();
-                responseMap.put("e-bus", 0.5);
-                responseMap.put("bus", 0.5);
+                responseMap.put("/bus/e-bus", 0.5);
+                responseMap.put("/bus", 0.5);
                 response.setLine(requestBody.getLine());
                 response.setVehicles(responseMap);
 
