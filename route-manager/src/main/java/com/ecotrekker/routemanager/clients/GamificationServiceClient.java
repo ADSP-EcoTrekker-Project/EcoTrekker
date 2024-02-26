@@ -27,6 +27,7 @@ public class GamificationServiceClient {
         .uri(uri)
         .bodyValue(request)
         .retrieve()
-        .bodyToMono(GamificationReply.class);
+        .bodyToMono(GamificationReply.class)
+        .single();
     }
 }

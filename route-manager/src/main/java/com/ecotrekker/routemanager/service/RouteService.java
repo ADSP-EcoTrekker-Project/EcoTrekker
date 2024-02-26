@@ -78,7 +78,6 @@ public class RouteService {
                 .map(totalCo2 -> new RouteResult(route.getSteps(), route.getId(), totalCo2))
             )
             .collectList()
-            .doOnNext(result -> log.info("Results: "+ result.toString()))
             .map( routeResults -> {
                 if (routesRequest.isGamification()) {
                     return gamificationServiceClient.getPoints(new GamificationRequest(routeResults))
