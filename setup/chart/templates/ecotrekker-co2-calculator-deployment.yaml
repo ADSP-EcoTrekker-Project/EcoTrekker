@@ -22,10 +22,10 @@ spec:
         image: {{ .Values.ecotrekker.co2calculator.image }}
         resources:
           requests:
-            cpu: "256m"
+            cpu: "2"
             memory: "512Mi"
           limits:
-            cpu: "768"
+            cpu: "3"
             memory: "512Mi"
         env:
         - name: VEHICLE_DEPOT_SERVICE_ADDRESS

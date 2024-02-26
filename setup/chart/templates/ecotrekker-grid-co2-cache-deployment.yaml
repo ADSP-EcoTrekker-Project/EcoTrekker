@@ -22,10 +22,10 @@ spec:
         image: {{ .Values.ecotrekker.gridco2cache.image }}
         resources:
           requests:
-            cpu: "64m"
+            cpu: "96m"
             memory: "256Mi"
           limits:
-            cpu: "128m"
+            cpu: "192m"
             memory: "384Mi"
         ports:
         - containerPort: 8080
