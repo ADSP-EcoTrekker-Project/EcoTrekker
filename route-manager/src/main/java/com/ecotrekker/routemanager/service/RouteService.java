@@ -1,6 +1,7 @@
 package com.ecotrekker.routemanager.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
@@ -55,16 +56,15 @@ public class RouteService {
                 (existing, replacement) -> existing));
     }
     
-    private ConcurrentMap<RouteStep, CompletableFuture<RouteStepResult>> calculateCo2(ConcurrentMap<RouteStep, CompletableFuture<DistanceReply>> distanceFutures) {
+    private Map<RouteStep, CompletableFuture<RouteStepResult>> calculateCo2(ConcurrentMap<RouteStep, CompletableFuture<DistanceReply>> distanceFutures) {
         return distanceFutures.keySet()
-        .parallelStream()
-        .collect(Collectors.toConcurrentMap(
-            step -> step,
-            step -> CompletableFuture.supplyAsync(() -> co2ServiceClient.getCo2Result(step)),
-            (existing, replacement) -> existing));
+        .stream()
+        .collect(Collectors.toMap(
+            step -> step, 
+            step -> CompletableFuture.supplyAsync(() -> co2ServiceClient.getCo2Result(step))));
     }
     
-    private List<RouteResult> calculateResults(RoutesRequest routeRequest, ConcurrentMap<RouteStep, CompletableFuture<RouteStepResult>> co2Futures) {
+    private List<RouteResult> calculateResults(RoutesRequest routeRequest, Map<RouteStep, CompletableFuture<RouteStepResult>> co2Futures) {
         return routeRequest
             .getRoutes()
             .parallelStream()
@@ -94,7 +94,7 @@ public class RouteService {
         try {
             ConcurrentMap<RouteStep, CompletableFuture<DistanceReply>> distanceFutures = calculateDistances(routeRequest);
             CompletableFuture.allOf(distanceFutures.values().toArray(new CompletableFuture[distanceFutures.size()])).get();
-            ConcurrentMap<RouteStep, CompletableFuture<RouteStepResult>> co2Futures = calculateCo2(distanceFutures);
+            Map<RouteStep, CompletableFuture<RouteStepResult>> co2Futures = calculateCo2(distanceFutures);
             List<RouteResult> results = calculateResults(routeRequest, co2Futures);
 
             if (routeRequest.isGamification()) {
