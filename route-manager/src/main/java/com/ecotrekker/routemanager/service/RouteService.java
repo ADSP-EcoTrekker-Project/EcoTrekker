@@ -78,13 +78,12 @@ public class RouteService {
                 .map(totalCo2 -> new RouteResult(route.getSteps(), route.getId(), totalCo2))
             )
             .collectList()
-            .map( routeResults -> {
+            .flatMap( routeResults -> {
                 if (routesRequest.isGamification()) {
                     return gamificationServiceClient.getPoints(new GamificationRequest(routeResults))
-                    .map(reply -> new RoutesResult(reply.getRoutes(), true))
-                    .block();
+                    .map(reply -> new RoutesResult(reply.getRoutes(), true));
                 } else {
-                    return new RoutesResult(routeResults, routesRequest.isGamification());
+                    return Mono.just(new RoutesResult(routeResults, routesRequest.isGamification()));
                 }
             });
     }
