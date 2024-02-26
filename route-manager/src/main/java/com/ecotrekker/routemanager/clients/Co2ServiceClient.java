@@ -10,6 +10,9 @@ import reactor.core.publisher.Mono;
 import com.ecotrekker.routemanager.model.RouteStep;
 import com.ecotrekker.routemanager.model.RouteStepResult;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 public class Co2ServiceClient {
     @Value("${co2-service.uri}")
@@ -26,8 +29,8 @@ public class Co2ServiceClient {
         return this.client.post()
         .uri(uri)
         .bodyValue(step)
-        .accept(MediaType.APPLICATION_JSON)
         .retrieve()
-        .bodyToMono(RouteStepResult.class);
+        .bodyToMono(RouteStepResult.class)
+        .single();
     }
 }

@@ -26,7 +26,6 @@ public class GamificationServiceClient {
         return this.client.post()
         .uri(uri)
         .bodyValue(request)
-        .accept(MediaType.APPLICATION_JSON)
         .retrieve()
         .bodyToMono(GamificationReply.class);
     }

@@ -67,15 +67,18 @@ public class RouteService {
                     .flatMap(distance -> Mono.justOrEmpty(co2Cache.get(routeStep))
                         .switchIfEmpty(co2ServiceClient
                             .getCo2Result(new RouteStep(routeStep.getStart(), routeStep.getEnd(), routeStep.getVehicle(), routeStep.getLine(), distance))
-                            .doOnNext(routeStepResult -> co2Cache.put(routeStep, routeStepResult))
+                            .doOnNext(routeStepResult -> {
+                                co2Cache.put(routeStep, routeStepResult);
+                            })
                         )
                     )
                 )
-                .log()
                 .thenMany(Flux.fromIterable(route.getSteps()))
                 .reduce(0.0, (sum, routeStep) -> sum + co2Cache.get(routeStep).getCo2())
-                .map(totalCo2 -> new RouteResult(route.getSteps(), route.getId(), totalCo2)))
+                .map(totalCo2 -> new RouteResult(route.getSteps(), route.getId(), totalCo2))
+            )
             .collectList()
+            .doOnNext(result -> log.info("Results: "+ result.toString()))
             .map( routeResults -> {
                 if (routesRequest.isGamification()) {
                     return gamificationServiceClient.getPoints(new GamificationRequest(routeResults))
