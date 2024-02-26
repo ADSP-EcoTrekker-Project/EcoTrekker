@@ -11,22 +11,24 @@ public class ValidRouteStepValidator implements ConstraintValidator<ValidRouteSt
     public void initialize(ValidRouteStep constraintAnnotation) {
     }
 
+    public boolean isBlank(String string){
+        return string == null || string.trim().length() < 0;
+    }
+
     @Override
     public boolean isValid(RouteStep value, ConstraintValidatorContext context) {
-        boolean startNotBlank = value.getStart() != null && value.getStart().trim().length() > 0;
-        boolean endNotBlank = value.getEnd() != null && value.getEnd().trim().length() > 0;
-
-        if (startNotBlank && endNotBlank) {
-            return true;
+        if ((isBlank(value.getStart()) && isBlank(value.getEnd())) && value.getDistance() == null) {
+            return false;
         }
 
-        if (value.getDistance() != null) {
-            return true;
+        String uri = value.getVehicle();
+        if (!uri.startsWith("/") || uri.endsWith("/")) {
+            return false;
         }
 
         context.buildConstraintViolationWithTemplate("Either start and end or distance must be provided!")
                 .addConstraintViolation();
-        return false;
+        return true;
     }
 
 }

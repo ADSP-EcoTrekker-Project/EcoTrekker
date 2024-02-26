@@ -48,22 +48,22 @@ public class CalculatorE2ETest {
         public MockResponse dispatch (RecordedRequest request) {
 
             ConsumptionResponse carResponse = new ConsumptionResponse();
-            carResponse.setVehicle("car");
+            carResponse.setVehicle("/car");
             carResponse.setCo2(160D);
             ConsumptionResponse ebikeResponse = new ConsumptionResponse();
-            ebikeResponse.setVehicle("e-bike");
+            ebikeResponse.setVehicle("/bike/e-bike");
             ebikeResponse.setCo2(21D);
 
             try {
                 ConsumptionRequest consumptionRequest = mapper.readValue(request.getBody().readUtf8(), ConsumptionRequest.class);
 
                 switch (consumptionRequest.getVehicle()) {
-                    case "car":
+                    case "/car":
                         return new MockResponse()
                             .setResponseCode(200)
                             .addHeader("Content-Type", "application/json; charset=utf-8")
                             .setBody(mapper.writeValueAsString(carResponse));
-                    case "e-bike":
+                    case "/bike/e-bike":
                         return new MockResponse()
                             .setResponseCode(200)
                             .addHeader("Content-Type", "application/json; charset=utf-8")
@@ -98,7 +98,7 @@ public class CalculatorE2ETest {
 
     @Test
     void testResponseCar() {
-        RouteStep testRouteStep = new RouteStep("a", "b", "car",null, 300.0);
+        RouteStep testRouteStep = new RouteStep("a", "b", "/car",null, 300.0);
         ResponseEntity<RouteStepResult> result = testRestTemplate.exchange(
             "http://localhost:"+port+"/v1/calc/co2", 
             HttpMethod.POST, 
@@ -111,7 +111,7 @@ public class CalculatorE2ETest {
 
     @Test
     void testResponseEbike() {
-        RouteStep testRouteStep = new RouteStep("b", "c", "e-bike",null, 300.0);
+        RouteStep testRouteStep = new RouteStep("b", "c", "/bike/e-bike",null, 300.0);
         ResponseEntity<RouteStepResult> result = testRestTemplate.exchange(
             "http://localhost:"+port+"/v1/calc/co2", 
             HttpMethod.POST, 

@@ -78,9 +78,22 @@ public class IVehicleTree extends AbstractVehicleDatastructure<IVehicleTreeEleme
 
     @Override
     public IVehicleTreeElement getElement(String name) throws NoSuchElementException {
-        IVehicleTreeElement result = asMap().get(name);
+        IVehicleTreeElement result = vehicleTreeMap.get(name);
         if (result == null) { throw new NoSuchElementException("Could not find element"); }
         return result;
+    }
+
+    @Override
+    public IVehicleTreeElement getElement(String[] name) throws NoSuchElementException {
+        for (int i = name.length - 1; i >= 0; i--){
+            String element = name[i];
+            // Root element "" is not part of the map
+            IVehicleTreeElement result = vehicleTreeMap.get(element);
+            if (result != null) {
+                return result;
+            }
+        }
+        throw new NoSuchElementException("Could not find element");
     }
 
     @Override

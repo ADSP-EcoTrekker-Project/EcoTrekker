@@ -22,22 +22,22 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping(value = "/v1")
 public class VehicleConsumptionV1Controller {
 
-    @Autowired 
+    @Autowired
     IVehicleTree vehicles;
 
     @PostMapping("/consumption")
     public ResponseEntity<?> getVehicleConsumption(@RequestBody VehicleConsumptionRequest request){
-        
-        String name = request.getVehicleName();
+        String fullname = request.getVehicleName();
+        String[] name = fullname.split("\\/");
         try {
             IVehicleTreeElement v = vehicles.getElement(name);
-            VehicleConsumptionReply reply = new VehicleConsumptionReply(name, v.getKwh(), v.getCo2());
+            VehicleConsumptionReply reply = new VehicleConsumptionReply(request.getVehicleName(), v.getKwh(), v.getCo2());
             return new ResponseEntity<VehicleConsumptionReply>(reply, HttpStatus.OK);
         } catch (NoSuchElementException e) {
-            VehicleConsumptionReply reply = new VehicleConsumptionReply(name, -1D, -1D);
+            VehicleConsumptionReply reply = new VehicleConsumptionReply(request.getVehicleName(), -1D, -1D);
             return new ResponseEntity<>(reply, HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            VehicleConsumptionReply reply = new VehicleConsumptionReply(name, -1D, -1D);
+            VehicleConsumptionReply reply = new VehicleConsumptionReply(request.getVehicleName(), -1D, -1D);
             return new ResponseEntity<>(reply, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
