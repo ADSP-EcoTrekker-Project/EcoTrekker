@@ -4,28 +4,28 @@
 
 ecotrekker:
   restapi:
-    image: lierseleow/eco-rest-api:performance
+    image: lierseleow/eco-rest-api:latest
     replicas: 1
   co2calculator:
-    image: lierseleow/eco-co2-calculator:performance
+    image: lierseleow/eco-co2-calculator:latest
     replicas: 1
   vehicleconsumption:
-    image: lierseleow/eco-vehicle-consumption:performance
+    image: lierseleow/eco-vehicle-consumption:latest
     replicas: 1
   gridco2cache:
-    image: lierseleow/eco-grid-co2-cache:performance
+    image: lierseleow/eco-grid-co2-cache:latest
     replicas: 1
   vehicledepot:
-    image: lierseleow/eco-vehicle-depot:performance
+    image: lierseleow/eco-vehicle-depot:latest
     replicas: 1
   publictransportdistance:
-    image: lierseleow/eco-public-transport-distance:performance
+    image: lierseleow/eco-public-transport-distance:latest
     replicas: 1
   routemanager:
-    image: lierseleow/eco-route-manager:performance
+    image: lierseleow/eco-route-manager:latest
     replicas: 1
   gamification:
-    image: lierseleow/eco-gamification:performance
+    image: lierseleow/eco-gamification:latest
     replicas: 1
 
 # replicaCount: 1
