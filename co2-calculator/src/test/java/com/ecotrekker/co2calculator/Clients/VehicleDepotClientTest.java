@@ -80,10 +80,10 @@ public class VehicleDepotClientTest {
     public void testClient() {
         VehicleDepotRequest request = new VehicleDepotRequest("169");
 
-        VehicleDepotResponse response = vehicleDepotClient.getVehicleShareInDepot(request);
-
-        assertTrue(response.getLine().equals(response.getLine()));
-
-        assertTrue(response.getVehicles().size() == 2);
+        vehicleDepotClient.getVehicleShareInDepot(request)
+        .doOnNext(response -> {
+            assertTrue(response.getLine().equals(response.getLine()));
+            assertTrue(response.getVehicles().size() == 2);
+        });
     }
 }

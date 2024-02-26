@@ -15,6 +15,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
 import com.ecotrekker.co2calculator.model.ConsumptionRequest;
 import com.ecotrekker.co2calculator.model.ConsumptionResponse;
@@ -91,34 +92,27 @@ public class CalculatorE2ETest {
     }
     
     @Autowired
-    private TestRestTemplate testRestTemplate;
-
-    @LocalServerPort
-    private Integer port;
+    private WebTestClient webTestClient;
 
     @Test
     void testResponseCar() {
         RouteStep testRouteStep = new RouteStep("a", "b", "/car",null, 300.0);
-        ResponseEntity<RouteStepResult> result = testRestTemplate.exchange(
-            "http://localhost:"+port+"/v1/calc/co2", 
-            HttpMethod.POST, 
-            new HttpEntity<RouteStep>(testRouteStep), 
-            RouteStepResult.class);
-        assertTrue(result.getStatusCode().is2xxSuccessful());
-        assertEquals(160*300.0, result.getBody().getCo2());
-        
+        webTestClient.post().uri("/v1/calc/co2")
+        .bodyValue(testRouteStep)
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody(RouteStepResult.class)
+        .consumeWith(body -> assertEquals(160 * 300.0, body.getResponseBody().getCo2()));
     }
 
     @Test
     void testResponseEbike() {
         RouteStep testRouteStep = new RouteStep("b", "c", "/bike/e-bike",null, 300.0);
-        ResponseEntity<RouteStepResult> result = testRestTemplate.exchange(
-            "http://localhost:"+port+"/v1/calc/co2", 
-            HttpMethod.POST, 
-            new HttpEntity<RouteStep>(testRouteStep), 
-            RouteStepResult.class);
-        assertTrue(result.getStatusCode().is2xxSuccessful());
-        assertEquals(21.0*300.0, result.getBody().getCo2());
-        
+        webTestClient.post().uri("/v1/calc/co2")
+        .bodyValue(testRouteStep)
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody(RouteStepResult.class)
+        .consumeWith(body -> assertEquals(21.0 * 300.0, body.getResponseBody().getCo2()));
     }
 }

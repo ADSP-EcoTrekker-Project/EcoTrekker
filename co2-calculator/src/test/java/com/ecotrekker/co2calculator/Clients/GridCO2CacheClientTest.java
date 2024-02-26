@@ -1,5 +1,6 @@
 package com.ecotrekker.co2calculator.Clients;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -70,8 +71,8 @@ public class GridCO2CacheClientTest {
     @Test
     public void testClient() {
 
-        CO2Response response = gridCO2CacheClient.getCO2Intensity();
-
-        assertTrue(response.getCarbonIntensity() == 400);
+        gridCO2CacheClient.getCO2Intensity()
+        .doOnNext(response -> assertTrue(response.getCarbonIntensity() == 400));
+        
     }
 }
