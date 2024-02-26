@@ -1,18 +1,33 @@
 package com.ecotrekker.routemanager.clients;
 
-import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
-import com.ecotrekker.routemanager.config.FeignClientConfig;
 import com.ecotrekker.routemanager.model.DistanceRequest;
 import com.ecotrekker.routemanager.model.DistanceReply;
 
-@FeignClient(value = "routes-distance-client", url="${distance-service.address}", configuration = FeignClientConfig.class)
-public interface DistanceServiceClient {
+@Component
+public class DistanceServiceClient {
+    @Value("${distance-service.uri}")
+    private String uri;
     
-    @RequestMapping(method = RequestMethod.POST, value = "${distance-service.uri}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    DistanceReply getDistance(@RequestBody DistanceRequest data);
+    private final WebClient client;
+
+    @Autowired
+    public DistanceServiceClient(WebClient.Builder builder) {
+        this.client = builder.baseUrl("http://localhost:8084").build();
+    }
+
+    public Mono<DistanceReply> getDistance(DistanceRequest request) {
+        return this.client.post()
+        .uri(uri)
+        .bodyValue(request)
+        .accept(MediaType.APPLICATION_JSON)
+        .retrieve()
+        .bodyToMono(DistanceReply.class);
+    }
 }

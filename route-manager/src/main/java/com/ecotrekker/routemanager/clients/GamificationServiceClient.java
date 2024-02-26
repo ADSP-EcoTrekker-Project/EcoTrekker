@@ -1,18 +1,33 @@
 package com.ecotrekker.routemanager.clients;
 
-import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
-import com.ecotrekker.routemanager.config.FeignClientConfig;
 import com.ecotrekker.routemanager.model.GamificationReply;
 import com.ecotrekker.routemanager.model.GamificationRequest;
 
-@FeignClient(value = "routes-gamification-client", url="${gamification-service.address}", configuration = FeignClientConfig.class)
-public interface GamificationServiceClient {
-    
-    @RequestMapping(method = RequestMethod.POST, value = "${gamification-service.uri}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    GamificationReply getPoints(@RequestBody GamificationRequest data);
+@Component
+public class GamificationServiceClient {
+    @Value("${gamification-service.uri}")
+    private String uri;
+
+    private final WebClient client;
+
+    @Autowired
+    public GamificationServiceClient(WebClient.Builder builder) {
+        this.client = builder.baseUrl("http://localhost:8082").build();
+    }
+
+    public Mono<GamificationReply> getPoints(GamificationRequest request) {
+        return this.client.post()
+        .uri(uri)
+        .bodyValue(request)
+        .accept(MediaType.APPLICATION_JSON)
+        .retrieve()
+        .bodyToMono(GamificationReply.class);
+    }
 }

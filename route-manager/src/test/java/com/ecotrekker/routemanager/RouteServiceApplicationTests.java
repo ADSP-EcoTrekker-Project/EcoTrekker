@@ -93,7 +93,7 @@ public class RouteServiceApplicationTests {
     final Dispatcher gameDispatcher = new Dispatcher() {
         @Override
         public MockResponse dispatch (RecordedRequest request) {
-            return new MockResponse().setResponseCode(404); //Gamification is not implemented yet
+            return new MockResponse().setResponseCode(200); //Gamification is not implemented yet
         }
     };
 

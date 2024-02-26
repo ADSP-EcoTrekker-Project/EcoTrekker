@@ -1,18 +1,33 @@
 package com.ecotrekker.routemanager.clients;
 
-import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
-import com.ecotrekker.routemanager.config.FeignClientConfig;
 import com.ecotrekker.routemanager.model.RouteStep;
 import com.ecotrekker.routemanager.model.RouteStepResult;
 
-@FeignClient(value = "routes-co2-service-client", url="${co2-service.address}", configuration = FeignClientConfig.class)
-public interface Co2ServiceClient {
+@Component
+public class Co2ServiceClient {
+    @Value("${co2-service.uri}")
+    private String uri;
+
+    private final WebClient client;
+
+    @Autowired
+    public Co2ServiceClient(WebClient.Builder builder) {
+        this.client = builder.baseUrl("http://localhost:8083").build();
+    }
     
-    @RequestMapping(method = RequestMethod.POST, value = "${co2-service.uri}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    RouteStepResult getCo2Result(@RequestBody RouteStep data);
+    public Mono<RouteStepResult> getCo2Result(RouteStep step) {
+        return this.client.post()
+        .uri(uri)
+        .bodyValue(step)
+        .accept(MediaType.APPLICATION_JSON)
+        .retrieve()
+        .bodyToMono(RouteStepResult.class);
+    }
 }

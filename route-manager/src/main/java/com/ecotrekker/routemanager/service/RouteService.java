@@ -3,11 +3,13 @@ package com.ecotrekker.routemanager.service;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.ecotrekker.routemanager.clients.Co2ServiceClient;
 import com.ecotrekker.routemanager.clients.DistanceServiceClient;
@@ -24,6 +26,9 @@ import com.ecotrekker.routemanager.model.RoutesRequest;
 import com.ecotrekker.routemanager.model.RoutesResult;
 
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import org.springframework.beans.factory.annotation.Value;
 
 @Slf4j
 @Service
@@ -38,75 +43,48 @@ public class RouteService {
     @Autowired
     private GamificationServiceClient gamificationServiceClient;
 
-
-    private Map<RouteStep, DistanceReply> calculateDistances(RoutesRequest routeRequest) {
-        return routeRequest.getRoutes()
-            .stream()
-            .flatMap(route -> route.getSteps().stream())
-            .distinct()
-            .collect(Collectors.toMap(
-                step -> step,
-                step -> {
-                    if (step.getDistance() == null) {
-                        DistanceReply reply = distanceServiceClient.getDistance(new DistanceRequest(step));
-                        step.setDistance(reply.getDistance());   
-                        return reply;
-                    }
-                    return null;
+    @Value("${distance-service.address}")
+    private String distanceServiceAddress;
+    @Value("${distance-service.uri}")
+    private String distanceServiceURI;
+    
+    public Mono<RoutesResult> requestCalculation(RoutesRequest routesRequest) {
+        ConcurrentHashMap<RouteStep, Double> distanceCache = new ConcurrentHashMap<>();
+        ConcurrentHashMap<RouteStep, RouteStepResult> co2Cache = new ConcurrentHashMap<>();
+        return Flux.fromIterable(routesRequest.getRoutes())
+            .flatMap(route -> Flux.fromIterable(route.getSteps())
+                .distinct()
+                .flatMap(routeStep -> Mono.justOrEmpty(routeStep.getDistance())
+                    .switchIfEmpty(Mono.justOrEmpty(distanceCache.get(routeStep))
+                        .switchIfEmpty(distanceServiceClient.getDistance(new DistanceRequest(routeStep))
+                            .map(reply -> reply.getDistance())
+                            .doOnNext(distance -> {
+                                routeStep.setDistance(distance);
+                                distanceCache.put(routeStep, distance);
+                            })
+                        )
+                    )
+                    .flatMap(distance -> Mono.justOrEmpty(co2Cache.get(routeStep))
+                        .switchIfEmpty(co2ServiceClient
+                            .getCo2Result(new RouteStep(routeStep.getStart(), routeStep.getEnd(), routeStep.getVehicle(), routeStep.getLine(), distance))
+                            .doOnNext(routeStepResult -> co2Cache.put(routeStep, routeStepResult))
+                        )
+                    )
+                )
+                .log()
+                .thenMany(Flux.fromIterable(route.getSteps()))
+                .reduce(0.0, (sum, routeStep) -> sum + co2Cache.get(routeStep).getCo2())
+                .map(totalCo2 -> new RouteResult(route.getSteps(), route.getId(), totalCo2)))
+            .collectList()
+            .map( routeResults -> {
+                if (routesRequest.isGamification()) {
+                    return gamificationServiceClient.getPoints(new GamificationRequest(routeResults))
+                    .map(reply -> new RoutesResult(reply.getRoutes(), true))
+                    .block();
+                } else {
+                    return new RoutesResult(routeResults, routesRequest.isGamification());
                 }
-                )
-                );
+            });
     }
     
-    private Map<RouteStep, RouteStepResult> calculateCo2(Map<RouteStep, DistanceReply> distanceFutures) {
-        return distanceFutures.keySet()
-        .stream()
-        .collect(Collectors.toMap(
-            step -> step, 
-            step -> co2ServiceClient.getCo2Result(step)));
-    }
-    
-    private List<RouteResult> calculateResults(RoutesRequest routeRequest, Map<RouteStep, RouteStepResult> co2Futures) {
-        return routeRequest
-            .getRoutes()
-            .parallelStream()
-            .map(route ->
-                new RouteResult(
-                    route.getSteps(),
-                    route.getId(),
-                    route
-                    .getSteps()
-                    .stream()
-                    .mapToDouble(step -> {
-                        try {
-                            log.error(step.toString());
-                            return co2Futures.get(step).getCo2();
-                        } catch (Exception e) {
-                            throw new RuntimeException();
-                        }
-                    })
-                    .sum()
-                )
-            )
-            .collect(Collectors.toList());
-    }
-    
-
-    public RoutesResult requestCalculation(RoutesRequest routeRequest) throws RouteServiceException {
-        try {
-            Map<RouteStep, DistanceReply> distanceFutures = calculateDistances(routeRequest);
-            // CompletableFuture.allOf(distanceFutures.values().toArray(new CompletableFuture[distanceFutures.size()])).get();
-            Map<RouteStep, RouteStepResult> co2Futures = calculateCo2(distanceFutures);
-            List<RouteResult> results = calculateResults(routeRequest, co2Futures);
-
-            if (routeRequest.isGamification()) {
-                GamificationReply gamificationReply = gamificationServiceClient.getPoints(new GamificationRequest(results));
-                return new RoutesResult(gamificationReply.getRoutes(), true);
-            }
-    
-            return new RoutesResult(results, false);
-        } catch (Exception e) {
-            throw new RouteServiceException("Error calculating Route data", e);
-        }
-    }
 }
