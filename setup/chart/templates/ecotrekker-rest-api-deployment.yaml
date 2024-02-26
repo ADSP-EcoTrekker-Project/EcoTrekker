@@ -25,7 +25,7 @@ spec:
             cpu: "256m"
             memory: "512Mi"
           limits:
-            cpu: "768"
+            cpu: "768m"
             memory: "512Mi"
         env:
         - name: ROUTE_SERVICE_ADDRESS
