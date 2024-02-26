@@ -2,7 +2,6 @@ package com.ecotrekker.routemanager.clients;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -19,8 +18,8 @@ public class DistanceServiceClient {
     private final WebClient client;
 
     @Autowired
-    public DistanceServiceClient(WebClient.Builder builder) {
-        this.client = builder.baseUrl("http://localhost:8084").build();
+    public DistanceServiceClient(WebClient.Builder builder, @Value("${distance-service.address}") String address) {
+        this.client = builder.baseUrl(address).build();
     }
 
     public Mono<DistanceReply> getDistance(DistanceRequest request) {

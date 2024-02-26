@@ -2,7 +2,6 @@ package com.ecotrekker.routemanager.clients;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -18,8 +17,8 @@ public class GamificationServiceClient {
     private final WebClient client;
 
     @Autowired
-    public GamificationServiceClient(WebClient.Builder builder) {
-        this.client = builder.baseUrl("http://localhost:8082").build();
+    public GamificationServiceClient(WebClient.Builder builder,  @Value("${gamification-service.address}") String address) {
+        this.client = builder.baseUrl(address).build();
     }
 
     public Mono<GamificationReply> getPoints(GamificationRequest request) {

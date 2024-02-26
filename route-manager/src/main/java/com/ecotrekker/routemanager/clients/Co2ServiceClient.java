@@ -2,7 +2,6 @@ package com.ecotrekker.routemanager.clients;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -18,8 +17,8 @@ public class Co2ServiceClient {
     private final WebClient client;
 
     @Autowired
-    public Co2ServiceClient(WebClient.Builder builder) {
-        this.client = builder.baseUrl("http://localhost:8083").build();
+    public Co2ServiceClient(WebClient.Builder builder,  @Value("${co2-service.address}") String address) {
+        this.client = builder.baseUrl(address).build();
     }
     
     public Mono<RouteStepResult> getCo2Result(RouteStep step) {
