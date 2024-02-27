@@ -57,36 +57,37 @@ public class PubTransportService {
             return Mono.error(new NoSuchElementException());
         }
         Flux<Double> distances = Flux.fromIterable(publicTransportRoutes.get(step.getLine()).getRoutes())
-        .flatMap(route -> {
-            AtomicBoolean isAdding = new AtomicBoolean(false);
-            AtomicBoolean isReversed = new AtomicBoolean(false);
-            double totalDistance = route.getStops()
-                .stream()
-                .mapToDouble(stop -> {
-                    if (stop.getStopName().equals(step.getStart())) {
-                        isAdding.set(true);
-                    }
-                    if (stop.getStopName().equals(step.getEnd())) {
-                        boolean foundStart = isAdding.get();
-                        if (!foundStart) {
-                            isReversed.set(true);
+            .flatMap(route -> {
+                AtomicBoolean isAdding = new AtomicBoolean(false);
+                AtomicBoolean isReversed = new AtomicBoolean(false);
+                double totalDistance = route.getStops()
+                    .stream()
+                    .mapToDouble(stop -> {
+                        if (stop.getStopName().equals(step.getStart())) {
+                            isAdding.set(true);
                         }
-                        isAdding.set(!foundStart);
-                    }
-                    if (isAdding.get()) {
-                        return stop.getDistanceToNextStopKm();
-                    }
-                    return 0;
-                })
-                .sum();
-            if (totalDistance == 0) {
-                return Mono.empty();
+                        if (stop.getStopName().equals(step.getEnd())) {
+                            boolean foundStart = isAdding.get();
+                            if (!foundStart) {
+                                isReversed.set(true);
+                            }
+                            isAdding.set(!foundStart);
+                        }
+                        if (isAdding.get()) {
+                            return stop.getDistanceToNextStopKm();
+                        }
+                        return 0;
+                    })
+                    .sum();
+                if (totalDistance == 0) {
+                    return Mono.empty();
+                }
+                if (isReversed.get()) {
+                    return Mono.just(-totalDistance);
+                }
+                return Mono.just(totalDistance);
             }
-            if (isReversed.get()) {
-                return Mono.just(-totalDistance);
-            }
-            return Mono.just(totalDistance);
-        });
+        );
 
         Flux<Double> positiveDistances = distances.filter(distance -> distance > 0);
         Flux<Double> negativeDistances = distances.filter(distance -> distance < 0).map(distance -> distance * -1);
