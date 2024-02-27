@@ -1,11 +1,15 @@
 package com.ecotrekker.publictransportdistance.service;
 
 import java.util.NoSuchElementException;
+
+import com.ecotrekker.publictransportdistance.model.RouteStep;
 import com.ecotrekker.publictransportdistance.model.PublicTransportRoutes;
 import com.ecotrekker.publictransportdistance.model.VehicleRoute;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,13 +21,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.Objects;
 
 @Slf4j
 @Service
-public class PublicTransportDistanceService {
+public class PubTransportService {
 
     private Map<String, VehicleRoute> publicTransportRoutes;
 
@@ -50,25 +52,26 @@ public class PublicTransportDistanceService {
         }
     }
 
-    public double calculateDistance(String start, String end, String line) {
-        if (publicTransportRoutes == null || !publicTransportRoutes.containsKey(line)) {
-            log.error("Received invalid parameters. start: " + start + " end: " + end + " line: " + line);
-            throw new NoSuchElementException();
+    public Mono<Double> calculateDistance(RouteStep step) {
+        if (publicTransportRoutes == null || !publicTransportRoutes.containsKey(step.getLine())) {
+            return Mono.error(new NoSuchElementException());
         }
-
-        VehicleRoute vRoute = publicTransportRoutes.get(line);
-        Optional<Double> distance = vRoute.getRoutes()
-        .parallelStream()
-        .map(route -> {
+        Flux<Double> distances = Flux.fromIterable(publicTransportRoutes.get(step.getLine()).getRoutes())
+        .flatMap(route -> {
             AtomicBoolean isAdding = new AtomicBoolean(false);
+            AtomicBoolean isReversed = new AtomicBoolean(false);
             double totalDistance = route.getStops()
                 .stream()
                 .mapToDouble(stop -> {
-                    if (stop.getStopName().equals(start)) {
+                    if (stop.getStopName().equals(step.getStart())) {
                         isAdding.set(true);
                     }
-                    if (stop.getStopName().equals(end)) {
-                        isAdding.set(false);
+                    if (stop.getStopName().equals(step.getEnd())) {
+                        boolean foundStart = isAdding.get();
+                        if (!foundStart) {
+                            isReversed.set(true);
+                        }
+                        isAdding.set(!foundStart);
                     }
                     if (isAdding.get()) {
                         return stop.getDistanceToNextStopKm();
@@ -77,17 +80,19 @@ public class PublicTransportDistanceService {
                 })
                 .sum();
             if (totalDistance == 0) {
-                return null;
+                return Mono.empty();
             }
-            return totalDistance;
-        })
-        .filter(Objects::nonNull)
-        .findAny();
-        if (distance.isPresent()) {
-            return distance.get();
-        } else {
-            log.error("Route does not exist for provided start and end stops");
-            throw new IllegalArgumentException();
-        }
+            if (isReversed.get()) {
+                return Mono.just(-totalDistance);
+            }
+            return Mono.just(totalDistance);
+        });
+
+        Flux<Double> positiveDistances = distances.filter(distance -> distance > 0);
+        Flux<Double> negativeDistances = distances.filter(distance -> distance < 0).map(distance -> distance * -1);
+
+        return Flux.concat(positiveDistances, negativeDistances)
+            .next()
+            .switchIfEmpty(Mono.error(new NoSuchElementException()));
     }
 }
