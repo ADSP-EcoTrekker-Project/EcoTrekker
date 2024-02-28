@@ -1,12 +1,12 @@
 from locust import HttpUser, between, constant_throughput, task
 
 car_request = {
-    "gamification" : True,
+    "gamification" : False,
     "routes" : [
         {
             "steps" : [
                 {
-                    "vehicle" : "car",
+                    "vehicle" : "/car",
                     "distance" : 3000.0,
                 }
             ]
@@ -15,16 +15,16 @@ car_request = {
 }
 
 bike_request = {
-    "gamification" : True,
+    "gamification" : False,
     "routes" : [
         {
             "steps" : [
                 {
-                    "vehicle" : "car",
+                    "vehicle" : "/car",
                     "distance" : 3000.0,
                 },
                 {
-                    "vehicle" : "e-bike",
+                    "vehicle" : "/bike/e-bike",
                     "distance" : 12000.0,
                 }
             ]
@@ -33,20 +33,20 @@ bike_request = {
 }
 
 metro_request = {
-    "gamification" : True,
+    "gamification" : False,
     "routes" : [
         {
             "steps" : [
                 {
-                    "vehicle" : "car",
+                    "vehicle" : "/car",
                     "distance" : 3000.0,
                 },
                 {
-                    "vehicle" : "e-bike",
+                    "vehicle" : "/bike/e-bike",
                     "distance" : 12000.0,
                 },
                 {
-                    "vehicle" : "metro",
+                    "vehicle" : "/metro",
                     "distance" : 6000.0,
                 }
             ]
@@ -55,18 +55,18 @@ metro_request = {
 }
 
 uni_request = {
-    "gamification" : True,
+    "gamification" : False,
     "routes" : [
         {
             "steps" : [
                 {
-                    "vehicle" : "bus",
+                    "vehicle" : "/bus",
                     "line" : "169",
                     "start" : "Müggelheim/Dorf (Berlin)",
                     "end" : "S Köpenick (Berlin)",
                 },
                 {
-                    "vehicle" : "train",
+                    "vehicle" : "/train",
                     "line" : "S3",
                     "start" : "S Köpenick (Berlin)",
                     "end" : "S Tiergarten (Berlin)",
@@ -77,8 +77,6 @@ uni_request = {
 }
 
 class EcoTrekkerUser(HttpUser):
-    wait_time = constant_throughput(5)
-
     @task
     def car(self):
         self.client.post("/v1/calc/co2",

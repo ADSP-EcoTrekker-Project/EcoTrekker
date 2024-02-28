@@ -17,9 +17,7 @@ public class CarbonIntensityController {
 
     @GetMapping("/grid")
     public ResponseEntity<?> getCarbonIntensity() {
-        Double carbonIntensity = carbonIntensityService.getLatestCarbonIntensity();
-        CarbonResponse response = new CarbonResponse();
-        response.setCarbonIntensity(carbonIntensity);
+        CarbonResponse response = carbonIntensityService.getLatestCarbonIntensity();
         return ResponseEntity.ok(response);
     }
 }
