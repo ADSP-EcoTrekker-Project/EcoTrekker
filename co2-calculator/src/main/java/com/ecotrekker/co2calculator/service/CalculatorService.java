@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.ecotrekker.co2calculator.clients.GridCO2CacheClient;
 import com.ecotrekker.co2calculator.clients.VehicleConsumptionClient;
 import com.ecotrekker.co2calculator.clients.VehicleDepotClient;
+import com.ecotrekker.co2calculator.model.CalculationResponse;
 import com.ecotrekker.co2calculator.model.ConsumptionCache;
 import com.ecotrekker.co2calculator.model.ConsumptionRequest;
 import com.ecotrekker.co2calculator.model.RouteStep;
@@ -32,7 +33,10 @@ public class CalculatorService {
     @Autowired
     private GridCO2CacheClient gridClient;
 
-    public Mono<RouteStepResult> requestCalculation(RouteStep step) {
+    @Autowired
+    private GamificationServiceModule gamificationModule;
+
+    public Mono<CalculationResponse> requestCalculation(RouteStep step, Boolean enableGamification) {
         return Mono.just(step)
         .filter(filterStep -> filterStep.getLine() != null && filterStep.isTopLevel()) // if is empty line or not toplevel vehicle skip ahead
         .flatMap(topStep -> depotClient.getVehicleShareInDepot(new VehicleDepotRequest(topStep.getLine())))
@@ -69,7 +73,11 @@ public class CalculatorService {
                 .map(cache -> cache.getCo2() * cache.getShare() * step.getDistance())
                 .reduce(0.0, (sum, result) -> sum + result)
             )
-            .map(result -> new RouteStepResult(step.getStart(), step.getEnd(), step.getVehicle(), step.getLine(), step.getDistance(), result))
+            .map(result -> {
+                RouteStepResult stepResult = new RouteStepResult(step.getStart(), step.getEnd(), step.getVehicle(), step.getLine(), step.getDistance(), result);
+                Double points = enableGamification ? gamificationModule.calculatePoints(stepResult) : null;
+                return new CalculationResponse(stepResult, points);
+            })
         );
     }
 }

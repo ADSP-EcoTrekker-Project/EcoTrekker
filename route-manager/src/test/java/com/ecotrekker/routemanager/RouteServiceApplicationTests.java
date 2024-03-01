@@ -13,6 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import com.ecotrekker.routemanager.model.CalculationRequest;
+import com.ecotrekker.routemanager.model.CalculationResponse;
 import com.ecotrekker.routemanager.model.DistanceReply;
 import com.ecotrekker.routemanager.model.DistanceRequest;
 import com.ecotrekker.routemanager.model.Route;
@@ -60,11 +62,12 @@ public class RouteServiceApplicationTests {
         @Override
         public MockResponse dispatch (RecordedRequest request) {
             try {
-                mapper.readValue(request.getBody().readUtf8(), DistanceRequest.class);
+                DistanceRequest requestBody = mapper.readValue(request.getBody().readUtf8(), DistanceRequest.class);
+                RouteStep step = requestBody.getStep();
                 return new MockResponse()
                     .setResponseCode(200)
                     .addHeader("Content-Type", "application/json; charset=utf-8")
-                    .setBody(mapper.writeValueAsString(new DistanceReply(1000.0)));
+                    .setBody(mapper.writeValueAsString(new DistanceReply(step.getLine().equals("m38") ? 500.0 : 1000.0)));
             } catch (Exception e) {
                 e.printStackTrace();
                 return new MockResponse().setResponseCode(500);
@@ -75,11 +78,17 @@ public class RouteServiceApplicationTests {
         @Override
         public MockResponse dispatch (RecordedRequest request) {
             try {
-                RouteStep input = mapper.readValue(request.getBody().readUtf8(), RouteStep.class);    
+                CalculationRequest requestBody = mapper.readValue(request.getBody().readUtf8(), CalculationRequest.class);    
+                RouteStep input = requestBody.getStep();
                 return new MockResponse()
                     .setResponseCode(200)
                     .addHeader("Content-Type", "application/json; charset=utf-8")
-                    .setBody(mapper.writeValueAsString(new RouteStepResult(input.getStart(), input.getEnd(), input.getVehicle(), input.getLine(), input.getDistance(), 42.0)));
+                    .setBody(mapper.writeValueAsString(
+                        new CalculationResponse(
+                            new RouteStepResult(input.getStart(), input.getEnd(), input.getVehicle(), input.getLine(), input.getDistance(), 42.0),
+                            100.0)
+                        )
+                    );
             } catch (Exception e) {
                 e.printStackTrace();
                 return new MockResponse().setResponseCode(500);
@@ -149,6 +158,5 @@ public class RouteServiceApplicationTests {
         .exchange()
         .expectStatus().isOk()
         .expectBody(RoutesResult.class);
-        
     }
 }

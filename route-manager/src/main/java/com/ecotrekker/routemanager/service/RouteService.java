@@ -7,12 +7,11 @@ import org.springframework.stereotype.Service;
 
 import com.ecotrekker.routemanager.clients.Co2ServiceClient;
 import com.ecotrekker.routemanager.clients.DistanceServiceClient;
-import com.ecotrekker.routemanager.clients.GamificationServiceClient;
+import com.ecotrekker.routemanager.model.CalculationCache;
+import com.ecotrekker.routemanager.model.CalculationResponse;
 import com.ecotrekker.routemanager.model.DistanceRequest;
-import com.ecotrekker.routemanager.model.GamificationRequest;
 import com.ecotrekker.routemanager.model.RouteResult;
 import com.ecotrekker.routemanager.model.RouteStep;
-import com.ecotrekker.routemanager.model.RouteStepResult;
 import com.ecotrekker.routemanager.model.RoutesRequest;
 import com.ecotrekker.routemanager.model.RoutesResult;
 
@@ -28,9 +27,6 @@ public class RouteService {
     
     @Autowired
     private Co2ServiceClient co2ServiceClient;
-    
-    @Autowired
-    private GamificationServiceClient gamificationServiceClient;
 
     @Value("${distance-service.address}")
     private String distanceServiceAddress;
@@ -39,7 +35,7 @@ public class RouteService {
     
     public Mono<RoutesResult> requestCalculation(RoutesRequest routesRequest) {
         ConcurrentHashMap<RouteStep, Double> distanceCache = new ConcurrentHashMap<>();
-        ConcurrentHashMap<RouteStep, RouteStepResult> co2Cache = new ConcurrentHashMap<>();
+        ConcurrentHashMap<RouteStep, CalculationResponse> calcCache = new ConcurrentHashMap<>();
         return Flux.fromIterable(routesRequest.getRoutes())
             .flatMap(route -> Flux.fromIterable(route.getSteps())
                 .distinct()
@@ -53,28 +49,27 @@ public class RouteService {
                             })
                         )
                     )
-                    .flatMap(distance -> Mono.justOrEmpty(co2Cache.get(routeStep))
+                    .flatMap(distance -> Mono.justOrEmpty(calcCache.get(routeStep))
                         .switchIfEmpty(co2ServiceClient
-                            .getCo2Result(new RouteStep(routeStep.getStart(), routeStep.getEnd(), routeStep.getVehicle(), routeStep.getLine(), distance))
+                            .getCo2Result(new RouteStep(routeStep.getStart(), routeStep.getEnd(), routeStep.getVehicle(), routeStep.getLine(), distance), routesRequest.isGamification())
                             .doOnNext(routeStepResult -> {
-                                co2Cache.put(routeStep, routeStepResult);
+                                calcCache.put(routeStep, routeStepResult);
                             })
                         )
                     )
                 )
                 .thenMany(Flux.fromIterable(route.getSteps()))
-                .reduce(0.0, (sum, routeStep) -> sum + co2Cache.get(routeStep).getCo2())
-                .map(totalCo2 -> new RouteResult(route.getSteps(), route.getId(), totalCo2))
+                .reduce(new CalculationCache(0.0, 0.0), (cache, routeStep) -> {
+                    CalculationResponse calculationResponseEntry = calcCache.get(routeStep);
+                    cache.setCo2(cache.getCo2() + calculationResponseEntry.getResult().getCo2());
+                    cache.setPoints(cache.getPoints() + calculationResponseEntry.getPoints());
+                    return cache;
+                })  
+                .map(result -> new RouteResult(route.getSteps(), route.getId(), result.getCo2(), result.getPoints()))
+                
             )
             .collectList()
-            .flatMap( routeResults -> {
-                if (routesRequest.isGamification()) {
-                    return gamificationServiceClient.getPoints(new GamificationRequest(routeResults))
-                    .map(reply -> new RoutesResult(reply.getRoutes(), true));
-                } else {
-                    return Mono.just(new RoutesResult(routeResults, routesRequest.isGamification()));
-                }
-            });
+            .map(routeResults -> new RoutesResult(routeResults, routesRequest.isGamification()));
     }
     
 }

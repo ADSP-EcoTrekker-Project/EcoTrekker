@@ -8,6 +8,7 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
 import com.ecotrekker.co2calculator.model.CalculationErrorResponse;
+import com.ecotrekker.co2calculator.model.CalculationRequest;
 import com.ecotrekker.co2calculator.model.RouteStep;
 import com.ecotrekker.co2calculator.service.CalculatorService;
 
@@ -21,8 +22,8 @@ public class Co2CalculatorHandler {
     CalculatorService calculatorService;
     
     public Mono<ServerResponse> calculateCo2(ServerRequest request) {
-        return request.bodyToMono(RouteStep.class)
-        .flatMap(stepRequest -> calculatorService.requestCalculation(stepRequest))
+        return request.bodyToMono(CalculationRequest.class)
+        .flatMap(calcRequest -> calculatorService.requestCalculation(calcRequest.getStep(), calcRequest.isGamification()))
         .flatMap(result -> {
             log.info("we try to send 200 with "+ result.toString());
             return ServerResponse.ok()

@@ -6,8 +6,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import com.ecotrekker.routemanager.model.CalculationRequest;
+import com.ecotrekker.routemanager.model.CalculationResponse;
 import com.ecotrekker.routemanager.model.RouteStep;
-import com.ecotrekker.routemanager.model.RouteStepResult;
 
 @Component
 public class Co2ServiceClient {
@@ -21,12 +22,12 @@ public class Co2ServiceClient {
         this.client = builder.baseUrl(address).build();
     }
     
-    public Mono<RouteStepResult> getCo2Result(RouteStep step) {
+    public Mono<CalculationResponse> getCo2Result(RouteStep step, Boolean enableGamification) {
         return this.client.post()
         .uri(uri)
-        .bodyValue(step)
+        .bodyValue(new CalculationRequest(step, enableGamification))
         .retrieve()
-        .bodyToMono(RouteStepResult.class)
+        .bodyToMono(CalculationResponse.class)
         .single();
     }
 }
