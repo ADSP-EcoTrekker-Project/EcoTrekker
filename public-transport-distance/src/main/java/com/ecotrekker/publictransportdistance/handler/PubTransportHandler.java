@@ -30,6 +30,7 @@ public class PubTransportHandler {
             if (ex instanceof NoSuchElementException) {
                 return ServerResponse.notFound().build();
             } else if (ex instanceof IllegalArgumentException) {
+                ex.printStackTrace();
                 return ServerResponse.badRequest().build();
             }
             return ServerResponse.status(500).build();
