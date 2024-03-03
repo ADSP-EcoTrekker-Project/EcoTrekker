@@ -53,7 +53,7 @@ public class GamificationServiceModule {
 
     private double prefVehicleMultiplier(String vehicle) {
         String topLevelElement = vehicle.split("/", 2)[0];
-        Optional<Double> factor = Optional.of(PREF_RATIO.get(topLevelElement));
+        Optional<Double> factor = Optional.ofNullable(PREF_RATIO.get(topLevelElement));
         return factor.orElse(DEF_PREF_MULTIPLIER);
     }
 
