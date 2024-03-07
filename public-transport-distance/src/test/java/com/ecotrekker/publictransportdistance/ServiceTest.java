@@ -76,4 +76,64 @@ public class ServiceTest {
             assertTrue(body.getResponseBody().getDistance() == (16.83941862107101) * 1000);
         });
     }
+
+    @Test
+    public void testDistanceCalculation4() {
+        String start = "Lagunenweg (Berlin)";
+        String end = "Frankenbergstr. (Berlin)";
+        String line = "161";
+        long startTime = System.currentTimeMillis();
+        webTestClient.post().uri("/v1/calc/distance")
+        .bodyValue(new DistanceRequest(new RouteStep(start,end,"sbahn",line, null)))
+        .exchange()
+        .expectStatus()
+        .is2xxSuccessful()
+        .expectBody(DistanceResponse.class)
+        .consumeWith(body -> { 
+            long stopTime = System.currentTimeMillis();
+            long elapsedTime = stopTime - startTime;
+            System.out.println("Result: "+body.getResponseBody().getDistance()+"km took: "+elapsedTime+ "ms");
+            assertTrue(body.getResponseBody().getDistance() == 0.18906660318538865 + 0.4334266938652022);
+        });
+    }
+
+    @Test
+    public void testDistanceCalculation5() {
+        String start = "Frankenbergstr. (Berlin)";
+        String end = "Lagunenweg (Berlin)";
+        String line = "161";
+        long startTime = System.currentTimeMillis();
+        webTestClient.post().uri("/v1/calc/distance")
+        .bodyValue(new DistanceRequest(new RouteStep(start,end,"sbahn",line, null)))
+        .exchange()
+        .expectStatus()
+        .is2xxSuccessful()
+        .expectBody(DistanceResponse.class)
+        .consumeWith(body -> { 
+            long stopTime = System.currentTimeMillis();
+            long elapsedTime = stopTime - startTime;
+            System.out.println("Result: "+body.getResponseBody().getDistance()+"km took: "+elapsedTime+ "ms");
+            assertTrue(body.getResponseBody().getDistance() == 0.33385591527773206 + 0.3405406025374646);
+        });
+    }
+
+    @Test
+    public void testDistanceCalculation6() {
+        String start = "Frankenbergstr. (Berlin)";
+        String end = "Fürstenwalder Allee/Schule (Berlin)";
+        String line = "161";
+        long startTime = System.currentTimeMillis();
+        webTestClient.post().uri("/v1/calc/distance")
+        .bodyValue(new DistanceRequest(new RouteStep(start,end,"sbahn",line, null)))
+        .exchange()
+        .expectStatus()
+        .is2xxSuccessful()
+        .expectBody(DistanceResponse.class)
+        .consumeWith(body -> { 
+            long stopTime = System.currentTimeMillis();
+            long elapsedTime = stopTime - startTime;
+            System.out.println("Result: "+body.getResponseBody().getDistance()+"km took: "+elapsedTime+ "ms");
+            assertTrue(body.getResponseBody().getDistance() == 0.33385591527773206 + 0.3405406025374646);
+        });
+    }
 }
