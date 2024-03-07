@@ -14,30 +14,32 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class IVehicleTree extends AbstractVehicleDatastructure<IVehicleTreeElement> {
 
-    private Map<String, IVehicleTreeElement> vehicleTreeMap;
+    private Map<Integer, IVehicleTreeElement> vehicleTreeMap;
 
-    public Map<String, IVehicleTreeElement> asMap() {
+    public Map<Integer, IVehicleTreeElement> asMap() {
         return vehicleTreeMap;
     }
 
-    private String asPrettyString(){
+    private String asPrettyString() {
         String result = "";
         Stack<IVehicleTreeElement> nodeStack = new Stack<>();
 
         nodeStack.push((IVehicleTreeElement) this.getRoot());
 
-        while(nodeStack.empty() == false){
+        while (nodeStack.empty() == false) {
             IVehicleTreeElement currentE = nodeStack.pop();
 
-            if (currentE.getName() != ""){
+            if (currentE.getName() != "") {
                 int parents = currentE.numParents() - 1;
                 result += "|";
-                for (int i = 0; i < parents; i++) { result += "\t"; }
+                for (int i = 0; i < parents; i++) {
+                    result += "\t";
+                }
                 result += currentE.getName();
                 result += "\n";
             }
-            
-            for (AbstractVehicleDatastructureElement vehicle : currentE.getChildren()){
+
+            for (AbstractVehicleDatastructureElement vehicle : currentE.getChildren()) {
                 IVehicleTreeElement castV = (IVehicleTreeElement) vehicle;
                 nodeStack.push(castV);
             }
@@ -61,7 +63,7 @@ public class IVehicleTree extends AbstractVehicleDatastructure<IVehicleTreeEleme
             element.setParent(getRoot());
             getRoot().getChildren().add(element);
         } finally {
-            vehicleTreeMap.put(element.getName(), element);
+            vehicleTreeMap.put(element.getName().hashCode(), element);
         }
     }
 
@@ -79,16 +81,18 @@ public class IVehicleTree extends AbstractVehicleDatastructure<IVehicleTreeEleme
     @Override
     public IVehicleTreeElement getElement(String name) throws NoSuchElementException {
         IVehicleTreeElement result = vehicleTreeMap.get(name);
-        if (result == null) { throw new NoSuchElementException("Could not find element"); }
+        if (result == null) {
+            throw new NoSuchElementException("Could not find element");
+        }
         return result;
     }
 
     @Override
     public IVehicleTreeElement getElement(String[] name) throws NoSuchElementException {
-        for (int i = name.length - 1; i >= 0; i--){
+        for (int i = name.length - 1; i >= 0; i--) {
             String element = name[i];
             // Root element "" is not part of the map
-            IVehicleTreeElement result = vehicleTreeMap.get(element);
+            IVehicleTreeElement result = vehicleTreeMap.get(element.hashCode());
             if (result != null) {
                 return result;
             }

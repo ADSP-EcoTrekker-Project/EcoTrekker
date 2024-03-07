@@ -83,9 +83,9 @@ public class PubTransportService {
                     return Mono.empty();
                 }
                 if (isReversed.get()) {
-                    return Mono.just(-totalDistance);
+                    return Mono.just(-totalDistance * 1000);
                 }
-                return Mono.just(totalDistance);
+                return Mono.just(totalDistance * 1000);
             }
         );
 

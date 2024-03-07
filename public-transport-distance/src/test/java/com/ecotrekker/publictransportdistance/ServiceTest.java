@@ -33,7 +33,7 @@ public class ServiceTest {
             long stopTime = System.currentTimeMillis();
             long elapsedTime = stopTime - startTime;
             System.out.println("Result: "+body.getResponseBody().getDistance()+"m took: "+elapsedTime+ "ms");
-            assertTrue(body.getResponseBody().getDistance() == 35.39862429197586);
+            assertTrue(body.getResponseBody().getDistance() == (35.39862429197586) * 1000);
         });
     }
     
@@ -53,7 +53,7 @@ public class ServiceTest {
             long stopTime = System.currentTimeMillis();
             long elapsedTime = stopTime - startTime;
             System.out.println("Result: "+body.getResponseBody().getDistance()+"km took: "+elapsedTime+ "ms");
-            assertTrue(body.getResponseBody().getDistance() == 2.869771777240845 );
+            assertTrue(body.getResponseBody().getDistance() == (2.869771777240845) * 1000);
         });
     }
 
@@ -73,7 +73,7 @@ public class ServiceTest {
             long stopTime = System.currentTimeMillis();
             long elapsedTime = stopTime - startTime;
             System.out.println("Result: "+body.getResponseBody().getDistance()+"km took: "+elapsedTime+ "ms");
-            assertTrue(body.getResponseBody().getDistance() == 16.83941862107101);
+            assertTrue(body.getResponseBody().getDistance() == (16.83941862107101) * 1000);
         });
     }
 }

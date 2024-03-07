@@ -10,7 +10,7 @@ public abstract class AbstractVehicleDatastructure <T extends AbstractVehicleDat
 
     private T root = null;
 
-    public Map<String, T> asMap() {
+    public Map<Integer, T> asMap() {
         new UnsupportedOperationException("Please override in Subtypes");
         return null;
     }
