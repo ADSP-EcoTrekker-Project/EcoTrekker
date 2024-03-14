@@ -43,6 +43,7 @@ public class CarbonIntensityService {
 
             @Override
             public void onNext(ElectricityMapsResponse response) {
+                log.info(response.toString());
                 latestCarbonIntensity.setCarbonIntensity(response.getCarbonIntensity());
                 log.info("Updated carbon intensity to " + latestCarbonIntensity.getCarbonIntensity().toString());
             }
