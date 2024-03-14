@@ -23,6 +23,9 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+### maven ###
+target/*
+
 ### STS ###
 .apt_generated
 .classpath
