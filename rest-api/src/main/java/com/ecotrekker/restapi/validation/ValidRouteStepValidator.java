@@ -39,7 +39,6 @@ public class ValidRouteStepValidator implements ConstraintValidator<ValidRouteSt
             return false;
         }
 
-
         return true;
     }
 
