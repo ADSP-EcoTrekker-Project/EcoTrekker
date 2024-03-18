@@ -14,9 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class IVehicleTree extends AbstractVehicleDatastructure<IVehicleTreeElement> {
 
-    private Map<Integer, IVehicleTreeElement> vehicleTreeMap;
+    private Map<String, IVehicleTreeElement> vehicleTreeMap;
 
-    public Map<Integer, IVehicleTreeElement> asMap() {
+    public Map<String, IVehicleTreeElement> asMap() {
         return vehicleTreeMap;
     }
 
@@ -63,7 +63,7 @@ public class IVehicleTree extends AbstractVehicleDatastructure<IVehicleTreeEleme
             element.setParent(getRoot());
             getRoot().getChildren().add(element);
         } finally {
-            vehicleTreeMap.put(element.getName().hashCode(), element);
+            vehicleTreeMap.put(element.getName(), element);
         }
     }
 
@@ -92,7 +92,7 @@ public class IVehicleTree extends AbstractVehicleDatastructure<IVehicleTreeEleme
         for (int i = name.length - 1; i >= 0; i--) {
             String element = name[i];
             // Root element "" is not part of the map
-            IVehicleTreeElement result = vehicleTreeMap.get(element.hashCode());
+            IVehicleTreeElement result = vehicleTreeMap.get(element);
             if (result != null) {
                 return result;
             }

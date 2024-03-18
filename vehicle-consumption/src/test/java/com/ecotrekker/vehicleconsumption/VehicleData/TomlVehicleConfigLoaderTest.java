@@ -37,7 +37,7 @@ public class TomlVehicleConfigLoaderTest {
         try {
             IVehicleTree t = load_config_into_tree("tomlloader/single_simple.toml");
 
-            Map<Integer, IVehicleTreeElement> l = t.asMap();
+            Map<String, IVehicleTreeElement> l = t.asMap();
 
             Assertions.assertTrue(l.size() > 0);
 
@@ -64,7 +64,7 @@ public class TomlVehicleConfigLoaderTest {
         try {
             IVehicleTree t = load_config_into_tree("tomlloader/single_complex.toml");
 
-            Map<Integer, IVehicleTreeElement> l = t.asMap();
+            Map<String, IVehicleTreeElement> l = t.asMap();
 
             Assertions.assertTrue(l.size() > 0);
 
@@ -91,7 +91,7 @@ public class TomlVehicleConfigLoaderTest {
         try {
             IVehicleTree t = load_config_into_tree("tomlloader/multi_simple.toml");
 
-            Map<Integer, IVehicleTreeElement> l = t.asMap();
+            Map<String, IVehicleTreeElement> l = t.asMap();
 
             Assertions.assertTrue(l.size() > 0);
 
