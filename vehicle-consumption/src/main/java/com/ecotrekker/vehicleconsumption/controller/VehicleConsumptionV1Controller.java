@@ -26,20 +26,26 @@ public class VehicleConsumptionV1Controller {
     IVehicleTree vehicles;
 
     @PostMapping("/consumption")
-    public ResponseEntity<?> getVehicleConsumption(@RequestBody VehicleConsumptionRequest request){
+    public ResponseEntity<VehicleConsumptionReply> getVehicleConsumption(@RequestBody VehicleConsumptionRequest request) {
         String fullname = request.getVehicleName();
+
+        // Check if the vehicle name is empty or null
+        if (fullname == null || fullname.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
         String[] name = fullname.split("\\/");
         try {
             IVehicleTreeElement v = vehicles.getElement(name);
             VehicleConsumptionReply reply = new VehicleConsumptionReply(request.getVehicleName(), v.getKwh(), v.getCo2());
-            return new ResponseEntity<VehicleConsumptionReply>(reply, HttpStatus.OK);
+            return ResponseEntity.ok(reply);
         } catch (NoSuchElementException e) {
-            VehicleConsumptionReply reply = new VehicleConsumptionReply(request.getVehicleName(), -1D, -1D);
-            return new ResponseEntity<>(reply, HttpStatus.NOT_FOUND);
+            return ResponseEntity.badRequest().build();
         } catch (Exception e) {
-            VehicleConsumptionReply reply = new VehicleConsumptionReply(request.getVehicleName(), -1D, -1D);
-            return new ResponseEntity<>(reply, HttpStatus.INTERNAL_SERVER_ERROR);
+            log.error("Error processing request", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    
+
+
 }
