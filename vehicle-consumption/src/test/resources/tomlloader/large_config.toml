@@ -1,0 +1,14 @@
+[[vehicle]]
+name = "car"
+kwh = 100
+co2 = 50
+
+[[vehicle]]
+name = "tram"
+kwh = 150
+co2 = 75
+
+[[vehicle]]
+name = "train"
+kwh = 200
+co2 = 100
