@@ -1,0 +1,42 @@
+[[depot]]
+lines = ["123", "456", "789"]
+vehicles = [
+    {"name" = "e-bus", "share" = 0.1},
+    {"name" = "ice-bus", "share" = 0.9},
+]
+
+[[depot]]
+lines = ["987", "654", "312"]
+vehicles = [
+    {"name" = "e-bus", "share" = 0.4},
+    {"name" = "ice-bus", "share" = 0.6},
+]
+
+[[depot]]
+lines = ["147", "258", "396", "X12", "X23", "X34"]
+vehicles = [
+    {"name" = "e-bus", "share" = 0.5},
+    {"name" = "ice-bus", "share" = 0.5},
+]
+
+[[depot]]
+lines = ["896", "753", "214", "M27"]
+vehicles = [
+    {"name" = "e-bus", "share" = 0.6},
+    {"name" = "ice-bus", "share" = 0.4},
+]
+
+[[depot]]
+lines = ["435", "876", "245", "576"]
+vehicles = [
+    {"name" = "e-bus", "share" = 0.7},
+    {"name" = "ice-bus", "share" = 0.3},
+]
+
+[[depot]]
+lines = ["734", "738", "217", "483"]
+vehicles = [
+    {"name" = "e-bus", "share" = 0.8},
+    {"name" = "ice-bus", "share" = 0.2},
+]
+
