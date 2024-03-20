@@ -3,6 +3,7 @@ package com.ecotrekker.co2calculator;
 import java.io.IOException;
 import java.net.URL;
 
+import com.ecotrekker.co2calculator.model.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,16 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
-import com.ecotrekker.co2calculator.model.ConsumptionRequest;
-import com.ecotrekker.co2calculator.model.ConsumptionResponse;
-import com.ecotrekker.co2calculator.model.RouteStep;
-import com.ecotrekker.co2calculator.model.RouteStepResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import okhttp3.mockwebserver.Dispatcher;
@@ -39,7 +32,7 @@ public class CalculatorE2ETest {
     @Value("${consumption-service.address}")
     private String consumURL;
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
     final Dispatcher dispatcher = new Dispatcher() {
 
@@ -90,7 +83,6 @@ public class CalculatorE2ETest {
     }
     
     @Autowired
-    private WebTestClient webTestClient;
     private WebTestClient webTestClient;
 
     @Test
