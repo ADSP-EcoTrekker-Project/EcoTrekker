@@ -1,6 +1,6 @@
 package com.ecotrekker.restapi;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.net.URL;
@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 
+import java.util.Collections;
 import java.util.UUID;
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
@@ -37,7 +38,7 @@ public class WebClientTest {
     
     public MockWebServer mockBackEnd;
     
-    private ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
     @Value("${route-service.address}")
     private String baseURL;
 
@@ -82,7 +83,28 @@ public class WebClientTest {
             .addHeader("Content-Type", "application/json"));
 
         RoutesResult r = service.requestCalculation(testRoutes);
-        assertTrue(r.getRoutes().size() >= 1);
+        assertFalse(r.getRoutes().isEmpty());
+    }
+
+    @Test
+    public void getResultsEmptyRoutesRequest() throws Exception {
+        RoutesRequest emptyRoutesRequest = new RoutesRequest(Collections.emptyList(), false);
+        mockBackEnd.enqueue(new MockResponse()
+                .setBody(mapper.writeValueAsString(new RoutesResult(Collections.emptyList(), false)))
+                .addHeader("Content-Type", "application/json"));
+
+        RoutesResult r = service.requestCalculation(emptyRoutesRequest);
+        assertTrue(r.getRoutes().isEmpty());
+    }
+
+    @Test
+    public void getResultsEmptyBody() {
+        mockBackEnd.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .addHeader("Content-Type", "application/json"));
+
+        RoutesResult r = service.requestCalculation(new RoutesRequest(Collections.emptyList(), false));
+        assertNull(r);
     }
 
 }

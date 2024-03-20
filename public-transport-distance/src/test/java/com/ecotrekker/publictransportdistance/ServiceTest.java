@@ -4,11 +4,19 @@ import com.ecotrekker.publictransportdistance.model.DistanceRequest;
 import com.ecotrekker.publictransportdistance.model.DistanceResponse;
 import com.ecotrekker.publictransportdistance.model.RouteStep;
 import static org.junit.Assert.assertTrue;
+import com.ecotrekker.publictransportdistance.model.DistanceRequest;
+import com.ecotrekker.publictransportdistance.model.DistanceResponse;
+import com.ecotrekker.publictransportdistance.model.RouteStep;
+import static org.junit.Assert.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.web.reactive.server.WebTestClient;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @SpringBootTest(
     webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -53,7 +61,7 @@ public class ServiceTest {
             long stopTime = System.currentTimeMillis();
             long elapsedTime = stopTime - startTime;
             System.out.println("Result: "+body.getResponseBody().getDistance()+"km took: "+elapsedTime+ "ms");
-            assertTrue(body.getResponseBody().getDistance() == 2.869771777240845);
+            assertTrue(body.getResponseBody().getDistance() == 2.869771777240845 );
         });
     }
 
@@ -136,4 +144,69 @@ public class ServiceTest {
             assertTrue(body.getResponseBody().getDistance() == 0.33385591527773206 + 0.3405406025374646);
         });
     }
+
+    @Test
+    public void testInvalidInput() {
+        String start = null;
+        String end = "";
+        String line = "S2";
+        webTestClient.post().uri("/v1/calc/distance")
+                .bodyValue(new DistanceRequest(new RouteStep(start, end, "sbahn", line, null)))
+                .exchange()
+                .expectStatus().is4xxClientError();
+    }
+
+    @Test
+    public void testNonexistentStation() {
+        String start = "Nonexistent Station";
+        String end = "Invalid End Station";
+        String line = "S2";
+        webTestClient.post().uri("/v1/calc/distance")
+                .bodyValue(new DistanceRequest(new RouteStep(start, end, "sbahn", line, null)))
+                .exchange()
+                .expectStatus().is4xxClientError();
+    }
+
+    @Test
+    public void testPerformance() {
+        String start = "S+U Pankow (Berlin)";
+        String end = "S Schönefeld (bei Berlin) Bhf";
+        String line = "S85";
+        int numRequests = 10000;
+        for (int i = 0; i < numRequests; i++) {
+            webTestClient.post().uri("/v1/calc/distance")
+                    .bodyValue(new DistanceRequest(new RouteStep(start, end, "sbahn", line, null)))
+                    .exchange()
+                    .expectStatus().is2xxSuccessful();
+        }
+    }
+
+    @Test
+    public void testConcurrency() {
+        String start = "S+U Pankow (Berlin)";
+        String end = "S Schönefeld (bei Berlin) Bhf";
+        String line = "S85";
+        int numThreads = 10;
+        int numRequestsPerThread = 1000;
+        CountDownLatch latch = new CountDownLatch(numThreads);
+        ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
+        for (int i = 0; i < numThreads; i++) {
+            executorService.execute(() -> {
+                for (int j = 0; j < numRequestsPerThread; j++) {
+                    webTestClient.post().uri("/v1/calc/distance")
+                            .bodyValue(new DistanceRequest(new RouteStep(start, end, "sbahn", line, null)))
+                            .exchange()
+                            .expectStatus().is2xxSuccessful();
+                }
+                latch.countDown();
+            });
+        }
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        executorService.shutdown();
+    }
+
 }

@@ -10,10 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 
-import com.ecotrekker.co2calculator.model.CalculationRequest;
-import com.ecotrekker.co2calculator.model.CalculationResponse;
 import com.ecotrekker.co2calculator.model.ConsumptionRequest;
 import com.ecotrekker.co2calculator.model.ConsumptionResponse;
 import com.ecotrekker.co2calculator.model.RouteStep;
@@ -88,6 +90,7 @@ public class CalculatorE2ETest {
     }
     
     @Autowired
+    private WebTestClient webTestClient;
     private WebTestClient webTestClient;
 
     @Test
