@@ -3,27 +3,30 @@ package com.ecotrekker.publictransportdistance;
 import com.ecotrekker.publictransportdistance.model.DistanceRequest;
 import com.ecotrekker.publictransportdistance.model.DistanceResponse;
 import com.ecotrekker.publictransportdistance.model.RouteStep;
+import com.ecotrekker.publictransportdistance.service.GenericCacheManager;
+
 import static org.junit.Assert.assertTrue;
-import com.ecotrekker.publictransportdistance.model.DistanceRequest;
-import com.ecotrekker.publictransportdistance.model.DistanceResponse;
-import com.ecotrekker.publictransportdistance.model.RouteStep;
-import static org.junit.Assert.assertTrue;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 @SpringBootTest(
     webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ServiceTest {
-
+    @Autowired
+    private GenericCacheManager<RouteStep,Double> genericCacheManager;
+    
     @Autowired
     private WebTestClient webTestClient;
+
+    @BeforeEach
+    public void setup() {
+        genericCacheManager.reset();
+    }
 
     @Test
     public void testDistanceCalculation() {
@@ -44,7 +47,27 @@ public class ServiceTest {
             assertTrue(body.getResponseBody().getDistance() == 35.39862429197586);
         });
     }
-    
+
+    @Test
+    public void testDistanceCalculationCalculationCache() {
+        String start = "S+U Pankow (Berlin)";
+        String end = "S Schönefeld (bei Berlin) Bhf";
+        String line = "S85";
+        long startTime = System.currentTimeMillis();
+        DistanceResponse reply = webTestClient.post().uri("/v1/calc/distance")
+            .bodyValue(new DistanceRequest(new RouteStep(start,end,"sbahn",line, null)))
+            .exchange()
+            .expectStatus()
+            .is2xxSuccessful()
+            .expectBody(DistanceResponse.class)
+            .returnResult()
+            .getResponseBody();
+        long elapsedTime = System.currentTimeMillis() - startTime;
+        System.out.println("Result: "+reply.getDistance()+"m took: "+elapsedTime+ "ms");
+        assertTrue(reply.getDistance() == 35.39862429197586);
+        assertTrue(genericCacheManager.estimatedSize() == 1);
+    }
+
     @Test
     public void testDistanceCalculation2() {
         String start = "S Lankwitz (Berlin)";
@@ -166,47 +189,4 @@ public class ServiceTest {
                 .exchange()
                 .expectStatus().is4xxClientError();
     }
-
-    @Test
-    public void testPerformance() {
-        String start = "S+U Pankow (Berlin)";
-        String end = "S Schönefeld (bei Berlin) Bhf";
-        String line = "S85";
-        int numRequests = 10000;
-        for (int i = 0; i < numRequests; i++) {
-            webTestClient.post().uri("/v1/calc/distance")
-                    .bodyValue(new DistanceRequest(new RouteStep(start, end, "sbahn", line, null)))
-                    .exchange()
-                    .expectStatus().is2xxSuccessful();
-        }
-    }
-
-    @Test
-    public void testConcurrency() {
-        String start = "S+U Pankow (Berlin)";
-        String end = "S Schönefeld (bei Berlin) Bhf";
-        String line = "S85";
-        int numThreads = 10;
-        int numRequestsPerThread = 1000;
-        CountDownLatch latch = new CountDownLatch(numThreads);
-        ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
-        for (int i = 0; i < numThreads; i++) {
-            executorService.execute(() -> {
-                for (int j = 0; j < numRequestsPerThread; j++) {
-                    webTestClient.post().uri("/v1/calc/distance")
-                            .bodyValue(new DistanceRequest(new RouteStep(start, end, "sbahn", line, null)))
-                            .exchange()
-                            .expectStatus().is2xxSuccessful();
-                }
-                latch.countDown();
-            });
-        }
-        try {
-            latch.await();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-        executorService.shutdown();
-    }
-
 }

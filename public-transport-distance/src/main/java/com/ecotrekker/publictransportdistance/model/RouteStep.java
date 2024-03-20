@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import java.util.Objects;
 
 @Data
 @Getter
@@ -19,13 +20,13 @@ public class RouteStep {
     @Override
     public boolean equals(Object other) {
         if (other != null && other instanceof RouteStep) {
-            RouteStep otherStep = (RouteStep) other;
-            if (otherStep.getVehicle().equals(this.getVehicle())) {
-                if (this.getStart().equals(otherStep.getStart()) && this.getEnd().equals(otherStep.getEnd()) || this.getDistance() == otherStep.getDistance()) {
-                    return true;
-                }
-            }
+            return this.hashCode() == other.hashCode();
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(start, end, line);
     }
 }
