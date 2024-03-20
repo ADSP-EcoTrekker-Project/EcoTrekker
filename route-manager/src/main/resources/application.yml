@@ -12,7 +12,4 @@ co2-service:
   address: http://localhost:8083
   uri: /v1/calc/co2
 
-gamification-service:
-  address: http://localhost:8082
-  uri: /v1/calc/points
           
