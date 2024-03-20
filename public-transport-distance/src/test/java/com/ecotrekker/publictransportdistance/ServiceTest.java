@@ -53,9 +53,10 @@ public class ServiceTest {
         String start = "S+U Pankow (Berlin)";
         String end = "S Schönefeld (bei Berlin) Bhf";
         String line = "S85";
+        RouteStep testRouteStep = new RouteStep(start, end, end, line, null);
         long startTime = System.currentTimeMillis();
         DistanceResponse reply = webTestClient.post().uri("/v1/calc/distance")
-            .bodyValue(new DistanceRequest(new RouteStep(start,end,"sbahn",line, null)))
+            .bodyValue(new DistanceRequest(testRouteStep))
             .exchange()
             .expectStatus()
             .is2xxSuccessful()
@@ -65,7 +66,7 @@ public class ServiceTest {
         long elapsedTime = System.currentTimeMillis() - startTime;
         System.out.println("Result: "+reply.getDistance()+"m took: "+elapsedTime+ "ms");
         assertTrue(reply.getDistance() == 35.39862429197586);
-        assertTrue(genericCacheManager.estimatedSize() == 1);
+        assertTrue(genericCacheManager.get(testRouteStep) == 35.39862429197586);
     }
 
     @Test

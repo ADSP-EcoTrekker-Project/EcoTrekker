@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono;
 public class GenericCacheManager<K,V> {
 
     private final Cache<K, V> cache = Caffeine.newBuilder()
-            .expireAfterAccess(Duration.ofSeconds(600L))
+            .expireAfterAccess(Duration.ofMinutes(10))
             .maximumSize(1000L)
             .scheduler(Scheduler.systemScheduler())
             .build();
@@ -22,6 +22,10 @@ public class GenericCacheManager<K,V> {
     public Mono<V> get(K key, Mono<V> handler) {
         return Mono.justOrEmpty(this.cache.getIfPresent(key))
             .switchIfEmpty(Mono.defer(() -> handler.flatMap(it -> this.put(key, it))));
+    }
+
+    public V get(K key) {
+        return this.cache.getIfPresent(key);
     }
 
     public Mono<V> put(K key, V object) {
@@ -35,9 +39,5 @@ public class GenericCacheManager<K,V> {
 
     public void reset() {
         this.cache.invalidateAll();
-    }
-
-    public long estimatedSize() {
-        return this.cache.estimatedSize();
     }
 }
