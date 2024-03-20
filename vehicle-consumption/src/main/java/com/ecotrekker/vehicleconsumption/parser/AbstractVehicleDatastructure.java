@@ -3,6 +3,8 @@ package com.ecotrekker.vehicleconsumption.parser;
 import java.lang.UnsupportedOperationException;
 import java.util.Map;
 
+import com.ecotrekker.vehicleconsumption.config.vehicles.tree.IVehicleTreeElement;
+
 import lombok.Data;
 
 @Data
@@ -10,7 +12,7 @@ public abstract class AbstractVehicleDatastructure <T extends AbstractVehicleDat
 
     private T root = null;
 
-    public Map<String, T> asMap() {
+    public Map<String, IVehicleTreeElement> asMap() {
         new UnsupportedOperationException("Please override in Subtypes");
         return null;
     }

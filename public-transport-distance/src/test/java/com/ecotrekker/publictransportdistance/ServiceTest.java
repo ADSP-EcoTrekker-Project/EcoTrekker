@@ -4,6 +4,10 @@ import com.ecotrekker.publictransportdistance.model.DistanceRequest;
 import com.ecotrekker.publictransportdistance.model.DistanceResponse;
 import com.ecotrekker.publictransportdistance.model.RouteStep;
 import static org.junit.Assert.assertTrue;
+import com.ecotrekker.publictransportdistance.model.DistanceRequest;
+import com.ecotrekker.publictransportdistance.model.DistanceResponse;
+import com.ecotrekker.publictransportdistance.model.RouteStep;
+import static org.junit.Assert.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,6 +23,7 @@ import java.util.concurrent.Executors;
 public class ServiceTest {
 
     @Autowired
+    private WebTestClient webTestClient;
     private WebTestClient webTestClient;
 
     @Test

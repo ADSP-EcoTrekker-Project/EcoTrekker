@@ -23,6 +23,9 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+### maven ###
+target/*
+
 ### STS ###
 .apt_generated
 .classpath
@@ -34,3 +37,5 @@ build/
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
+
+__pycache__/

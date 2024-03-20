@@ -28,7 +28,7 @@ public class GamificationServiceModule {
             Map.entry("metro", 1.5),
             Map.entry("tram", 1.6),
             Map.entry("bus", 1.7),
-            Map.entry("express", 1.8),
+            // Map.entry("express", 1.8),
             Map.entry("express", 1.9),
             Map.entry("regional", 1.95),
             Map.entry("car", 0.8),

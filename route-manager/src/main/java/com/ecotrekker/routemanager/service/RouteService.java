@@ -62,7 +62,7 @@ public class RouteService {
                 .reduce(new CalculationCache(0.0, 0.0), (cache, routeStep) -> {
                     CalculationResponse calculationResponseEntry = calcCache.get(routeStep);
                     cache.setCo2(cache.getCo2() + calculationResponseEntry.getResult().getCo2());
-                    cache.setPoints(cache.getPoints() + calculationResponseEntry.getPoints());
+                    cache.setPoints(cache.getPoints() + (calculationResponseEntry.getPoints() != null ? calculationResponseEntry.getPoints() : 0));
                     return cache;
                 })  
                 .map(result -> new RouteResult(route.getSteps(), route.getId(), result.getCo2(), result.getPoints()))

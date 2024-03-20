@@ -10,7 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 
 import com.ecotrekker.co2calculator.model.ConsumptionRequest;
 import com.ecotrekker.co2calculator.model.ConsumptionResponse;
@@ -87,26 +91,31 @@ public class CalculatorE2ETest {
     
     @Autowired
     private WebTestClient webTestClient;
+    private WebTestClient webTestClient;
 
     @Test
     void testResponseCar() {
-        RouteStep testRouteStep = new RouteStep("a", "b", "/car",null, 300.0);
+        CalculationRequest testCalcReq = new CalculationRequest(
+            new RouteStep("a", "b", "/car",null, 300.0),
+            false);
         webTestClient.post().uri("/v1/calc/co2")
-        .bodyValue(testRouteStep)
+        .bodyValue(testCalcReq)
         .exchange()
         .expectStatus().isOk()
-        .expectBody(RouteStepResult.class)
-        .consumeWith(body -> assertEquals(160 * 300.0, body.getResponseBody().getCo2()));
+        .expectBody(CalculationResponse.class)
+        .consumeWith(body -> assertEquals(160D * 300D, body.getResponseBody().getResult().getCo2()));
     }
 
     @Test
     void testResponseEbike() {
-        RouteStep testRouteStep = new RouteStep("b", "c", "/bike/e-bike",null, 300.0);
+        CalculationRequest testCalcReq = new CalculationRequest(
+            new RouteStep("b", "c", "/bike/e-bike",null, 300.0),
+            false);
         webTestClient.post().uri("/v1/calc/co2")
-        .bodyValue(testRouteStep)
+        .bodyValue(testCalcReq)
         .exchange()
         .expectStatus().isOk()
-        .expectBody(RouteStepResult.class)
-        .consumeWith(body -> assertEquals(21.0 * 300.0, body.getResponseBody().getCo2()));
+        .expectBody(CalculationResponse.class)
+        .consumeWith(body -> assertEquals(21D * 300D, body.getResponseBody().getResult().getCo2()));
     }
 }
