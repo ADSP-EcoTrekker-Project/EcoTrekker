@@ -24,7 +24,6 @@ public class ServiceTest {
 
     @Autowired
     private WebTestClient webTestClient;
-    private WebTestClient webTestClient;
 
     @Test
     public void testDistanceCalculation() {
