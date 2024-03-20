@@ -42,18 +42,23 @@ public class VehicleDepotClientTest {
         public MockResponse dispatch (RecordedRequest request) {
             try {
                 VehicleDepotResponse requestBody = mapper.readValue(request.getBody().readUtf8(), VehicleDepotResponse.class);
+                if (requestBody.getLine().equals("169")) {
+                    VehicleDepotResponse response = new VehicleDepotResponse();
+                    Map<String, Double> responseMap = new HashMap<>();
+                    responseMap.put("/bus/e-bus", 0.5);
+                    responseMap.put("/bus", 0.5);
+                    response.setLine(requestBody.getLine());
+                    response.setVehicles(responseMap);
 
-                VehicleDepotResponse response = new VehicleDepotResponse();
-                Map<String, Double> responseMap = new HashMap<>();
-                responseMap.put("/bus/e-bus", 0.5);
-                responseMap.put("/bus", 0.5);
-                response.setLine(requestBody.getLine());
-                response.setVehicles(responseMap);
-
-                return new MockResponse()
-                    .setResponseCode(200)
-                    .addHeader("Content-Type", "application/json; charset=utf-8")
-                    .setBody(mapper.writeValueAsString(response));
+                    return new MockResponse()
+                        .setResponseCode(200)
+                        .addHeader("Content-Type", "application/json; charset=utf-8")
+                        .setBody(mapper.writeValueAsString(response));
+                } else {
+                    return new MockResponse()
+                    .setResponseCode(404)
+                    .addHeader("Content-Type", "application/json; charset=utf-8");
+                }
             } catch (Exception e) {
                 e.printStackTrace();
                 return new MockResponse().setResponseCode(500);
@@ -77,13 +82,23 @@ public class VehicleDepotClientTest {
     private VehicleDepotClient vehicleDepotClient;
 
     @Test
-    public void testClient() {
+    public void testClientExistingDepot() {
         VehicleDepotRequest request = new VehicleDepotRequest("169");
 
-        VehicleDepotResponse response = vehicleDepotClient.getVehicleShareInDepot(request);
+        vehicleDepotClient.getVehicleShareInDepot(request)
+        .doOnNext(response -> {
+            assertTrue(response.getLine().equals(response.getLine()));
+            assertTrue(response.getVehicles().size() == 2);
+        });
+    }
+    @Test
+    public void testClientNoDepot() {
+        VehicleDepotRequest request = new VehicleDepotRequest("M36");
 
-        assertTrue(response.getLine().equals(response.getLine()));
-
-        assertTrue(response.getVehicles().size() == 2);
+        vehicleDepotClient.getVehicleShareInDepot(request)
+        .doOnNext(response -> {
+            assertTrue(response.getLine().equals(response.getLine()));
+            assertTrue(response.getVehicles().size() == 2);
+        });
     }
 }

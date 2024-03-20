@@ -1,30 +1,24 @@
 package com.ecotrekker.routemanager.service;
 
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentMap;
-import java.util.stream.Collectors;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ecotrekker.routemanager.clients.Co2ServiceClient;
 import com.ecotrekker.routemanager.clients.DistanceServiceClient;
-import com.ecotrekker.routemanager.clients.GamificationServiceClient;
-import com.ecotrekker.routemanager.model.DistanceReply;
+import com.ecotrekker.routemanager.model.CalculationCache;
+import com.ecotrekker.routemanager.model.CalculationResponse;
 import com.ecotrekker.routemanager.model.DistanceRequest;
-import com.ecotrekker.routemanager.model.GamificationReply;
-import com.ecotrekker.routemanager.model.GamificationRequest;
-import com.ecotrekker.routemanager.model.RouteServiceException;
 import com.ecotrekker.routemanager.model.RouteResult;
 import com.ecotrekker.routemanager.model.RouteStep;
-import com.ecotrekker.routemanager.model.RouteStepResult;
 import com.ecotrekker.routemanager.model.RoutesRequest;
 import com.ecotrekker.routemanager.model.RoutesResult;
 
-import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import org.springframework.beans.factory.annotation.Value;
 
-@Slf4j
 @Service
 public class RouteService {
     
@@ -33,78 +27,49 @@ public class RouteService {
     
     @Autowired
     private Co2ServiceClient co2ServiceClient;
-    
-    @Autowired
-    private GamificationServiceClient gamificationServiceClient;
 
-
-    private ConcurrentMap<RouteStep, CompletableFuture<DistanceReply>> calculateDistances(RoutesRequest routeRequest) {
-        return routeRequest.getRoutes()
-            .parallelStream()
-            .flatMap(route -> route.getSteps().stream())
-            .distinct()
-            .collect(Collectors.toConcurrentMap(
-                step -> step,
-                step -> CompletableFuture.supplyAsync(() -> {
-                    if (step.getDistance() == null) {
-                        step.setDistance(distanceServiceClient.getDistance(new DistanceRequest(step)).getDistance());   
-                    }
-                    return null;
-                }
-                ),
-                (existing, replacement) -> existing));
-    }
+    @Value("${distance-service.address}")
+    private String distanceServiceAddress;
+    @Value("${distance-service.uri}")
+    private String distanceServiceURI;
     
-    private ConcurrentMap<RouteStep, CompletableFuture<RouteStepResult>> calculateCo2(ConcurrentMap<RouteStep, CompletableFuture<DistanceReply>> distanceFutures) {
-        return distanceFutures.keySet()
-        .parallelStream()
-        .collect(Collectors.toConcurrentMap(
-            step -> step,
-            step -> CompletableFuture.supplyAsync(() -> co2ServiceClient.getCo2Result(step)),
-            (existing, replacement) -> existing));
-    }
-    
-    private List<RouteResult> calculateResults(RoutesRequest routeRequest, ConcurrentMap<RouteStep, CompletableFuture<RouteStepResult>> co2Futures) {
-        return routeRequest
-            .getRoutes()
-            .parallelStream()
-            .map(route ->
-                new RouteResult(
-                    route.getSteps(),
-                    route.getId(),
-                    route
-                    .getSteps()
-                    .stream()
-                    .mapToDouble(step -> {
-                        try {
-                            log.error(step.toString());
-                            return co2Futures.get(step).get().getCo2();
-                        } catch (Exception e) {
-                            throw new RuntimeException();
-                        }
-                    })
-                    .sum()
+    public Mono<RoutesResult> requestCalculation(RoutesRequest routesRequest) {
+        ConcurrentHashMap<RouteStep, Double> distanceCache = new ConcurrentHashMap<>();
+        ConcurrentHashMap<RouteStep, CalculationResponse> calcCache = new ConcurrentHashMap<>();
+        return Flux.fromIterable(routesRequest.getRoutes())
+            .flatMap(route -> Flux.fromIterable(route.getSteps())
+                .distinct()
+                .flatMap(routeStep -> Mono.justOrEmpty(routeStep.getDistance())
+                    .switchIfEmpty(Mono.justOrEmpty(distanceCache.get(routeStep))
+                        .switchIfEmpty(distanceServiceClient.getDistance(new DistanceRequest(routeStep))
+                            .map(reply -> reply.getDistance())
+                            .doOnNext(distance -> {
+                                routeStep.setDistance(distance);
+                                distanceCache.put(routeStep, distance);
+                            })
+                        )
+                    )
+                    .flatMap(distance -> Mono.justOrEmpty(calcCache.get(routeStep))
+                        .switchIfEmpty(co2ServiceClient
+                            .getCo2Result(new RouteStep(routeStep.getStart(), routeStep.getEnd(), routeStep.getVehicle(), routeStep.getLine(), distance), routesRequest.isGamification())
+                            .doOnNext(routeStepResult -> {
+                                calcCache.put(routeStep, routeStepResult);
+                            })
+                        )
+                    )
                 )
+                .thenMany(Flux.fromIterable(route.getSteps()))
+                .reduce(new CalculationCache(0.0, 0.0), (cache, routeStep) -> {
+                    CalculationResponse calculationResponseEntry = calcCache.get(routeStep);
+                    cache.setCo2(cache.getCo2() + calculationResponseEntry.getResult().getCo2());
+                    cache.setPoints(cache.getPoints() + (calculationResponseEntry.getPoints() != null ? calculationResponseEntry.getPoints() : 0));
+                    return cache;
+                })  
+                .map(result -> new RouteResult(route.getSteps(), route.getId(), result.getCo2(), result.getPoints()))
+                
             )
-            .collect(Collectors.toList());
+            .collectList()
+            .map(routeResults -> new RoutesResult(routeResults, routesRequest.isGamification()));
     }
     
-
-    public RoutesResult requestCalculation(RoutesRequest routeRequest) throws RouteServiceException {
-        try {
-            ConcurrentMap<RouteStep, CompletableFuture<DistanceReply>> distanceFutures = calculateDistances(routeRequest);
-            CompletableFuture.allOf(distanceFutures.values().toArray(new CompletableFuture[distanceFutures.size()])).get();
-            ConcurrentMap<RouteStep, CompletableFuture<RouteStepResult>> co2Futures = calculateCo2(distanceFutures);
-            List<RouteResult> results = calculateResults(routeRequest, co2Futures);
-
-            if (routeRequest.isGamification()) {
-                GamificationReply gamificationReply = gamificationServiceClient.getPoints(new GamificationRequest(results));
-                return new RoutesResult(gamificationReply.getRoutes(), true);
-            }
-    
-            return new RoutesResult(results, false);
-        } catch (Exception e) {
-            throw new RouteServiceException("Error calculating Route data", e);
-        }
-    }
 }

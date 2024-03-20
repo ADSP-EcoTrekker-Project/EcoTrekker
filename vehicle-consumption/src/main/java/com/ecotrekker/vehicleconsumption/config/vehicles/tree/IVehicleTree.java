@@ -20,24 +20,26 @@ public class IVehicleTree extends AbstractVehicleDatastructure<IVehicleTreeEleme
         return vehicleTreeMap;
     }
 
-    private String asPrettyString(){
+    private String asPrettyString() {
         String result = "";
         Stack<IVehicleTreeElement> nodeStack = new Stack<>();
 
         nodeStack.push((IVehicleTreeElement) this.getRoot());
 
-        while(nodeStack.empty() == false){
+        while (nodeStack.empty() == false) {
             IVehicleTreeElement currentE = nodeStack.pop();
 
-            if (currentE.getName() != ""){
+            if (currentE.getName() != "") {
                 int parents = currentE.numParents() - 1;
                 result += "|";
-                for (int i = 0; i < parents; i++) { result += "\t"; }
+                for (int i = 0; i < parents; i++) {
+                    result += "\t";
+                }
                 result += currentE.getName();
                 result += "\n";
             }
-            
-            for (AbstractVehicleDatastructureElement vehicle : currentE.getChildren()){
+
+            for (AbstractVehicleDatastructureElement vehicle : currentE.getChildren()) {
                 IVehicleTreeElement castV = (IVehicleTreeElement) vehicle;
                 nodeStack.push(castV);
             }
@@ -79,13 +81,15 @@ public class IVehicleTree extends AbstractVehicleDatastructure<IVehicleTreeEleme
     @Override
     public IVehicleTreeElement getElement(String name) throws NoSuchElementException {
         IVehicleTreeElement result = vehicleTreeMap.get(name);
-        if (result == null) { throw new NoSuchElementException("Could not find element"); }
+        if (result == null) {
+            throw new NoSuchElementException("Could not find element");
+        }
         return result;
     }
 
     @Override
     public IVehicleTreeElement getElement(String[] name) throws NoSuchElementException {
-        for (int i = name.length - 1; i >= 0; i--){
+        for (int i = name.length - 1; i >= 0; i--) {
             String element = name[i];
             // Root element "" is not part of the map
             IVehicleTreeElement result = vehicleTreeMap.get(element);

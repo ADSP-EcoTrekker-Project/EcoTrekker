@@ -1,107 +1,83 @@
 package com.ecotrekker.co2calculator.service;
 
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentMap;
-import java.util.stream.Collectors;
-
+import java.util.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ecotrekker.co2calculator.clients.GridCO2CacheClient;
 import com.ecotrekker.co2calculator.clients.VehicleConsumptionClient;
 import com.ecotrekker.co2calculator.clients.VehicleDepotClient;
-import com.ecotrekker.co2calculator.model.CO2Response;
+import com.ecotrekker.co2calculator.model.CalculationResponse;
+import com.ecotrekker.co2calculator.model.ConsumptionCache;
 import com.ecotrekker.co2calculator.model.ConsumptionRequest;
-import com.ecotrekker.co2calculator.model.ConsumptionResponse;
 import com.ecotrekker.co2calculator.model.RouteStep;
 import com.ecotrekker.co2calculator.model.RouteStepResult;
-import com.ecotrekker.co2calculator.model.VehicleDepotResponse;
 
-import feign.FeignException;
-import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import com.ecotrekker.co2calculator.model.VehicleDepotRequest;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
 public class CalculatorService {
 
     @Autowired
-    private VehicleConsumptionClient vehicleClient;
+    private VehicleConsumptionClient consumptionClient;
 
     @Autowired
     private VehicleDepotClient depotClient;
 
     @Autowired
-    private GridCO2CacheClient co2Client;
+    private GridCO2CacheClient gridClient;
 
-    public RouteStepResult requestCalculation(RouteStep step) {
-        Double co2 = null;
-        try {
-            if (step.getLine() != null && step.isTopLevel()) {
-                // Get Vehicles
-                log.info("Handling Top Level Public Transport");
-                VehicleDepotResponse depotData = depotClient
-                        .getVehicleShareInDepot(new VehicleDepotRequest(step.getLine()));
-                // Get Vehicle Consumptions
-                log.info(depotData.toString());
-                ConcurrentMap<String, CompletableFuture<ConsumptionResponse>> data = depotData.getVehicles()
-                        .entrySet()
-                        .parallelStream()
-                        .filter(entry -> entry.getValue() > 0D)
-                        .collect(Collectors.toConcurrentMap(
-                                entry -> entry.getKey(),
-                                entry -> CompletableFuture.supplyAsync(
-                                        () -> vehicleClient.getConsumption(new ConsumptionRequest(entry.getKey())))));
-                log.info(data.toString());
-                List<ConsumptionResponse> consumptions = data.values().stream()
-                        .map(entry -> {
-                            try {
-                                return entry.get();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                throw new RuntimeException();
-                            }
-                        })
-                        .collect(Collectors.toList());
-                log.info(consumptions.toString());
-                // Request co2 if needed
-                double gridCo2Response = 0;
-                if (consumptions.stream().anyMatch(entry -> entry.getKwh() != null)) {
-                    gridCo2Response = co2Client.getCO2Intensity().getCarbonIntensity();
-                }
-                // Calc co2 per vehicle
-                double gridCo2 = gridCo2Response; // effectively final for stream scope
-                co2 = consumptions.stream().mapToDouble(entry -> {
-                    String vehicle = entry.getVehicle();
-                    log.info(vehicle);
-                    if (entry.getKwh() != null) {
-                        Double t = depotData.getVehicles().get(vehicle) * entry.getKwh() * gridCo2 * step.getDistance();
-                        log.info(t.toString());
-                        return t;
-                    } else {
-                        Double t = depotData.getVehicles().get(vehicle) * entry.getCo2() * step.getDistance();
-                        log.info(t.toString());
-                        return t;
-                    }
-                }).sum();
-            }
-        } catch (FeignException.NotFound e) {
-            co2 = null;
-        }
-        
-        if (co2 == null) {
-            ConsumptionResponse consumption = vehicleClient.getConsumption(new ConsumptionRequest(step.getVehicle()));
-            if (consumption.getKwh() != null) {
-                CO2Response gridCo2 = co2Client.getCO2Intensity();
-                co2 = consumption.getKwh() * gridCo2.getCarbonIntensity() * step.getDistance();
-            } else {
-                co2 = consumption.getCo2() * step.getDistance();
-            }
-        }
-        
-        return new RouteStepResult(step.getStart(), step.getEnd(), step.getVehicle(), step.getLine(),
-                step.getDistance(), co2);
+    @Autowired
+    private GamificationServiceModule gamificationModule;
+
+    public Mono<CalculationResponse> requestCalculation(RouteStep step, Boolean enableGamification) {
+        return Mono.just(step)
+        .filter(filterStep -> filterStep.getLine() != null && filterStep.isTopLevel()) // if is empty line or not toplevel vehicle skip ahead
+        .flatMap(topStep -> depotClient.getVehicleShareInDepot(new VehicleDepotRequest(topStep.getLine())))
+        .onErrorResume(ex -> Mono.empty()) // incase we get error or nothing from depot service skip ahead
+        .flatMap(depotReply -> 
+            Flux.fromIterable(depotReply.getVehicles().entrySet())
+            .flatMap(entry -> 
+                consumptionClient.getCO2Intensity(new ConsumptionRequest(entry.getKey()))
+                .map(consumReply -> new ConsumptionCache(entry.getValue(), consumReply.getKwh(), consumReply.getCo2()))
+            )
+            .collectList()
+        )
+        .switchIfEmpty(consumptionClient.getCO2Intensity(new ConsumptionRequest(step.getVehicle()))
+            .map(consumption -> Collections.singletonList(new ConsumptionCache(1.0, consumption.getKwh(), consumption.getCo2()))
+            )
+        )
+        .flatMap(consumptions ->
+            Flux.fromIterable(consumptions)
+            .filter(cache -> cache.getKwh() != null) //this may be called more than once, but it shouldnt be too bad
+            .collectList()
+            .filter(kwhConsums -> kwhConsums.size() >= 1) // skip ahead if we dont electric vehicles vehicle
+            .flatMap(gridCo2 -> gridClient.getCO2Intensity()
+                .map(gridReply -> gridReply.getCarbonIntensity()))
+                .map(gridCo2 -> consumptions.stream()
+                    .mapToDouble(cache -> {
+                        if (cache.getKwh() != null) {
+                            return cache.getKwh() * gridCo2 * cache.getShare() * step.getDistance();
+                        }
+                        return cache.getCo2() * cache.getShare() * step.getDistance();
+                    })
+                    .sum()
+            )
+            .switchIfEmpty(Flux.fromIterable(consumptions)
+                .map(cache -> cache.getCo2() * cache.getShare() * step.getDistance())
+                .reduce(0.0, (sum, result) -> sum + result)
+            )
+            .map(result -> {
+                RouteStepResult stepResult = new RouteStepResult(step.getStart(), step.getEnd(), step.getVehicle(), step.getLine(), step.getDistance(), result);
+                Double points = enableGamification ? gamificationModule.calculatePoints(stepResult) : null;
+                return new CalculationResponse(stepResult, points);
+            })
+        );
     }
 }

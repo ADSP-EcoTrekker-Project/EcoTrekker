@@ -10,12 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
+import com.ecotrekker.routemanager.model.CalculationRequest;
+import com.ecotrekker.routemanager.model.CalculationResponse;
 import com.ecotrekker.routemanager.model.DistanceReply;
 import com.ecotrekker.routemanager.model.DistanceRequest;
 import com.ecotrekker.routemanager.model.Route;
@@ -30,8 +29,6 @@ import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.UUID;
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
@@ -40,11 +37,12 @@ import java.util.List;
 @SpringBootTest(
     webEnvironment = WebEnvironment.RANDOM_PORT,
     properties = {
-        "distance-service.address=http://localhost:8082",
+        "distance-service.address=http://localhost:8084",
         "co2-service.address=http://localhost:8083",
-        "gamification-service.address=http://localhost:8084",
+        "gamification-service.address=http://localhost:8082",
     }
 )
+
 public class RouteServiceApplicationTests {
 
     public MockWebServer mockDistanceServiceBackEnd;
@@ -64,11 +62,12 @@ public class RouteServiceApplicationTests {
         @Override
         public MockResponse dispatch (RecordedRequest request) {
             try {
-                mapper.readValue(request.getBody().readUtf8(), DistanceRequest.class);    
+                DistanceRequest requestBody = mapper.readValue(request.getBody().readUtf8(), DistanceRequest.class);
+                RouteStep step = requestBody.getStep();
                 return new MockResponse()
                     .setResponseCode(200)
                     .addHeader("Content-Type", "application/json; charset=utf-8")
-                    .setBody(mapper.writeValueAsString(new DistanceReply(1000.0)));
+                    .setBody(mapper.writeValueAsString(new DistanceReply(step.getLine().equals("m38") ? 500.0 : 1000.0)));
             } catch (Exception e) {
                 e.printStackTrace();
                 return new MockResponse().setResponseCode(500);
@@ -79,11 +78,17 @@ public class RouteServiceApplicationTests {
         @Override
         public MockResponse dispatch (RecordedRequest request) {
             try {
-                RouteStep input = mapper.readValue(request.getBody().readUtf8(), RouteStep.class);    
+                CalculationRequest requestBody = mapper.readValue(request.getBody().readUtf8(), CalculationRequest.class);    
+                RouteStep input = requestBody.getStep();
                 return new MockResponse()
                     .setResponseCode(200)
                     .addHeader("Content-Type", "application/json; charset=utf-8")
-                    .setBody(mapper.writeValueAsString(new RouteStepResult(input.getStart(), input.getEnd(), input.getVehicle(), input.getLine(), input.getDistance(), 42.0)));
+                    .setBody(mapper.writeValueAsString(
+                        new CalculationResponse(
+                            new RouteStepResult(input.getStart(), input.getEnd(), input.getVehicle(), input.getLine(), input.getDistance(), 42.0),
+                            100.0)
+                        )
+                    );
             } catch (Exception e) {
                 e.printStackTrace();
                 return new MockResponse().setResponseCode(500);
@@ -93,7 +98,7 @@ public class RouteServiceApplicationTests {
     final Dispatcher gameDispatcher = new Dispatcher() {
         @Override
         public MockResponse dispatch (RecordedRequest request) {
-            return new MockResponse().setResponseCode(404); //Gamification is not implemented yet
+            return new MockResponse().setResponseCode(501); //Gamification is not implemented yet
         }
     };
 
@@ -120,10 +125,7 @@ public class RouteServiceApplicationTests {
     }
     
     @Autowired
-    private TestRestTemplate testRestTemplate;
-
-    @LocalServerPort
-    private Integer port;
+    private WebTestClient webTestClient;
 
 	@Test
 	void contextLoads() {
@@ -131,6 +133,7 @@ public class RouteServiceApplicationTests {
 
     @Test
     void testResponse() {
+        System.out.println("START TEST");
         List<RouteStep> stepsRoute1 = Stream.of(
             new RouteStep("a", "b", "bus","m36", null),
             new RouteStep("b", "c", "bus","137", null),
@@ -147,12 +150,13 @@ public class RouteServiceApplicationTests {
             .collect(Collectors.toList()),
         false);
         
-        ResponseEntity<RoutesResult> result = testRestTemplate.exchange(
-            "http://localhost:"+port+"/v1/calc/routes", 
-            HttpMethod.POST, 
-            new HttpEntity<RoutesRequest>(testRoutes), 
-            RoutesResult.class);
-        assertTrue(result.getStatusCode().is2xxSuccessful());
-        
+        webTestClient
+        .post().uri("/v1/calc/routes")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .bodyValue(testRoutes)
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody(RoutesResult.class);
     }
 }

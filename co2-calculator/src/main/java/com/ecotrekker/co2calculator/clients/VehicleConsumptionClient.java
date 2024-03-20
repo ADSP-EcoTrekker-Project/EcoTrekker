@@ -1,18 +1,33 @@
 package com.ecotrekker.co2calculator.clients;
 
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClient;
 
-import com.ecotrekker.co2calculator.config.FeignClientConfig;
 import com.ecotrekker.co2calculator.model.ConsumptionRequest;
 import com.ecotrekker.co2calculator.model.ConsumptionResponse;
 
-@FeignClient(value = "vehicle-consumption-client", url="${consumption-service.address}", configuration = FeignClientConfig.class)
-public interface VehicleConsumptionClient {
+import reactor.core.publisher.Mono;
+
+@Component
+public class VehicleConsumptionClient {
+    @Value("${consumption-service.uri}")
+    private String uri;
+
+    private final WebClient client;
+
+    @Autowired
+    public VehicleConsumptionClient(WebClient.Builder builder,  @Value("${consumption-service.address}") String address) {
+        this.client = builder.baseUrl(address).build();
+    }
     
-    @RequestMapping(method = RequestMethod.POST, value = "${consumption-service.uri}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    ConsumptionResponse getConsumption(@RequestBody ConsumptionRequest data);
+    public Mono<ConsumptionResponse> getCO2Intensity(ConsumptionRequest request) {
+        return this.client.post()
+        .uri(uri)
+        .bodyValue(request)
+        .retrieve()
+        .bodyToMono(ConsumptionResponse.class)
+        .single();
+    }
 }

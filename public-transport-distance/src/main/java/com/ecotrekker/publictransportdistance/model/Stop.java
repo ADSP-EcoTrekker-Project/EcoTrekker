@@ -9,4 +9,9 @@ public class Stop {
     private String stopLat;
     private String stopLon;
     private Double distanceToNextStopKm;
+
+    @Override
+    public int hashCode() {
+        return stopId.hashCode();
+    } 
 }

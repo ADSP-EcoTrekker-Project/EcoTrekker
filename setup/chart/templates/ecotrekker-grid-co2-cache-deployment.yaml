@@ -22,19 +22,24 @@ spec:
         image: {{ .Values.ecotrekker.gridco2cache.image }}
         resources:
           requests:
-            cpu: "1"
-            memory: "512Mi"
+            cpu: "176m"
+            memory: "256Mi"
+          limits:
+            cpu: "256m"
+            memory: "384Mi"
         ports:
         - containerPort: 8080
         livenessProbe:
           httpGet:
             path: /status/alive
             port: 8080
+          initialDelaySeconds: 120
           periodSeconds: 30
         readinessProbe:
           httpGet:
             path: /status/ready
             port: 8080
+          initialDelaySeconds: 120
           periodSeconds: 30
 ---
 apiVersion: v1

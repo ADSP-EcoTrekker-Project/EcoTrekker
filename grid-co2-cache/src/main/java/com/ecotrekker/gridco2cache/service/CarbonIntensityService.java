@@ -1,6 +1,7 @@
 package com.ecotrekker.gridco2cache.service;
 
 import com.ecotrekker.gridco2cache.model.CarbonIntensityResponse;
+import com.ecotrekker.gridco2cache.model.CarbonResponse;
 
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
@@ -16,21 +17,15 @@ public class CarbonIntensityService {
     private String apiToken;
 
     @Getter
-    private volatile Double latestCarbonIntensity;
+    private volatile CarbonResponse latestCarbonIntensity = new CarbonResponse();
 
     @Autowired
     private ElectricityMapsClient client;
-
-    public Double getCarbonIntensityForZone(String zone) {
-        CarbonIntensityResponse response = client.getLatestCarbonIntensity(apiToken, zone);
-        latestCarbonIntensity = response.getCarbonIntensity();
-        return latestCarbonIntensity;
-    }
 
     @PostConstruct
     @Scheduled(cron = "0 * * * * *")
     public void updateCarbonIntensityCache() {
         CarbonIntensityResponse response = client.getLatestCarbonIntensity(apiToken, "DE");
-        latestCarbonIntensity = response.getCarbonIntensity();
+        latestCarbonIntensity.setCarbonIntensity(response.getCarbonIntensity());
     }
 }
