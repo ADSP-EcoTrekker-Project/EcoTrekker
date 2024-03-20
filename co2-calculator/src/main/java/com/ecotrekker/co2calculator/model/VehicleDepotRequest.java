@@ -9,4 +9,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class VehicleDepotRequest {
     private String line;
+
+    @Override
+    public boolean equals(Object other) {
+        if (other != null && other instanceof VehicleDepotRequest) {
+            return this.hashCode() == other.hashCode();
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return line.hashCode();
+    }
 }
