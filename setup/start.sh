@@ -24,8 +24,8 @@ docker run -d --restart unless-stopped -p 8084:8080 \
     ${REPO}/eco-public-transport-distance:latest
 
 docker run -d --restart unless-stopped -p 8081:8080 \
-    -e DISTANCE_SERVICE_ADDRESS="172.17.0.1:8084" \
-    -e CO2_SERVICE_ADDRESS="172.17.0.1:8083" \
+    -e DISTANCE_SERVICE_ADDRESS="http://172.17.0.1:8084" \
+    -e CO2_SERVICE_ADDRESS="http://172.17.0.1:8083" \
     ${REPO}/eco-route-manager:latest
 
 docker run -d --restart unless-stopped -p 8080:8080 \
