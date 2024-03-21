@@ -39,15 +39,6 @@ target "co2-calculator" {
     context = "co2-calculator/"
 }
 
-target "gamification" {
-    dockerfile = "../docker/gamification.Dockerfile"
-    tags = ["${REPO}/eco-gamification:${TAG}"]
-    contexts = {
-        bake-base-image = "target:builder"
-    }
-    context = "gamification/"
-}
-
 target "public-transport-distance" {
     dockerfile = "../docker/public-transport-distance.Dockerfile"
     tags = ["${REPO}/eco-public-transport-distance:${TAG}"]
@@ -85,5 +76,5 @@ target "vehicle-depot" {
 }
 
 group "default" {
-    targets = ["rest-api", "route-manager", "gamification", "public-transport-distance", "co2-calculator", "grid-co2-cache", "vehicle-consumption", "vehicle-depot"]
+    targets = ["rest-api", "route-manager", "public-transport-distance", "co2-calculator", "grid-co2-cache", "vehicle-consumption", "vehicle-depot"]
 }
