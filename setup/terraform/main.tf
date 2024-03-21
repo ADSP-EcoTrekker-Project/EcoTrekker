@@ -20,9 +20,9 @@ terraform {
 }
 
 provider "google" {
-  credentials = file("adsp-ecotrekker-6fc9257fae68.json")
+  credentials = file("ecotrekker-077a3c87f348.json")
 
-  project = "adsp-ecotrekker"
+  project = "ecotrekker"
   region  = "europe-west3"
   zone    = "europe-west3-a"
 }
