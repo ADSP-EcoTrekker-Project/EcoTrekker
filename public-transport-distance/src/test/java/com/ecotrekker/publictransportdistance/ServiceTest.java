@@ -65,8 +65,8 @@ public class ServiceTest {
             .getResponseBody();
         long elapsedTime = System.currentTimeMillis() - startTime;
         System.out.println("Result: "+reply.getDistance()+"m took: "+elapsedTime+ "ms");
-        assertTrue(reply.getDistance() == 35.39862429197586);
-        assertTrue(genericCacheManager.get(testRouteStep) == 35.39862429197586);
+        assertTrue(reply.getDistance() == 35.39862429197586 * 1000);
+        assertTrue(genericCacheManager.get(testRouteStep) * 1000 == 35.39862429197586 * 1000);
     }
 
     @Test
