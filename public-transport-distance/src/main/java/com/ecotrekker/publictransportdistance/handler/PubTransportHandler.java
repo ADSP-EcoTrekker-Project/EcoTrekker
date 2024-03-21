@@ -25,7 +25,7 @@ public class PubTransportHandler {
         .flatMap(requestBody -> distanceService.calculateDistance(requestBody.getStep())
         .flatMap(result -> ServerResponse.ok()
             .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(new DistanceResponse(result)))
+            .body(BodyInserters.fromValue(new DistanceResponse(result * 1000)))
         ).onErrorResume(ex -> {
             if (ex instanceof NoSuchElementException) {
                 return ServerResponse.notFound().build();
