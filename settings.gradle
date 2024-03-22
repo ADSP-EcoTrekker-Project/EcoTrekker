@@ -14,4 +14,4 @@ rootProject.name = 'EcoTrekker'
 
 include "rest-api", "co2-calculator", "vehicle-consumption"
 include "grid-co2-cache", "public-transport-distance","vehicle-depot"
-include "route-manager", "gamification"
+include "route-manager"
