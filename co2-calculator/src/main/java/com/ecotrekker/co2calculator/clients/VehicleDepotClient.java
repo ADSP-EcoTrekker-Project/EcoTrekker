@@ -7,6 +7,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.ecotrekker.co2calculator.model.VehicleDepotRequest;
 import com.ecotrekker.co2calculator.model.VehicleDepotResponse;
+import com.ecotrekker.co2calculator.service.GenericCacheManager;
 
 import reactor.core.publisher.Mono;
 
@@ -21,13 +22,18 @@ public class VehicleDepotClient {
     public VehicleDepotClient(WebClient.Builder builder,  @Value("${depot-service.address}") String address) {
         this.client = builder.baseUrl(address).build();
     }
+
+    @Autowired GenericCacheManager<VehicleDepotRequest, VehicleDepotResponse> cacheManager;
     
     public Mono<VehicleDepotResponse> getVehicleShareInDepot(VehicleDepotRequest request) {
-        return this.client.post()
-        .uri(uri)
-        .bodyValue(request)
-        .retrieve()
-        .bodyToMono(VehicleDepotResponse.class)
-        .single();
+        return cacheManager.get(
+            request, 
+            this.client.post()
+                .uri(uri)
+                .bodyValue(request)
+                .retrieve()
+                .bodyToMono(VehicleDepotResponse.class)
+                .single()
+        );
     }
 }

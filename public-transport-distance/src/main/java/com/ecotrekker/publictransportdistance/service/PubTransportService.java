@@ -4,6 +4,9 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +23,10 @@ import com.ecotrekker.publictransportdistance.model.VehicleRoute;
 public class PubTransportService {
     private Map<String, VehicleRoute> publicTransportRoutes;
     private Map<String, Map<UUID,Map<String, List<Integer>>>> routeStepIndices;
-
+    
+    @Autowired
+    private GenericCacheManager<RouteStep, Double> distanceCacheManager;
+    
     private void generateCache() {
         routeStepIndices = publicTransportRoutes.entrySet().stream()
             .collect(
@@ -42,6 +48,7 @@ public class PubTransportService {
                         )
                 )
             );
+            distanceCacheManager.reset();
     }
 
     public void loadMapData(Map<String, VehicleRoute> publicTransportRoutes) {
@@ -104,8 +111,11 @@ public class PubTransportService {
         Flux<Double> positiveDistances = distances.filter(distance -> distance > 0);
         Flux<Double> negativeDistances = distances.filter(distance -> distance < 0).map(distance -> distance * -1);
 
-        return Flux.concat(positiveDistances, negativeDistances)
-            .next()
-            .switchIfEmpty(Mono.error(new NoSuchElementException()));
+        return distanceCacheManager.get(
+            step,
+            Flux.concat(positiveDistances, negativeDistances)
+                .next()
+                .switchIfEmpty(Mono.error(new NoSuchElementException()))
+        );
     }
 }

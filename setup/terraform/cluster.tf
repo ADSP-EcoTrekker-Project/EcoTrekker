@@ -1,6 +1,6 @@
 resource "google_container_cluster" "ecotrekker" {
   name     = "ecotrekker-cluster"
-  location = "europe-west3"
+  location = "europe-west3-a"
 
   deletion_protection = false
 
@@ -19,14 +19,15 @@ resource "google_container_cluster" "ecotrekker" {
 
 resource "google_container_node_pool" "ecotrekker_nodes" {
   name           = "ecotrekker-node-pool"
-  location       = "europe-west3"
+  location       = "europe-west3-a"
   node_locations = ["europe-west3-a"]
   cluster        = google_container_cluster.ecotrekker.name
-  node_count     = 4
+  node_count     = 2
 
   node_config {
     preemptible  = true
     machine_type = "e2-highcpu-4"
+    disk_size_gb = 32
 
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
     service_account = google_service_account.ecotrekker.email

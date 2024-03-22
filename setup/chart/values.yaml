@@ -24,9 +24,6 @@ ecotrekker:
   routemanager:
     image: lierseleow/eco-route-manager:latest
     replicas: 1
-  gamification:
-    image: lierseleow/eco-gamification:latest
-    replicas: 1
 
 # replicaCount: 1
 

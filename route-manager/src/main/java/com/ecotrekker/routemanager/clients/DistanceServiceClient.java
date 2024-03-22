@@ -8,6 +8,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import com.ecotrekker.routemanager.model.DistanceRequest;
+import com.ecotrekker.routemanager.service.GenericCacheManager;
+import com.ecotrekker.routemanager.model.CalculationResponse;
 import com.ecotrekker.routemanager.model.DistanceReply;
 
 @Component
@@ -22,13 +24,19 @@ public class DistanceServiceClient {
         this.client = builder.baseUrl(address).build();
     }
 
+    @Autowired
+    private GenericCacheManager<DistanceRequest, DistanceReply> cacheManager;
+
     public Mono<DistanceReply> getDistance(DistanceRequest request) {
-        return this.client.post()
-        .uri(uri)
-        .bodyValue(request)
-        .accept(MediaType.APPLICATION_JSON)
-        .retrieve()
-        .bodyToMono(DistanceReply.class)
-        .single();
+        return cacheManager.get(
+            request, 
+            this.client.post()
+                .uri(uri)
+                .bodyValue(request)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(DistanceReply.class)
+                .single()
+        );
     }
 }

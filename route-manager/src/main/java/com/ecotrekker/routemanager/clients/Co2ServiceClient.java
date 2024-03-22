@@ -8,7 +8,6 @@ import reactor.core.publisher.Mono;
 
 import com.ecotrekker.routemanager.model.CalculationRequest;
 import com.ecotrekker.routemanager.model.CalculationResponse;
-import com.ecotrekker.routemanager.model.RouteStep;
 
 @Component
 public class Co2ServiceClient {
@@ -21,13 +20,14 @@ public class Co2ServiceClient {
     public Co2ServiceClient(WebClient.Builder builder,  @Value("${co2-service.address}") String address) {
         this.client = builder.baseUrl(address).build();
     }
+
     
-    public Mono<CalculationResponse> getCo2Result(RouteStep step, Boolean enableGamification) {
+    public Mono<CalculationResponse> getCo2Result(CalculationRequest request) {
         return this.client.post()
-        .uri(uri)
-        .bodyValue(new CalculationRequest(step, enableGamification))
-        .retrieve()
-        .bodyToMono(CalculationResponse.class)
-        .single();
+            .uri(uri)
+            .bodyValue(request)
+            .retrieve()
+            .bodyToMono(CalculationResponse.class)
+            .single();
     }
 }

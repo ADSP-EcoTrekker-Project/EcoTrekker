@@ -7,6 +7,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.ecotrekker.co2calculator.model.ConsumptionRequest;
 import com.ecotrekker.co2calculator.model.ConsumptionResponse;
+import com.ecotrekker.co2calculator.service.GenericCacheManager;
 
 import reactor.core.publisher.Mono;
 
@@ -21,13 +22,18 @@ public class VehicleConsumptionClient {
     public VehicleConsumptionClient(WebClient.Builder builder,  @Value("${consumption-service.address}") String address) {
         this.client = builder.baseUrl(address).build();
     }
+
+    @Autowired GenericCacheManager<ConsumptionRequest, ConsumptionResponse> cacheManager;
     
-    public Mono<ConsumptionResponse> getCO2Intensity(ConsumptionRequest request) {
-        return this.client.post()
-        .uri(uri)
-        .bodyValue(request)
-        .retrieve()
-        .bodyToMono(ConsumptionResponse.class)
-        .single();
+    public Mono<ConsumptionResponse> getConsumption(ConsumptionRequest request) {
+        return cacheManager.get(
+            request, 
+            this.client.post()
+                .uri(uri)
+                .bodyValue(request)
+                .retrieve()
+                .bodyToMono(ConsumptionResponse.class)
+                .single()
+        );
     }
 }

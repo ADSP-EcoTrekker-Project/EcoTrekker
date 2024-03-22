@@ -38,8 +38,7 @@ import java.util.List;
     webEnvironment = WebEnvironment.RANDOM_PORT,
     properties = {
         "distance-service.address=http://localhost:8084",
-        "co2-service.address=http://localhost:8083",
-        "gamification-service.address=http://localhost:8082",
+        "co2-service.address=http://localhost:8083"
     }
 )
 
@@ -47,14 +46,11 @@ public class RouteServiceApplicationTests {
 
     public MockWebServer mockDistanceServiceBackEnd;
     public MockWebServer mockCo2ServiceBackEnd;
-    public MockWebServer mockGamificationServiceBackEnd;
 
     @Value("${distance-service.address}")
     private String distanceURL;
     @Value("${co2-service.address}")
     private String co2URL;
-    @Value("${gamification-service.address}")
-    private String gameURL;
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -95,12 +91,6 @@ public class RouteServiceApplicationTests {
             }
         }
     };
-    final Dispatcher gameDispatcher = new Dispatcher() {
-        @Override
-        public MockResponse dispatch (RecordedRequest request) {
-            return new MockResponse().setResponseCode(501); //Gamification is not implemented yet
-        }
-    };
 
     @BeforeEach
     void setUp() throws IOException {
@@ -111,17 +101,12 @@ public class RouteServiceApplicationTests {
         mockCo2ServiceBackEnd = new MockWebServer();
         mockCo2ServiceBackEnd.setDispatcher(co2Dispatcher);
         mockCo2ServiceBackEnd.start(new URL(co2URL).getPort());
-
-        mockGamificationServiceBackEnd = new MockWebServer();
-        mockGamificationServiceBackEnd.setDispatcher(gameDispatcher);
-        mockGamificationServiceBackEnd.start(new URL(gameURL).getPort());
     }
 
     @AfterEach
     void tearDown() throws IOException {
         mockDistanceServiceBackEnd.shutdown();
         mockCo2ServiceBackEnd.shutdown();
-        mockGamificationServiceBackEnd.shutdown();
     }
     
     @Autowired

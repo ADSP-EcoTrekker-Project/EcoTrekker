@@ -1,0 +1,11 @@
+server:
+  port: 8080
+  connection-timeout: 1s
+  tomcat:
+    threads:
+      max: 400
+
+electricitymaps:
+  api:
+    url: https://api-access.electricitymaps.com/free-tier/carbon-intensity/latest?zone=DE
+    key: yi9wa2inSOpmmrfLJGJoQRbbdtf2aF1B

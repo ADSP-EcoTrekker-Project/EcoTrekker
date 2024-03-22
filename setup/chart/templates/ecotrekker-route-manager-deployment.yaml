@@ -22,18 +22,16 @@ spec:
         image: {{ .Values.ecotrekker.routemanager.image }}
         resources:
           requests:
-            cpu: "2"
+            cpu: "1.8"
             memory: "512Mi"
           limits:
-            cpu: "3"
+            cpu: "2.5"
             memory: "512Mi"
         env:
         - name: DISTANCE_SERVICE_ADDRESS
           value: http://{{ lower (include "ecotrekker.name" .) }}-public-transport-distance-service.{{ .Release.Namespace }}.svc.cluster.local:8080
         - name: CO2_SERVICE_ADDRESS
           value: http://{{ lower (include "ecotrekker.name" .) }}-co2-calculator-service.{{ .Release.Namespace }}.svc.cluster.local:8080
-        - name: GAMIFICATION_SERVICE_ADDRESS
-          value: http://{{ lower (include "ecotrekker.name" .) }}-gamification-service.{{ .Release.Namespace }}.svc.cluster.local:8080
         ports:
         - containerPort: 8080
 ---

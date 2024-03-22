@@ -10,7 +10,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ConsumptionRequest {
-
     private String vehicle;
 
+    @Override
+    public boolean equals(Object other) {
+        if (other != null && other instanceof ConsumptionRequest) {
+            return this.hashCode() == other.hashCode();
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return vehicle.hashCode();
+    }
 }

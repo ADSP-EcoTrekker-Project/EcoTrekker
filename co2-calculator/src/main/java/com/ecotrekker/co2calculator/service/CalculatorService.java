@@ -18,9 +18,6 @@ import reactor.core.publisher.Mono;
 
 import com.ecotrekker.co2calculator.model.VehicleDepotRequest;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 @Service
 public class CalculatorService {
 
@@ -40,24 +37,23 @@ public class CalculatorService {
         return Mono.just(step)
         .filter(filterStep -> filterStep.getLine() != null && filterStep.isTopLevel()) // if is empty line or not toplevel vehicle skip ahead
         .flatMap(topStep -> depotClient.getVehicleShareInDepot(new VehicleDepotRequest(topStep.getLine())))
-        .onErrorResume(ex -> Mono.empty()) // incase we get error or nothing from depot service skip ahead
+        .onErrorResume(ex -> Mono.empty()) // in case we get error or nothing from depot service skip ahead
         .flatMap(depotReply -> 
             Flux.fromIterable(depotReply.getVehicles().entrySet())
             .flatMap(entry -> 
-                consumptionClient.getCO2Intensity(new ConsumptionRequest(entry.getKey()))
+                consumptionClient.getConsumption(new ConsumptionRequest(entry.getKey()))
                 .map(consumReply -> new ConsumptionCache(entry.getValue(), consumReply.getKwh(), consumReply.getCo2()))
             )
             .collectList()
         )
-        .switchIfEmpty(consumptionClient.getCO2Intensity(new ConsumptionRequest(step.getVehicle()))
-            .map(consumption -> Collections.singletonList(new ConsumptionCache(1.0, consumption.getKwh(), consumption.getCo2()))
-            )
+        .switchIfEmpty(consumptionClient.getConsumption(new ConsumptionRequest(step.getVehicle()))
+            .map(consumption -> Collections.singletonList(new ConsumptionCache(1.0, consumption.getKwh(), consumption.getCo2())))
         )
         .flatMap(consumptions ->
             Flux.fromIterable(consumptions)
             .filter(cache -> cache.getKwh() != null) //this may be called more than once, but it shouldnt be too bad
             .collectList()
-            .filter(kwhConsums -> kwhConsums.size() >= 1) // skip ahead if we dont electric vehicles vehicle
+            .filter(kwhConsums -> kwhConsums.size() >= 1) // skip ahead if we dont use electric vehicles vehicles
             .flatMap(gridCo2 -> gridClient.getCO2Intensity()
                 .map(gridReply -> gridReply.getCarbonIntensity()))
                 .map(gridCo2 -> consumptions.stream()

@@ -22,7 +22,7 @@ spec:
         image: {{ .Values.ecotrekker.restapi.image }}
         resources:
           requests:
-            cpu: "256m"
+            cpu: "512m"
             memory: "512Mi"
           limits:
             cpu: "768m"

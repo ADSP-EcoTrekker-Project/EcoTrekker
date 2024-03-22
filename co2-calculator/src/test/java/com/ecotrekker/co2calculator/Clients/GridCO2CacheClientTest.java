@@ -1,6 +1,5 @@
 package com.ecotrekker.co2calculator.Clients;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -15,7 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
 import com.ecotrekker.co2calculator.clients.GridCO2CacheClient;
-import com.ecotrekker.co2calculator.model.CO2Response;
+import com.ecotrekker.co2calculator.model.CarbonResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import okhttp3.mockwebserver.Dispatcher;
@@ -39,7 +38,7 @@ public class GridCO2CacheClientTest {
         @Override
         public MockResponse dispatch (RecordedRequest request) {
             try {
-                CO2Response response = new CO2Response();
+                CarbonResponse response = new CarbonResponse();
                 response.setCarbonIntensity(400);
 
                 return new MockResponse()

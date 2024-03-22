@@ -1,5 +1,7 @@
 server:
   port: 8080
+  connection-timeout: 1s
+
 
 client:
   timeout: 200
