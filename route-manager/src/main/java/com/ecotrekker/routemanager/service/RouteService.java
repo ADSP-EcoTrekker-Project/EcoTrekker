@@ -36,7 +36,6 @@ public class RouteService {
     public Mono<RoutesResult> requestCalculation(RoutesRequest routesRequest) {
         return Flux.fromIterable(routesRequest.getRoutes())
             .flatMap(route -> Flux.fromIterable(route.getSteps())
-                .distinct()
                 .flatMap(routeStep -> Mono.justOrEmpty(routeStep.getDistance())
                     .switchIfEmpty(distanceServiceClient.getDistance(new DistanceRequest(routeStep))
                         .map(reply -> reply.getDistance())
@@ -50,16 +49,12 @@ public class RouteService {
                         );
                     })
                 )
-                .thenMany(Flux.fromIterable(route.getSteps()))
-                .reduce(new CalculationCache(0.0, 0.0), (cache, routeStep) -> {
-                    CalculationRequest requestKey = new CalculationRequest(routeStep, routesRequest.isGamification());
-                    CalculationResponse calculationResponseEntry = co2CacheManager.get(requestKey);
-                    cache.setCo2(cache.getCo2() + calculationResponseEntry.getResult().getCo2());
-                    cache.setPoints(cache.getPoints() + (calculationResponseEntry.getPoints() != null ? calculationResponseEntry.getPoints() : 0));
+                .reduce(new CalculationCache(0.0, 0.0), (cache, calculationResponse) -> {
+                    cache.setCo2(cache.getCo2() + calculationResponse.getResult().getCo2());
+                    cache.setPoints(cache.getPoints() + (calculationResponse.getPoints() != null ? calculationResponse.getPoints() : 0));
                     return cache;
                 })  
                 .map(result -> new RouteResult(route.getSteps(), route.getId(), result.getCo2(), result.getPoints()))
-                
             )
             .collectList()
             .map(routeResults -> new RoutesResult(routeResults, routesRequest.isGamification()));

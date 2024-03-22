@@ -8,10 +8,12 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.Scheduler;
 
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @Component
-public class GenericCacheManager<K,V> {
+@Slf4j
+public class GenericCacheManager<K, V> {
 
     private final Cache<K, V> cache = Caffeine.newBuilder()
             .expireAfterWrite(Duration.ofMinutes(15))
@@ -21,7 +23,11 @@ public class GenericCacheManager<K,V> {
 
     public Mono<V> get(K key, Mono<V> handler) {
         return Mono.justOrEmpty(this.cache.getIfPresent(key))
-            .switchIfEmpty(Mono.defer(() -> handler.flatMap(it -> this.put(key, it))));
+                .doOnNext(value -> log.info("[CACHE] hit for key" + key))
+                .switchIfEmpty(Mono.defer(() -> handler
+                        .doOnNext(value -> log
+                                .info("[CACHE] miss... written new value for key" + key + " value: " + value))
+                        .flatMap(it -> this.put(key, it))));
     }
 
     public V get(K key) {
@@ -30,7 +36,7 @@ public class GenericCacheManager<K,V> {
 
     public Mono<V> put(K key, V object) {
         return Mono.just(object)
-            .doOnNext(element -> cache.put(key, element));
+                .doOnNext(element -> cache.put(key, element));
     }
 
     public void remove(K key) {
