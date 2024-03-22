@@ -1,8 +1,16 @@
 from typing import Any, Dict
-from locust import HttpUser, between, constant_throughput, task
+from locust import HttpUser, task, events
 import random
 
 random.seed(None)
+
+@events.request.add_listener
+def my_request_handler(request_type, name, response_time, response_length, response,
+                       context, exception, start_time, url, **kwargs):
+    if exception:
+        print(f"Request to {name} failed with exception {exception}")
+        print(f"response: {response}")
+        print(f"Body: {context}")
 
 
 class EcoTrekkerUser(HttpUser):
@@ -135,14 +143,15 @@ class EcoTrekkerUser(HttpUser):
             }
         )
 
-        pair_num = random.randint(0, 3)
+        
         if EcoTrekkerUser.step_pairs.get(vehicle):
+            pair_num = random.randint(0, len(EcoTrekkerUser.step_pairs) - 1)
             reverse = random.randint(0, 1) == 1
             line, start, stop = EcoTrekkerUser.step_pairs.get(vehicle)[
                 pair_num]
 
-            if reverse:
-                start, stop = stop, start
+            # if reverse:
+            #     start, stop = stop, start
             step.update(
                 {
                     "line": line,
@@ -191,4 +200,5 @@ class EcoTrekkerUser(HttpUser):
 
         self.client.post("/v1/calc/co2",
                          json=req,
+                         context=req,
                          name=name)
