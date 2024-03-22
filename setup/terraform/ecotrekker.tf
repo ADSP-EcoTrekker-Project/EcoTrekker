@@ -10,6 +10,6 @@ resource "helm_release" "ecotrekker" {
   create_namespace = true
 
   lifecycle {
-    replace_triggered_by = [ terraform_data.always_run ]
+    replace_triggered_by = [terraform_data.always_run]
   }
 }

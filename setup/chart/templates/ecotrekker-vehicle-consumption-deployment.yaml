@@ -22,10 +22,10 @@ spec:
         image: {{ .Values.ecotrekker.vehicleconsumption.image }}
         resources:
           requests:
-            cpu: "512m"
+            cpu: "640m"
             memory: "512Mi"
           limits:
-            cpu: "784m"
+            cpu: "880m"
             memory: "512Mi"
         ports:
         - containerPort: 8080

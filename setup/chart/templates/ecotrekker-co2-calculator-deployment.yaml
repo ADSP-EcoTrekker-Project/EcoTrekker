@@ -22,7 +22,7 @@ spec:
         image: {{ .Values.ecotrekker.co2calculator.image }}
         resources:
           requests:
-            cpu: "2"
+            cpu: "2.25"
             memory: "512Mi"
           limits:
             cpu: "3"
