@@ -71,7 +71,7 @@ metadata:
     app.kubernetes.io/microservice: rest-api
 spec:
   rules:
-  - host: "ecotrekker.leolierse.de"
+  - host: {{ .Values.ecotrekker.restapi.ingress | quote }}
     http:
       paths:
       - path: /

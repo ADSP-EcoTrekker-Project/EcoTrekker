@@ -5,6 +5,7 @@
 ecotrekker:
   restapi:
     image: lierseleow/eco-rest-api:latest
+    ingress: ecotrekker.leolierse.de
     replicas: 1
   co2calculator:
     image: lierseleow/eco-co2-calculator:latest
